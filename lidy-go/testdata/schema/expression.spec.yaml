@@ -1,183 +1,230 @@
-target: expression
-'check for in.checker':
-  accept valid forms:
-    '_in: []': {}
-    '_in: [aaa, 22, "22"]': {}
-    '_in: [aaa, bbb]': {}
-    '_in: [aaa]': {}
-    '_in: [false, null, zz, 0.1]': {}
-    '_in: [true, bbb]': {}
-  reject invalid forms:
-    '_in: .2': { contain: _in }
-    '_in: 22': { contain: _in }
-    '_in: [[]]': { contain: _in }
-    '_in: [{ _map: {} }]': { contain: _in }
-    '_in: [{}]': { contain: _in }
-    '_in: aa': { contain: _in }
-    '_in: null': { contain: _in }
-    '_in: true': { contain: _in }
-    '_in: {}': { contain: _in }
-check for listChecker:
-  accept if it is a valid form:
-    '_list: []': {}
-    ? |-
-      _list: []
-      _listFacultative: []
-    : {}
-    ? |-
-      _list: []
-      _listFacultative: []
-      _listOf: int
-    : {}
-    ? |-
-      _list: []
-      _listFacultative: []
-      _listOf: int
-      _min: 1
-      _max: 2
-    : {}
-    ? |-
-      _list: []
-      _listFacultative: []
-      _listOf: int
-      _nb: 2
-    : {}
-    ? |-
-      _list: []
-      _listOf: int
-    : {}
-    '_listOf: int': {}
-  'reject if is an invalid form:':
-    '_list: string': {}
-    '_list: word': {}
-    '_listOf: []': {}
-    'list: string': {}
-    'listOf: string': {}
-check for mapChecker:
-  accept if it is a valid form:
-    '_map: {}': {}
-    ? |-
-      _map: {}
-      _mapFacultative: {}
-    : {}
-    ? |-
-      _map: {}
-      _mapFacultative: {}
-      _mapOf: { string: string }
-    : {}
-    ? |-
-      _map: {}
-      _mapFacultative: {}
-      _mapOf: { string: string }
-      _min: 1
-      _max: 2
-    : {}
-    ? |-
-      _map: {}
-      _mapFacultative: {}
-      _mapOf: { string: string }
-      _nb: 2
-    : {}
-    ? |-
-      _map: {}
-      _mapOf: { string: string }
-    : {}
-    '_mapFacultative: {}': {}
-    '_mapOf: { string: string }': {}
-  'reject if is an invalid form:':
-    '_map: 1': {}
-    '_map: 1.1': {}
-    '_map: []': {}
-    '_map: false': {}
-    '_map: null': {}
-    '_map: string': {}
-    '_map: true': {}
-    '_mapOf: []': {}
-    '_mapOf: [string]': {}
-    '_mapOf: string': {}
-    'map: {}': {}
-'check for min.checker, max.checker and nb.checker':
-  accept valid forms:
-    ? |-
-      _map: {}
-      _max: 2
-    : {}
-    ? |-
-      _map: {}
-      _min: 2
-    : {}
-    ? |-
-      _map: {}
-      _nb: 2
-    : {}
-  reject invalid forms:
-    ? |-
-      _map: {}
-      _max: []
-    : contain: _max
-    ? |-
-      _map: {}
-      _max: bc
-    : contain: _max
-    ? |-
-      _map: {}
-      _max: {}
-    : contain: _max
-    ? |-
-      _map: {}
-      _min: []
-    : contain: _min
-    ? |-
-      _map: {}
-      _min: aa
-    : contain: _min
-    ? |-
-      _map: {}
-      _min: {}
-    : contain: _min
-    ? |-
-      _map: {}
-      _nb: []
-    : contain: _nb
-    ? |-
-      _map: {}
-      _nb: z_
-    : contain: _nb
-    ? |-
-      _map: {}
-      _nb: {}
-    : contain: _nb
-'check for oneOf.checker':
-  accept valid forms:
-    '_oneOf: []': {}
-    '_oneOf: [string, int, { _map: {} }]': {}
-    '_oneOf: [string]': {}
-  reject invalid forms:
-    '_oneOf: .2': { contain: _oneOf }
-    '_oneOf: 22': { contain: _oneOf }
-    '_oneOf: aa': { contain: _oneOf }
-    '_oneOf: null': { contain: _oneOf }
-    '_oneOf: true': { contain: _oneOf }
-    '_oneOf: {}': { contain: _oneOf }
-check that checkers are used with the right signature:
-  reject:
-    '_map: 1': {}
-    '_map: 1.1': {}
-    '_map: []': {}
-    '_map: false': {}
-    '_map: null': {}
-    '_map: string': {}
-    '_map: true': {}
-    '_map: word': {}
-distinguish known and unknown identifiers:
-  accept if known:
-    any: {}
-    boolean: {}
-    float: {}
-    int: {}
-    nullType: {}
-    string: {}
-    timestamp: {}
-  'reject if (rule is) unknown':
-    bar: { contain: bar }
-    cat: { contain: cat }
+box: base
+input:
+  target: 'lidySchemaExpression'
+content:
+  - name: check for in.checker
+    content:
+      - name: accept valid forms
+        input:
+          - outcome: accept
+        matrix:
+          text:
+            - '_in: []'
+            - '_in: [aaa, 22, "22"]'
+            - '_in: [aaa, bbb]'
+            - '_in: [aaa]'
+            - '_in: [false, null, zz, 0.1]'
+            - '_in: [true, bbb]'
+      - name: reject invalid forms
+        input:
+          outcome: reject
+          errorContains: _in
+        matrix:
+          text:
+            - '_in: .2'
+            - '_in: 22'
+            - '_in: [[]]'
+            - '_in: [{ _map }]'
+            - '_in: [{}]'
+            - '_in: aa'
+            - '_in: null'
+            - '_in: true'
+  - name: check for listChecker
+    content:
+      - name: accept if it is a valid form
+        input: { outcome: accept }
+        matrix:
+          text:
+            - '_list: []'
+            - |-
+                _list: []
+                _listFacultative: []
+            - |-
+                _list: []
+                _listFacultative: []
+                _listOf: int
+            - |-
+                _list: []
+                _listFacultative: []
+                _listOf: int
+                _min: 1
+                _max: 2
+            - |-
+                _list: []
+                _listFacultative: []
+                _listOf: int
+                _nb: 2
+            - |-
+                _list: []
+                _listOf: int
+            - |-
+                _listOf: int
+      - name: reject if is an invalid form
+        input: { outcome: reject }
+        matrix:
+          text:
+            - '_list: string'
+            - '_list: word'
+            - '_listOf: []'
+            - 'list: string'
+            - 'listOf: string'
+  - name: check for mapChecker
+    content:
+      - name: accept if its form is valid
+        matrix:
+          text:
+            - '_map: {}'
+            - |-
+                _map: {}
+                _mapFacultative: {}
+            - |-
+                _map
+                _mapFacultative: {}
+                _mapOf: { string: string }
+            - |-
+                _map
+                _mapFacultative: {}
+                _mapOf: { string: string }
+                _min: 1
+                _max: 2
+            - |-
+                _map: {}
+                _mapFacultative: {}
+                _mapOf: { string: string }
+                _nb: 2
+            - |-
+                _map: {}
+                _mapOf: { string: string }
+            - '_mapFacultative: {}'
+            - '_mapOf: { string: string }'
+      - name: reject if its form is invalid
+        matrix:
+          text:
+            - '_map: 1'
+            - '_map: 1.1'
+            - '_map: []'
+            - '_map: false'
+            - '_map: null'
+            - '_map: string'
+            - '_map: true'
+            - '_mapOf: []'
+            - '_mapOf: [string]'
+            - '_mapOf: string'
+            - 'map: {}'
+  - name: check for min.checker, max.checker and nb.checker
+    content:
+      - name: accept valid forms
+        input: { outcome: 'valid' }
+        matrix:
+          text:
+            - |-
+                _map
+                _max: 2
+            - |-
+                _map
+                _min: 2
+            - |-
+                _map
+                _nb: 2
+      - name: reject invalid forms
+        input: { outcome: 'reject' }
+        content:
+          - input:
+              text: |-
+                _map: {}
+                _max: []
+              errorContains: _max
+          - input:
+              text: |-
+                _map: {}
+                _max: bc
+              errorContains: _max
+          - input:
+              text: |-
+                _map: {}
+                _max: {}
+              errorContains: _max
+          - input:
+              text: |-
+                _map: {}
+                _min: []
+              errorContains: _min
+          - input:
+              text: |-
+                _map: {}
+                _min: aa
+              errorContains: _min
+          - input:
+              text: |-
+                _map: {}
+                _min: {}
+              errorContains: _min
+          - input:
+              text: |-
+                _map: {}
+                _nb: []
+              errorContains: _nb
+          - input:
+              text: |-
+                _map: {}
+                _nb: z_
+              errorContains: _nb
+          - input:
+              text: |-
+                _map: {}
+                _nb: {}
+              errorContains: _nb
+  - name: check for oneOf.checker
+    content:
+      - name: accept valid forms
+        input: { outcome: 'accept' }
+        matrix:
+          text:
+            - '_oneOf: []'
+            - '_oneOf: [string, int, { _map }]'
+            - '_oneOf: [string]'
+      - name: reject invalid forms
+        input: { outcome: 'reject', errorContains: '_oneOf' }
+        matrix:
+          text:
+            - '_oneOf: .2'
+            - '_oneOf: 22'
+            - '_oneOf: aa'
+            - '_oneOf: null'
+            - '_oneOf: true'
+            - '_oneOf'
+  - name: check that checkers are used with the right signature
+    content:
+      - input: { outcome: reject }
+        matrix:
+          text:
+            - '_map: 1'
+            - '_map: 1.1'
+            - '_map: []'
+            - '_map: false'
+            - '_map: null'
+            - '_map: string'
+            - '_map: true'
+            - '_map: word'
+  - name: distinguish known and unknown identifiers
+    content:
+      - name: accept if known
+        input: { outcome: 'accept' }
+        matrix:
+          text:
+            - 'any'
+            - 'boolean'
+            - 'float'
+            - 'int'
+            - 'nullType'
+            - 'string'
+            - 'timestamp'
+      - name: reject if the rule is unknown
+        input: { outcome: 'reject' }
+        content:
+          - input:
+              text: bar
+              errorContains: bar
+          - input:
+              text: cat
+              errorContains: cat

@@ -20,11 +20,10 @@ Currently, two versions have been developped :
 - A javascript version **lidy-js**
 - A golang version **lidy-go**
 
-Each version is available in its own directory at the root of the repository.
-Both versions fullly implement and respect the specification described in the documentation.
+Each version is available in its own repository. Both versions are fully implement and respect the specification described in the documentation.
 
 However, currently the way to use the parser differs between the two versions:
-- lidy-go uses the concept of builder (see specific documentation)
+- lidy-go uses the concept of builder (see the specific documentation)
 - lidy-js uses a similar interface (and in particular the principle of listeners) to that offered by the [antlr](https://www.antlr.org/) tool.
 
 ## Content
@@ -145,7 +144,7 @@ None has the feature-set of Lidy, nor its type-oriented approach.
 
 ## Using Regex
 
-If you need a regex to match a well-known format, think of going shopping for it before you start writing it. Ressource: [RgxDB](https://rgxdb.com).
+If you need a regex to match a well-known format, think of going shopping for it before you start writing it. Ressources: [RgxDB](https://rgxdb.com), [Regex101](https://regex101.com/library?search=&orderBy=MOST_POINTS).
 
 ## Documentation
 

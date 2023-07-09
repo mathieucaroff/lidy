@@ -1,9 +1,22 @@
-_in:
-  expression: '_in: [a, present, b, c]'
-  accept:
-    present: {}
-  reject:
-    missing: {}
-_in empty:
-  expression: '_in: []'
-  reject everything: '@any'
+box: base
+content:
+  - name: _in
+    input:
+      expression: '_in: [a, present, b, c]'
+    content:
+      - input: { outcome: 'accept', text: 'present' }
+      - input: { outcome: 'reject', text: 'missing' }
+  - name: _in rejects everything when empty
+    input:
+      expression: '_in: []'
+      outcome: 'reject'
+    content:
+      - input: { text: '0.2' }
+      - input: { text: '2' }
+      - input: { text: '[]' }
+      - input: { text: '[a]' }
+      - input: { text: 'a' }
+      - input: { text: 'null' }
+      - input: { text: 'true' }
+      - input: { text: '{ k: v }' }
+      - input: { text: '{}' }

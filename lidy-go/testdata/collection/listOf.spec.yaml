@@ -1,19 +1,28 @@
-_listOf:
+box: base
+input:
   expression: '_listOf: string'
-  accept a lot of strings:
-    '[va, vb, vc, vd, ve, vf]': {}
-    '[va, vb]': {}
-  accept one string:
-    '[va]': {}
-  accept the empty list:
-    '[]': {}
-  reject lists with non-matching elements:
-    '[2]': {}
-    '[3, 4]': {}
-    '[5, va]': {}
-    '[va, 4]': {}
-  reject non-lists:
-    '0': {}
-    a: {}
-    'true': {}
-    '{}': {}
+content:
+  - input: { outcome: 'accept' }
+    content:
+      - name: 'accept a lot of strings'
+        content:
+          - input: { text: '[va, vb, vc, vd, ve, vf]' }
+          - input: { text: '[va, vb]' }
+      - name: 'accept one string'
+        input: { text: '[va]' }
+      - name: 'accept the empty list'
+        input: { text: '[]' }
+  - input: { outcome: 'reject' }
+    content:
+      - name: 'reject lists with non-matching elements'
+        content:
+          - input: { text: '[2]' }
+          - input: { text: '[3, 4]' }
+          - input: { text: '[5, va]' }
+          - input: { text: '[va, 4]' }
+      - name: 'reject non-lists'
+        content:
+          - input: { text: '0' }
+          - input: { text: 'a' }
+          - input: { text: 'true' }
+          - input: { text: '{}' }

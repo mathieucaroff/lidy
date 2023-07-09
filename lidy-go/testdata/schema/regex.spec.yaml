@@ -1,50 +1,69 @@
-target: 'regex.checker'
-validate regexes:
-  'accept \0, which, after all, cannot be a reference':
-    'a\0': {}
-  accept empty group:
-    '()': {}
-  accept regexes:
-    '(a[bc])': {}
-    '.?': {}
-    '^$': {}
-    a: {}
-  accept silenced groups:
-    '(?:a)': {}
-  accept the empty regex:
-    '""': {}
-  'accept the use of {} and [] as literal sequences':
-    '[[]': {}
-    '[]]': {}
-    ']': {}
-    'a{b}': {}
-    '{': {}
-    '{c}': {}
-    '}': {}
-  reject backreferences:
-    '(?:a)\1': {}
-    'a(b)(?:c)\2': {}
-    'a(b)\1': {}
-    'a(b)\2': {}
-    'a\1': {}
-    'a\1(a)': {}
-  reject empty class:
-    '[]': {}
-  reject lookaheads and lookbehinds, positive or negative:
-    '(?!a)': {}
-    '(?<!a)': {}
-    '(?<=a)': {}
-    '(?=a)': {}
-  reject misplaced quantifier:
-    '*': {}
-    '+': {}
-    '?': {}
-    '{2}': {}
-  reject unbalanced regexes:
-    '(': {}
-    '(()': {}
-    '())': {}
-    ')': {}
-    ')(': {}
-    ')]': {}
-    '[': {}
+box: base
+input:
+  target: 'lidySchemaRegexChecker'
+name: validate regexes
+content:
+  - input: { outcome: 'accept' }
+    content:
+      - name: accept \0, which, after all, cannot be a reference
+        input: { text: 'a\0' }
+      - name: accept empty group
+        input: { text: '()' }
+      - name: accept regexes
+        matrix:
+          text:
+            - '(a[bc])'
+            - '.?'
+            - '^$'
+            - a
+      - name: accept silenced groups
+        input: { text: '(?:a)' }
+      - name: accept the empty regex
+        input: { text: '""' }
+      - name: accept the use of {} and [] as literal sequences
+        matrix:
+          text:
+            - '[[]'
+            - '[]]'
+            - ']'
+            - 'a{b}'
+            - '{'
+            - '{c}'
+            - '}'
+  - input: { outcome: 'reject' }
+    content:
+        - name: reject backreferences
+          matrix:
+            text:
+              - '(?:a)\1'
+              - 'a(b)(?:c)\2'
+              - 'a(b)\1'
+              - 'a(b)\2'
+              - 'a\1'
+              - 'a\1(a)'
+        - name: reject empty class
+          input: { text: '[]' }
+        - name: reject lookaheads and lookbehinds, positive or negative
+          matrix:
+            text:
+              - '(?!a)'
+              - '(?<!a)'
+              - '(?<=a)'
+              - '(?=a)'
+        - name: reject misplaced quantifier
+          matrix:
+            text:
+              - '*'
+              - '+'
+              - '?'
+              - '{2}'
+        - name: reject unbalanced regexes
+          matrix:
+            text:
+              - '('
+              - '(()'
+              - '())'
+              - ')'
+              - ')('
+              - ')]'
+              - '['

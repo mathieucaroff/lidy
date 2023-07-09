@@ -1,101 +1,142 @@
-PENDING _merge 0 _mapFacultative 2 entries:
-  schema: |-
-    main:
-      _merge:
-        - _map: { a: string }
-          _mapFacultative: { b: int, c: boolean }
-        - _map: { c: int }
-          _mapFacultative: { a: int }
-  accept a and b too:
-    '{ a: 2, b: 3, c: 1 }': {}
-  accept when only c is provided:
-    '{ c: 2 }': {}
-  reject if a and b are not both ints:
-    '{ a: 2, b: b, c: 1 }': {}
-    '{ a: a, b: 3, c: 1 }': {}
-    '{ a: f, b: g, c: 1 }': {}
-  reject if c is not an int:
-    '{ c: aa }': {}
-  reject if c is not provided:
-    '{ a: 1 }': {}
-    '{ a: 1, b: 2 }': {}
-    '{ b: 1 }': {}
-    '{}': {}
-PENDING _merge _map override:
-  schema: |-
-    main:
-      _merge:
-        - boat
-        - car
-    boat:
-      _map:
-        id: int
-        capacity: float
-    car:
-      _map:
-        id: string
-        engine: string
-  accept if all keys are present and matching:
-    '{ id: a, capacity: 0, engine: 3KZ_bc }': {}
-    '{ id: a, capacity: 2.1, engine: 3KZ_bc }': {}
-  reject any entry is unknown:
-    '{ id: a, capacity: 0, engine: b, _alt: ok }': {}
-    '{ id: a, capacity: 0, engine: b, extra: more }': {}
-  reject if any key is missing:
-    '{ capacity: 2.1, engine: 3KZ_bc }':
-      contain: id
-    '{ id: a, capacity: 2.1 }':
-      contain: engine
-    '{ id: a, engine: bc }':
-      contain: capacity
-  reject if some keys do not match:
-    '{ id: 10, capacity: 2.1, engine: 3KZ_bc }':
-      contain: id
-    '{ id: a, capacity: large, engine: 3KZ_bc }':
-      contain: capacity
-  reject nodes that are not dictionaries:
-    '[]':
-      contain: type
-PENDING _merge _mapOf behaves like a _oneOf and does not override:
-  schema: |-
-    main:
-      _merge:
-        - { _mapFacultative: { kkey: boolean } }
-        - _mapOf: { string: string }
-        - _mapOf: { { _list: [] }: int }
-        - _mapOf: { { _list: [] }: string }
-        - _mapOf: { { _list: [string] }: int }
-        - { _mapFacultative: { pkey: null } }
-  accept if valid:
-    '{ []: 2 }': {}
-    '{ []: aa }': {}
-    '{ [zz]: -3 }': {}
-    '{ a: aa }': {}
-    '{ a: aa, []: 2, [zz]: -3 }': {}
-    '{ a: aa, []: 2, [zz]: -3, kkey: false, pkey: null }': {}
-    '{ a: aa, kkey: true }': {}
-    '{}': {}
-  reject if there's a non-matching type:
-    '{ [a]: aa }': {}
-    '{ b: 4 }': {}
-    '{ kkey: bb }': {}
-    '{ kkey: null }': {}
-    '{ pkey: cc }': {}
-    '{ pkey: false }': {}
-  reject nodes that are not dictionaries:
-    '0.1': {}
-    '[]': {}
-    'null': {}
-_merge empty:
-  schema: |-
-    main:
-      _merge: []
-  accept if valid:
-    '{}': {}
-  reject any unknown entry:
-    '{ a: va }': {}
-    '{ b: 4 }': {}
-  reject nodes that are not dictionaries:
-    '0.1': {}
-    '[]': {}
-    'null': {}
+box: base
+content:
+  - flag: PENDING
+    name: _merge 0 _mapFacultative 2 entries
+    input:
+      schema: |-
+        main:
+          _merge:
+            - _map: { a: string }
+              _mapFacultative: { b: int, c: boolean }
+            - _map: { c: int }
+              _mapFacultative: { a: int }
+    content:
+      - input: { outcome: 'accept' }
+        content:
+          - name: accept a and b too
+            input: { text: '{ a: 2, b: 3, c: 1 }' }
+          - name: accept when only c is provided
+            input: { text: '{ c: 2 }' }
+      - input: { outcome: 'reject' }
+        content:
+          - name: reject if a and b are not both ints
+            content:
+              - input: { text: '{ a: 2, b: b, c: 1 }' }
+              - input: { text: '{ a: a, b: 3, c: 1 }' }
+              - input: { text: '{ a: f, b: g, c: 1 }' }
+          - name: reject if c is not an int
+            input: { text: '{ c: aa }' }
+          - name: reject if c is not provided
+            content:
+              - input: { text: '{ a: 1 }' }
+              - input: { text: '{ a: 1, b: 2 }' }
+              - input: { text: '{ b: 1 }' }
+              - input: { text: '{}' }
+  - flag: PENDING
+    name: _merge _map override
+    input:
+      schema: |-
+        main:
+          _merge:
+            - boat
+            - car
+        boat:
+          _map:
+            id: int
+            capacity: float
+        car:
+          _map:
+            id: string
+            engine: string
+    content:
+      - input: { outcome: 'accept' }
+        name: accept if all keys are present and matching
+        content:
+          - input: { text: '{ id: a, capacity: 0, engine: 3KZ_bc }' }
+          - input: { text: '{ id: a, capacity: 2.1, engine: 3KZ_bc }' }
+      - input: { outcome: 'reject' }
+        content:
+          - name: reject any entry is unknown
+            content:
+              - input: '{ id: a, capacity: 0, engine: b, _alt: ok }'
+              - input: '{ id: a, capacity: 0, engine: b, extra: more }'
+          - name: reject if any key is missing
+            content:
+              - input:
+                  text: '{ capacity: 2.1, engine: 3KZ_bc }'
+                  errorContains: id
+              - input:
+                  text: '{ id: a, capacity: 2.1 }'
+                  errorContains: engine
+              - input:
+                  text: '{ id: a, engine: bc }'
+                  errorContains: capacity
+          - name: reject if some keys do not match
+            content:
+              - input:
+                  text: '{ id: 10, capacity: 2.1, engine: 3KZ_bc }'
+                  errorContains: id
+              - input:
+                  text: '{ id: a, capacity: large, engine: 3KZ_bc }'
+                  errorContains: capacity
+          - name: reject nodes that are not mappings
+            input:
+              text: '[]'
+              errorContains: type
+  - name: _merge _mapOf behaves like a _oneOf and does not override
+    input:
+      schema: |-
+        main:
+          _merge:
+            - { _mapFacultative: { kkey: boolean } }
+            - _mapOf: { string: string }
+            - _mapOf: { { _list: [] }: int }
+            - _mapOf: { { _list: [] }: string }
+            - _mapOf: { { _list: [string] }: int }
+            - { _mapFacultative: { pkey: null } }
+    content:
+      - name: accept if valid
+        input: { outcome: 'accept' }
+        content:
+          - input: { text: '{ []: 2 }' }
+          - input: { text: '{ []: aa }' }
+          - input: { text: '{ [zz]: -3 }' }
+          - input: { text: '{ a: aa }' }
+          - input: { text: '{ a: aa, []: 2, [zz]: -3 }' }
+          - input: { text: '{ a: aa, []: 2, [zz]: -3, kkey: false, pkey: null }' }
+          - input: { text: '{ a: aa, kkey: true }' }
+          - input: { text: '{}' }
+      - name: reject if there's a non-matching type
+        input: { outcome: 'reject' }
+        content:
+          - input: { text: '{ [a]: aa }' }
+          - input: { text: '{ b: 4 }' }
+          - input: { text: '{ kkey: bb }' }
+          - input: { text: '{ kkey: null }' }
+          - input: { text: '{ pkey: cc }' }
+          - input: { text: '{ pkey: false }' }
+      - name: reject nodes that are not mappings
+        input: { outcome: 'reject' }
+        content:
+          - input: { text: '0.1' }
+          - input: { text: '[]' }
+          - input: { text: 'null' }
+  - name: _merge empty
+    input:
+      schema: |-
+        main:
+          _merge: []
+    content:
+      - name: accept if valid
+        input: { outcome: 'accept', text: '{}' }
+      - input: { outcome: 'reject' }
+        content:
+          - name: reject any unknown entry
+            content:
+              - input: { text: '{ a: va }' }
+              - input: { text: '{ b: 4 }' }
+          - name: reject nodes that are not mappings
+            content:
+              - input: { text: '0.1' }
+              - input: { text: '[]' }
+              - input: { text: 'null' }
