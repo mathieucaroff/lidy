@@ -1,11 +1,14 @@
-# Folders
-/*/
-
-!/asset/
-!/lidy-go/
-
 # Files
 *.log
 .*
+
+# Folders
+/*/
+
+!/.github/
+!/asset/
+!/go/
+!/lidy-go/
+!/testdata/
 
 !/.gitignore
