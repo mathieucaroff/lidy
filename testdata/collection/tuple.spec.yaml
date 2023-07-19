@@ -1,37 +1,31 @@
-box: base
 content:
   - name: _list with zero entry
-    input:
-      expression: '_list: []'
+    expression: '_list: []'
     content:
       - name: accept the empty list
-        input: { text: '[]' }
-          
+        text: '[]'
       - name: reject any non-empty list
-        content:
-          - input: { text: '[4]' }
-          - input: { text: '[va]' }
+        text:
+          - '[4]'
+          - '[va]'
       - name: reject nodes that are not lists
-        input: { text: '{}' }
+        text: '{}'
   - name: _list with two entries
-    input:
-      expression: '_list: [string, int]'
+    expression: '_list: [string, int]'
     content:
       - name: accept when all entries are present and valid
-        input: { outcome: 'accept', text: '[va, 4]' }
-      - input: { outcome: 'reject' }
-        content:
-          - name: reject if an entry does not match
-            content:
-              - input: { text: '[12, 4]' }
-              - input: { text: '[va, vb]' }
-          - name: reject lists with too few elements
-            input: { text: '[va, 4, extra]' }
-          - name: reject lists with too many elements
-            input: { text: '[va, 4, extra]' }
-          - name: reject nodes that are not lists
-            content:
-              - input: { text: '0' }
-              - input: { text: 'a' }
-              - input: { text: 'true' }
-              - input: { text: '{}' }
+        text: '[va, 4]'
+      - name: reject if an entry does not match
+        text:
+          - '[12, 4]'
+          - '[va, vb]'
+      - name: reject lists with too few elements
+        text: '[va, 4, extra]'
+      - name: reject lists with too many elements
+        text: '[va, 4, extra]'
+      - name: reject nodes that are not lists
+        text:
+          - '0'
+          - 'a'
+          - 'true'
+          - '{}'

@@ -1,102 +1,84 @@
-box: base
 content:
   - flag: PENDING
     name: _map contaning one entry whose property is Lidy keyword
     input:
       expressionTemplate: '_map: { "${keyword}": int }'
-      keywordList:
+      keyword:
         - '_map'
         - '_mapOf'
         - '_list'
         - '_listOf'
     content:
-      - input: { outcome: 'accept' }
-        content:
-          - name: accept a map with one entry which matches
-            input:
-              textTemplate: '{ ${keyword}: 2 }'
-      - input: { outcome: 'reject' }
-        content:
-          - name: reject mappings which contain a non-matching entry
-            content:
-              - input: { textTemplate: '{ ${keyword}: 1.1 }' }
-              - input: { textTemplate: '{ ${keyword}: a }' }
-              - input: { textTemplate: '{ ${keyword}: null }' }
-              - input: { textTemplate: '{ ${keyword}: true }' }
-              - input: { textTemplate: '{ ${keyword}: {} }' }
-          - name: reject if the entry is missing
-            input: { text: '{}' }
-          - name: reject if there are unknown entries
-            content:
-              - input: { text: '{ ${keyword}: 2, a: 4 }' }
-              - input: { text: '{ ${keyword}: 2, b: va }' }
-          - name: reject nodes that are not mappings
-            input: { text: '[]' }
-          - name: reject unrelated mappings
-            content:
-              - input: { text: '{ a: 4 }'}
-              - input: { text: '{ b: va }'}
+      - name: accept a map with one entry which matches
+        textTemplate: '{ ${keyword}: 2 }'
+      - name: reject mappings which contain a non-matching entry
+        textTemplate:
+          - '{ ${keyword}: 1.1 }'
+          - '{ ${keyword}: a }'
+          - '{ ${keyword}: null }'
+          - '{ ${keyword}: true }'
+          - '{ ${keyword}: {} }'
+      - name: reject if the entry is missing
+        text: '{}'
+      - name: reject if there are unknown entries
+        text:
+          - '{ ${keyword}: 2, a: 4 }'
+          - '{ ${keyword}: 2, b: va }'
+      - name: reject nodes that are not mappings
+        text: '[]'
+      - name: reject unrelated mappings
+        text:
+          - '{ a: 4 }'
+          - '{ b: va }'
   - name: _map with zero entries, while _mapFacultative has two entries
-    input:
-      expression: '_mapFacultative: { a: string, b: int }'
+    expression: '_mapFacultative: { a: string, b: int }'
     content:
-      - input: { outcome: 'accept' }
-        content:
-          - name: accept the empty mapping
-            input: { text: '{}' }
-          - name: accept when all entries are present and valid
-            input: { text: '{ a: va, b: 4 }' }
-          - name: accept when only some entries are present
-            content:
-              - input: { text: '{ a: va }' }
-              - input: { text: '{ b: 4 }' }
-      - input: { outcome: 'reject' }
-        content:
-          - name: reject extraneous unknown entries
-            input: { text: '{ a: va, b: 4, z: 12 }' }
-          - name: reject if an entry does not match
-            input: { text: '{ a: 12 }' }
-          - name: reject single unknown entries
-            input: { text: '{ z: 12 }' }
-          - name: reject nodes that are not dictionaries
-            content:
-              - input: { text: '0' }
-              - input: { text: '[]' }
-              - input: { text: 'a' }
-              - input: { text: 'true' }
+      - name: accept the empty mapping
+        text: '{}'
+      - name: accept when all entries are present and valid
+        text: '{ a: va, b: 4 }'
+      - name: accept when only some entries are present
+        text:
+          - '{ a: va }'
+          - '{ b: 4 }'
+      - name: reject extraneous unknown entries
+        text: '{ a: va, b: 4, z: 12 }'
+      - name: reject if an entry does not match
+        text: '{ a: 12 }'
+      - name: reject single unknown entries
+        text: '{ z: 12 }'
+      - name: reject nodes that are not dictionaries
+        text:
+          - '0'
+          - '[]'
+          - 'a'
+          - 'true'
   - name: _map with zero entries
-    input:
-      expression: '_map: {}'
-      content:
-        - name: accept the empty mapping
-          input: { outcome: 'accept', text: '{}' }
-        - input: { outcome: 'reject' }
-          content:
-            - name: reject any unknown entry
-              content:
-                - input: { text: '{ a: va }' }
-                - input: { text: '{ b: 4 }' }
-            - name: reject nodes that are not mappings
-              input: { text: '[]' }
+    expression: '_map: {}'
+    content:
+      - name: accept the empty mapping
+        text: '{}'
+      - name: reject any unknown entry
+        text:
+          - '{ a: va }'
+          - '{ b: 4 }'
+      - name: reject nodes that are not mappings
+        text: '[]'
   - name: _map with one entry
-    input:
-      expression: '_map: { aa: float }'
-      content:
-        - name: accept if valid
-          input: { outcome: 'accept' }
-          content:
-            - input: { text: '{ aa: 0 }' }
-            - input: { text: '{ aa: 2.2 }' }
-        - input: { outcome: 'reject' }
-          content:
-            - name: reject any unknown entry
-              content:
-                - input: { text: '{ a: va }' }
-                - input: { text: '{ b: 4 }' }
-            - name: reject missing entry
-              input: { text: '{}' }
-            - name: reject nodes that are not dictionaries
-              content:
-                - input: { text: '0.1' }
-                - input: { text: '[]' }
-                - input: { text: 'null' }
+    expression: '_map: { aa: float }'
+    content:
+      - name: accept if valid
+        text:
+          - '{ aa: 0 }'
+          - '{ aa: 2.2 }'
+      - name: reject any unknown entry
+        text:
+          - '{ a: va }'
+          - '{ b: 4 }'
+      - name: reject missing entry
+        text: '{}'
+      - name: reject nodes that are not dictionaries
+        text:
+          - '0.1'
+          - '[]'
+          - 'null'

@@ -1,51 +1,38 @@
-box: base
 content:
   - name: _regex email
-    input:
-      expression: '_regex: "^[a-zA-Z0-9]+([.][a-zA-Z0-9]+)*@[a-zA-Z0-9]+([.][a-zA-Z0-9]+)+$"'
+    expression: '_regex: "^[a-zA-Z0-9]+([.][a-zA-Z0-9]+)*@[a-zA-Z0-9]+([.][a-zA-Z0-9]+)+$"'
     content:
       - name: accept email
-        input: { outcome: 'accept' }
-        content:
-          - input: { text: 'a.b.c@0.23.z' }
-          - input: { text: 'a@b.c' }
+        text:
+          - text: 'a.b.c@0.23.z'
+          - text: 'a@b.c'
       - name: reject non-email
-        input: { outcome: 'reject' }
-        content:
-          - input: { text: '.a@b.c' }
-          - input: { text: 'a@b' }
+        text:
+          - text: '.a@b.c'
+          - text: 'a@b'
   - name: _regex empty
-    input:
-      expression: '_regex: "^$"'
+    expression: '_regex: "^$"'
     content:
       - name: accept the empty string
-        input: { outcome: 'accept', text: '""' }
+        text: '""'
       - name: reject letters
-        input: { outcome: 'reject', text: 'a' }
+        text: 'a'
       - name: reject strings containing a single space
-        input: { outcome: 'reject', text: ' ' }
+        text: ' '
   - name: _regex non-empty word
-    input:
-      expression: '_regex: "[a-z]+"'
+    expression: '_regex: "[a-z]+"'
     content:
       - name: accept non-empty word
-        input: { outcome: 'accept' }
-        content:
-          - input: { text: 'a' }
-          - input: { text: 'word' }
-      - input: { outcome: 'reject' }
-        content:
-          - name: reject if not a string
-            content:
-              - input: { text: '1' }
-              - input: { text: '1.1' }
-              - input: { text: '[]' }
-              - input: { text: 'null' }
-              - input: { text: 'true' }
-              - input: { text: '{}' }
-          - name: reject if void, as it is not a string
-            input: { text: ~ }
-          - name: reject if null, as it is not a string
-            input: { text: 'null' }
-          - name: reject the empty string
-            input: { text: '""' }
+        text:
+          - 'a'
+          - 'word'
+      - name: reject if not a string
+        text:
+          - '1'
+          - '1.1'
+          - '[]'
+          - 'null'
+          - 'true'
+          - '{}'
+      - name: reject the empty string
+        text: '""'

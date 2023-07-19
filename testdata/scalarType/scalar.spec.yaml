@@ -1,65 +1,51 @@
-box: base
-input: { outcome: accept }
 content:
-  - name: boolean
-    input:
-      expression: 'boolean'
-    matrix:
-      text:
-        - 'true'
-        - 'false'
-  - name: float
-    input:
-      expression: 'float'
-    matrix:
-      text:
-        - '1.2'
-        - '-1.2'
-        - '0.2'
-        - '.2'
-        - '0.'
-        - '.0'
-        - '1_230.15'
-        - '12.3015e+02'
-        - '.inf'
-        - '-.Inf'
-        - '.nan'
-        - '.NaN'
-        - '.NAN'
-        - '2'
-        - '-2'
-        - '1234'
-        - '0x4D2'
-        - '02333'
-  - name: int
-    input:
-      expression: 'int'
-    matrix:
-      text:
-        - '2'
-        - '-2'
-        - '1234'
-        - '0x4D2'
-        - '02333'
-  - name: nullType
-    input:
-      expression: 'nullType'
-    matrix:
-      text:
-        - 'null'
-        - '~'
-        - ''
-  - name: string
-    input:
-      expression: 'string'
-    matrix:
-      text:
-        - a
-        - '`!@#$%^&*()-=~1234567890_+;'
-        - '"[]:{}'',./<>? \\ \" \t \n"'
-  - name: timestamp
-    input:
-      expression: 'timestamp'
-    matrix:
-      text:
-        - '2020-06-17T10:13:46'
+  - name: accept boolean
+    expression: 'boolean'
+    text:
+      - 'true'
+      - 'false'
+  - name: accept float
+    expression: 'float'
+    text:
+      - '1.2'
+      - '-1.2'
+      - '0.2'
+      - '.2'
+      - '0.'
+      - '.0'
+      - '1_230.15'
+      - '12.3015e+02'
+      - '.inf'
+      - '-.Inf'
+      - '.nan'
+      - '.NaN'
+      - '.NAN'
+      - '2'
+      - '-2'
+      - '1234'
+      - '0x4D2'
+      - '02333'
+  - name: accept int
+    expression: 'int'
+    text:
+      - '2'
+      - '-2'
+      - '1234'
+      - '0x4D2'
+      - '02333'
+  - name: accept nullType
+    expression: 'nullType'
+    text:
+      - 'null'
+      - '~'
+      - ''
+  - name: accept string
+    expression: 'string'
+    text:
+      - a
+      - '`!@#$%^&*()-=~1234567890_+;'
+      - '"[]:{}'',./<>? \\ \" \t \n"'
+  - name: accept timestamp
+    expression: 'timestamp'
+    text:
+      - '2020-06-17T10:13:46'

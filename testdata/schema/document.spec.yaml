@@ -1,123 +1,98 @@
-box: base
-input:
-  target: 'lidySchemadocument'
+target: 'lidySchemaDocument'
 content:
   - name: detect invalid self-references in documents
     content:
       - flag: PENDING
         name: reject if the self-reference is too direct
-        input: { outcome: 'reject' }
         content:
-          - input:
-              text: |-
-                main: plant
-                piece:
-                  _in: [grass, leaf, branch, tree]
-                plant:
-                  _oneOf:
-                    - plant
-                    - piece
-              errorContains: plant
-          - input:
-              text: |-
-                main: aa
-                aa: { _merge: [bb] }
-                bb: { _oneOf: [aa, cc] }
-                cc: string
-              errorContains: aa
-          - input:
-              text: |-
-                main: animal
-                animal: animal
-              errorContains: animal
-          - input:
-              text: |-
-                main: main
-              errorContains: main
-          - input:
-              text: |-
-                main: weather
-                weather:
-                  _merge: [rain, cloud]
-                rain:
-                  _merge: [water, cloud]
-                cloud:
-                  _merge: [water, rain]
-                water:
-                  _map:
-                    temperature: float
-              errorContains: cloud
+          - text: |-
+              main: plant
+              piece:
+                _in: [grass, leaf, branch, tree]
+              plant:
+                _oneOf:
+                  - plant
+                  - piece
+            errorContains: plant
+          - text: |-
+              main: aa
+              aa: { _merge: [bb] }
+              bb: { _oneOf: [aa, cc] }
+              cc: string
+            errorContains: aa
+          - text: |-
+              main: animal
+              animal: animal
+            errorContains: animal
+          - text: |-
+              main: main
+            errorContains: main
+          - text: |-
+              main: weather
+              weather:
+                _merge: [rain, cloud]
+              rain:
+                _merge: [water, cloud]
+              cloud:
+                _merge: [water, rain]
+              water:
+                _map:
+                  temperature: float
+            errorContains: cloud
       - name: accept if the self-reference is sufficiently indirect
-        input: { outcome: 'accept' }
-        content:
-          - input:
-              text: |-
-                main:
-                  _listFacultative: [main]
-          - input:
-              text: |-
-                main:
-                  _mapFacultative: { content: main }
-          - input:
-              text: |-
-                main: animal
-                animal:
-                  _map:
-                    name: string
-                    age: string
-                    eat: edible
-                edible:
-                  _oneOf:
-                    - _in: [grass, leaves]
-                    - animal
-          - input:
-              text: |-
-                main: person
-                person:
-                  _map:
-                    name: string
-                    mother: person
-                    father: person
+        text:
+          - |-
+              main:
+                _listFacultative: [main]
+          - |-
+              main:
+                _mapFacultative: { content: main }
+          - |-
+              main: animal
+              animal:
+                _map:
+                  name: string
+                  age: string
+                  eat: edible
+              edible:
+                _oneOf:
+                  - _in: [grass, leaves]
+                  - animal
+          - |-
+              main: person
+              person:
+                _map:
+                  name: string
+                  mother: person
+                  father: person
       - name: accept indirect even if no finite schema can be matched
-        input: { outcome: 'accept' }
-        content:
-          - input:
-              text: |-
-                main:
-                  _list: [main]
-          - input:
-              text: |-
-                main:
-                  _listOf: main
-          - input:
-              text: |-
-                main:
-                  _map: { content: main }
-          - input:
-              text: |-
-                main:
-                  _mapOf: { main: main }
-          - input:
-              text: |-
-                main:
-                  _mapOf: { string: main }
-  - name: tell valid documents from invalid documents
+        text:
+          - |-
+              main:
+                _list: [main]
+          - |-
+              main:
+                _listOf: main
+          - |-
+              main:
+                _map: { content: main }
+          - |-
+              main:
+                _mapOf: { main: main }
+          - |-
+              main:
+                _mapOf: { string: main }
+  - name: tell valid documents from invalid ones
     content:
       - flag: PENDING
         name: reject if a reference cannot be resolved
-        input:
-          outcome: 'reject'
-          text: 'main: animal'
-          errorContains: animal
+        text: 'main: animal'
+        errorContains: animal
       - flag: PENDING
         name: reject if the target rule (main) is missing
-        input:
-          outcome: 'reject'
-          text: 'animal: string'
-          errorContains: main
+        text: 'animal: string'
+        errorContains: main
       - name: accept if the document is valid
-        input:
-          outcome: 'accept'
-          text: |-
-            main: animal
-            animal: string
+        text: |-
+          main: animal
+          animal: string

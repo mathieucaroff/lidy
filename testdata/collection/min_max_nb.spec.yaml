@@ -1,36 +1,29 @@
-box: base
 flag: PENDING
 content:
   - name: _min_max_nb for _listOf
-    input:
-      expressionTemplate: |-
-        _listOf: any
-        ${checker}
-      checkerList:
-        - '_min: 2'
-        - '_max: 2'
-        - '_nb: 2'
+    expressionTemplate: |-
+      _listOf: any
+      ${checker}
+    checker:
+      - '_min: 2'
+      - '_max: 2'
+      - '_nb: 2'
     content:
       - name: accept when there's the right number of entries
-        input: { outcome: 'accept', text: '[a b]' }
+        text: '[a b]'
   - name: _min_max_nb for _mapOf
-    input:
-      expressionTemplate: |-
-        _mapOf: any
-        ${checker}
-      text: '{ ka: va, kb: vb }'
+    expressionTemplate: |-
+      _mapOf: any
+      ${checker}
+    text: '{ ka: va, kb: vb }'
     content:
       - name: accept when there's the right number of entries
-        input:
-          checkerList:
-            - '_min: 2'
-            - '_max: 2'
-            - '_nb: 2'
-          outcome: accept
+        checker:
+          - '_min: 2'
+          - '_max: 2'
+          - '_nb: 2'
       - name: reject when the number requirement is wrong
-        input:
-          checkerList:
-            - '_min: 3'
-            - '_max: 1'
-            - '_nb: 3'
-          outcome: reject
+        checker:
+          - '_min: 3'
+          - '_max: 1'
+          - '_nb: 3'

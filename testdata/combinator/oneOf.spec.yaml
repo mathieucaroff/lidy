@@ -1,59 +1,51 @@
-box: base
 content:
   - name: _oneOf mapping
-    input:
-      expression: '_oneOf: [{ "_mapOf": { "string": "string" } }]'
+    expression: '_oneOf: [{ "_mapOf": { "string": "string" } }]'
     content:
       - name: accept dict with matching-matching entries
-        content:
-          - input: { text: '{ 0k: 0v }' }
-          - input: { text: '{ ka: va }' }
-          - input: { text: '{ ka: va, kb: vb }' }
-          - input: { text: '{ ka: va, kb: vb, 0k: 0v }' }
+        text:
+          - '{ 0k: 0v }'
+          - '{ ka: va }'
+          - '{ ka: va, kb: vb }'
+          - '{ ka: va, kb: vb, 0k: 0v }'
       - name: accept the empty dict
-        input: { text: '{}' }
+        text: '{}'
       - name: reject non-dicts
         content:
-          - input: { text: '0.1' }
-          - input: { text: '[]' }
-          - input: { text: 'vz' }
+          - text: '0.1'
+          - text: '[]'
+          - text: 'vz'
   - name: _oneOf empty
-    input:
-      expression: '_oneOf: []'
-      outcome: 'reject'
-      content:
-        - input: { text: '0.2' }
-        - input: { text: '2' }
-        - input: { text: '[]' }
-        - input: { text: '[a]' }
-        - input: { text: 'a' }
-        - input: { text: 'null' }
-        - input: { text: 'true' }
-        - input: { text: '{ k: v }' }
-        - input: { text: '{}' }
+    expression: '_oneOf: []'
+    text:
+      - '0.2'
+      - '2'
+      - '[]'
+      - '[a]'
+      - 'a'
+      - 'null'
+      - 'true'
+      - '{ k: v }'
+      - '{}'
   - name: _oneOf scalar
-    input:
-      expression: '_oneOf: [boolean, int]'
+    expression: '_oneOf: [boolean, int]'
     content:
-      - input: { outcome: 'accept' }
-        content:
-          - name: accept booleans
-            content:
-              - input: { text: 'false' }
-              - input: { text: 'true' }
-          - name: accept integers
-            content:
-              - input: { text: '-0' }
-              - input: { text: '-1' }
-              - input: { text: '-99999' }
-              - input: { text: '0' }
-              - input: { text: '1' }
-              - input: { text: '99999' }
-      - input: { outcome: 'reject' }
-        name: reject non-booleans non-integers
-        content:
-          - input: { text: '0.1' }
-          - input: { text: '2020-06-17T10:13:46' }
-          - input: { text: '[]' }
-          - input: { text: 'vz' }
-          - input: { text: '{}' }
+      - name: accept booleans
+        text:
+          - 'false'
+          - 'true'
+      - name: accept integers
+        text:
+          - '-0'
+          - '-1'
+          - '-99999'
+          - '0'
+          - '1'
+          - '99999'
+      - name: reject non-booleans non-integers
+        text:
+          - '0.1'
+          - '2020-06-17T10:13:46'
+          - '[]'
+          - 'vz'
+          - '{}'

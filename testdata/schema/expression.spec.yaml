@@ -1,230 +1,191 @@
-box: base
-input:
-  target: 'lidySchemaExpression'
+target: 'lidySchemaExpression'
 content:
   - name: check for in.checker
     content:
       - name: accept valid forms
-        input:
-          - outcome: accept
-        matrix:
-          text:
-            - '_in: []'
-            - '_in: [aaa, 22, "22"]'
-            - '_in: [aaa, bbb]'
-            - '_in: [aaa]'
-            - '_in: [false, null, zz, 0.1]'
-            - '_in: [true, bbb]'
+        text:
+          - '_in: []'
+          - '_in: [aaa, 22, "22"]'
+          - '_in: [aaa, bbb]'
+          - '_in: [aaa]'
+          - '_in: [false, null, zz, 0.1]'
+          - '_in: [true, bbb]'
       - name: reject invalid forms
-        input:
-          outcome: reject
-          errorContains: _in
-        matrix:
-          text:
-            - '_in: .2'
-            - '_in: 22'
-            - '_in: [[]]'
-            - '_in: [{ _map }]'
-            - '_in: [{}]'
-            - '_in: aa'
-            - '_in: null'
-            - '_in: true'
+        errorContains: _in
+        text:
+          - '_in: .2'
+          - '_in: 22'
+          - '_in: [[]]'
+          - '_in: [{ _map }]'
+          - '_in: [{}]'
+          - '_in: aa'
+          - '_in: null'
+          - '_in: true'
   - name: check for listChecker
     content:
       - name: accept if it is a valid form
-        input: { outcome: accept }
-        matrix:
-          text:
-            - '_list: []'
-            - |-
-                _list: []
-                _listFacultative: []
-            - |-
-                _list: []
-                _listFacultative: []
-                _listOf: int
-            - |-
-                _list: []
-                _listFacultative: []
-                _listOf: int
-                _min: 1
-                _max: 2
-            - |-
-                _list: []
-                _listFacultative: []
-                _listOf: int
-                _nb: 2
-            - |-
-                _list: []
-                _listOf: int
-            - |-
-                _listOf: int
+        text:
+          - '_list: []'
+          - |-
+              _list: []
+              _listFacultative: []
+          - |-
+              _list: []
+              _listFacultative: []
+              _listOf: int
+          - |-
+              _list: []
+              _listFacultative: []
+              _listOf: int
+              _min: 1
+              _max: 2
+          - |-
+              _list: []
+              _listFacultative: []
+              _listOf: int
+              _nb: 2
+          - |-
+              _list: []
+              _listOf: int
+          - '_listOf: int'
       - name: reject if is an invalid form
-        input: { outcome: reject }
-        matrix:
-          text:
-            - '_list: string'
-            - '_list: word'
-            - '_listOf: []'
-            - 'list: string'
-            - 'listOf: string'
+        text:
+          - '_list: string'
+          - '_list: word'
+          - '_listOf: []'
+          - 'list: string'
+          - 'listOf: string'
   - name: check for mapChecker
     content:
       - name: accept if its form is valid
-        matrix:
-          text:
-            - '_map: {}'
-            - |-
-                _map: {}
-                _mapFacultative: {}
-            - |-
-                _map
-                _mapFacultative: {}
-                _mapOf: { string: string }
-            - |-
-                _map
-                _mapFacultative: {}
-                _mapOf: { string: string }
-                _min: 1
-                _max: 2
-            - |-
-                _map: {}
-                _mapFacultative: {}
-                _mapOf: { string: string }
-                _nb: 2
-            - |-
-                _map: {}
-                _mapOf: { string: string }
-            - '_mapFacultative: {}'
-            - '_mapOf: { string: string }'
+        text:
+          - '_map: {}'
+          - |-
+              _map: {}
+              _mapFacultative: {}
+          - |-
+              _map
+              _mapFacultative: {}
+              _mapOf: { string: string }
+          - |-
+              _map
+              _mapFacultative: {}
+              _mapOf: { string: string }
+              _min: 1
+              _max: 2
+          - |-
+              _map: {}
+              _mapFacultative: {}
+              _mapOf: { string: string }
+              _nb: 2
+          - |-
+              _map: {}
+              _mapOf: { string: string }
+          - '_mapFacultative: {}'
+          - '_mapOf: { string: string }'
       - name: reject if its form is invalid
-        matrix:
-          text:
-            - '_map: 1'
-            - '_map: 1.1'
-            - '_map: []'
-            - '_map: false'
-            - '_map: null'
-            - '_map: string'
-            - '_map: true'
-            - '_mapOf: []'
-            - '_mapOf: [string]'
-            - '_mapOf: string'
-            - 'map: {}'
+        text:
+          - '_map: 1'
+          - '_map: 1.1'
+          - '_map: []'
+          - '_map: false'
+          - '_map: null'
+          - '_map: string'
+          - '_map: true'
+          - '_mapOf: []'
+          - '_mapOf: [string]'
+          - '_mapOf: string'
+          - 'map: {}'
   - name: check for min.checker, max.checker and nb.checker
     content:
       - name: accept valid forms
-        input: { outcome: 'valid' }
-        matrix:
-          text:
-            - |-
-                _map
-                _max: 2
-            - |-
-                _map
-                _min: 2
-            - |-
-                _map
-                _nb: 2
+        text:
+          - |-
+              _map
+              _max: 2
+          - |-
+              _map
+              _min: 2
+          - |-
+              _map
+              _nb: 2
       - name: reject invalid forms
-        input: { outcome: 'reject' }
         content:
-          - input:
-              text: |-
-                _map: {}
-                _max: []
-              errorContains: _max
-          - input:
-              text: |-
-                _map: {}
-                _max: bc
-              errorContains: _max
-          - input:
-              text: |-
-                _map: {}
-                _max: {}
-              errorContains: _max
-          - input:
-              text: |-
-                _map: {}
-                _min: []
-              errorContains: _min
-          - input:
-              text: |-
-                _map: {}
-                _min: aa
-              errorContains: _min
-          - input:
-              text: |-
-                _map: {}
-                _min: {}
-              errorContains: _min
-          - input:
-              text: |-
-                _map: {}
-                _nb: []
-              errorContains: _nb
-          - input:
-              text: |-
-                _map: {}
-                _nb: z_
-              errorContains: _nb
-          - input:
-              text: |-
-                _map: {}
-                _nb: {}
-              errorContains: _nb
+          - errorContains: _max
+            text:
+              - |-
+                  _map: {}
+                  _max: []
+              - |-
+                  _map: {}
+                  _max: bc
+              - |-
+                  _map: {}
+                  _max: {}
+          - errorContains: _min
+            text:
+              - |-
+                  _map: {}
+                  _min: []
+              - |-
+                  _map: {}
+                  _min: aa
+              - |-
+                  _map: {}
+                  _min: {}
+          - errorContains: _nb
+            text:
+              - |-
+                  _map: {}
+                  _nb: []
+              - |-
+                  _map: {}
+                  _nb: z_
+              - |-
+                    _map: {}
+                    _nb: {}
   - name: check for oneOf.checker
     content:
       - name: accept valid forms
-        input: { outcome: 'accept' }
-        matrix:
-          text:
-            - '_oneOf: []'
-            - '_oneOf: [string, int, { _map }]'
-            - '_oneOf: [string]'
+        text:
+          - '_oneOf: []'
+          - '_oneOf: [string, int, { _map }]'
+          - '_oneOf: [string]'
       - name: reject invalid forms
-        input: { outcome: 'reject', errorContains: '_oneOf' }
-        matrix:
-          text:
-            - '_oneOf: .2'
-            - '_oneOf: 22'
-            - '_oneOf: aa'
-            - '_oneOf: null'
-            - '_oneOf: true'
-            - '_oneOf'
+        errorContains: '_oneOf'
+        text:
+          - '_oneOf: .2'
+          - '_oneOf: 22'
+          - '_oneOf: aa'
+          - '_oneOf: null'
+          - '_oneOf: true'
+          - '_oneOf'
   - name: check that checkers are used with the right signature
     content:
-      - input: { outcome: reject }
-        matrix:
-          text:
-            - '_map: 1'
-            - '_map: 1.1'
-            - '_map: []'
-            - '_map: false'
-            - '_map: null'
-            - '_map: string'
-            - '_map: true'
-            - '_map: word'
+      - name: reject
+        text:
+          - '_map: 1'
+          - '_map: 1.1'
+          - '_map: []'
+          - '_map: false'
+          - '_map: null'
+          - '_map: string'
+          - '_map: true'
+          - '_map: word'
   - name: distinguish known and unknown identifiers
     content:
       - name: accept if known
-        input: { outcome: 'accept' }
-        matrix:
-          text:
-            - 'any'
-            - 'boolean'
-            - 'float'
-            - 'int'
-            - 'nullType'
-            - 'string'
-            - 'timestamp'
+        text:
+          - 'any'
+          - 'boolean'
+          - 'float'
+          - 'int'
+          - 'nullType'
+          - 'string'
+          - 'timestamp'
       - name: reject if the rule is unknown
-        input: { outcome: 'reject' }
         content:
-          - input:
-              text: bar
-              errorContains: bar
-          - input:
-              text: cat
-              errorContains: cat
+          - text: bar
+            errorContains: bar
+          - text: cat
+            errorContains: cat
