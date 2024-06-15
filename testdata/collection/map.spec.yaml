@@ -1,84 +1,83 @@
 content:
   - flag: PENDING
     name: _map contaning one entry whose property is Lidy keyword
-    input:
-      expressionTemplate: '_map: { "${keyword}": int }'
-      keyword:
-        - '_map'
-        - '_mapOf'
-        - '_list'
-        - '_listOf'
+    expressionTemplate: '_map: { "${keyword}": int }'
+    keyword:
+      - "_map"
+      - "_mapOf"
+      - "_list"
+      - "_listOf"
     content:
       - name: accept a map with one entry which matches
-        textTemplate: '{ ${keyword}: 2 }'
+        textTemplate: "{ ${keyword}: 2 }"
       - name: reject mappings which contain a non-matching entry
         textTemplate:
-          - '{ ${keyword}: 1.1 }'
-          - '{ ${keyword}: a }'
-          - '{ ${keyword}: null }'
-          - '{ ${keyword}: true }'
-          - '{ ${keyword}: {} }'
+          - "{ ${keyword}: 1.1 }"
+          - "{ ${keyword}: a }"
+          - "{ ${keyword}: null }"
+          - "{ ${keyword}: true }"
+          - "{ ${keyword}: {} }"
       - name: reject if the entry is missing
-        text: '{}'
+        text: "{}"
       - name: reject if there are unknown entries
-        text:
-          - '{ ${keyword}: 2, a: 4 }'
-          - '{ ${keyword}: 2, b: va }'
+        textTemplate:
+          - "{ ${keyword}: 2, a: 4 }"
+          - "{ ${keyword}: 2, b: va }"
       - name: reject nodes that are not mappings
-        text: '[]'
+        text: "[]"
       - name: reject unrelated mappings
         text:
-          - '{ a: 4 }'
-          - '{ b: va }'
+          - "{ a: 4 }"
+          - "{ b: va }"
   - name: _map with zero entries, while _mapFacultative has two entries
-    expression: '_mapFacultative: { a: string, b: int }'
+    expression: "_mapFacultative: { a: string, b: int }"
     content:
       - name: accept the empty mapping
-        text: '{}'
+        text: "{}"
       - name: accept when all entries are present and valid
-        text: '{ a: va, b: 4 }'
+        text: "{ a: va, b: 4 }"
       - name: accept when only some entries are present
         text:
-          - '{ a: va }'
-          - '{ b: 4 }'
+          - "{ a: va }"
+          - "{ b: 4 }"
       - name: reject extraneous unknown entries
-        text: '{ a: va, b: 4, z: 12 }'
+        text: "{ a: va, b: 4, z: 12 }"
       - name: reject if an entry does not match
-        text: '{ a: 12 }'
+        text: "{ a: 12 }"
       - name: reject single unknown entries
-        text: '{ z: 12 }'
+        text: "{ z: 12 }"
       - name: reject nodes that are not dictionaries
         text:
-          - '0'
-          - '[]'
-          - 'a'
-          - 'true'
+          - "0"
+          - "[]"
+          - "a"
+          - "true"
   - name: _map with zero entries
-    expression: '_map: {}'
+    expression: "_map: {}"
     content:
       - name: accept the empty mapping
-        text: '{}'
+        text: "{}"
       - name: reject any unknown entry
         text:
-          - '{ a: va }'
-          - '{ b: 4 }'
+          - "{ a: va }"
+          - "{ b: 4 }"
       - name: reject nodes that are not mappings
-        text: '[]'
+        text: "[]"
   - name: _map with one entry
-    expression: '_map: { aa: float }'
+    expression: "_map: { aa: float }"
     content:
       - name: accept if valid
         text:
-          - '{ aa: 0 }'
-          - '{ aa: 2.2 }'
+          - "{ aa: 0 }"
+          - "{ aa: 2.2 }"
       - name: reject any unknown entry
         text:
-          - '{ a: va }'
-          - '{ b: 4 }'
+          - "{ a: va }"
+          - "{ b: 4 }"
       - name: reject missing entry
-        text: '{}'
+        text: "{}"
       - name: reject nodes that are not dictionaries
         text:
-          - '0.1'
-          - '[]'
-          - 'null'
+          - "0.1"
+          - "[]"
+          - "null"

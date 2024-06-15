@@ -1,188 +1,188 @@
-target: 'lidySchemaExpression'
+box: "lidySchemaExpression"
 content:
   - name: check for in.checker
     content:
       - name: accept valid forms
         text:
-          - '_in: []'
+          - "_in: []"
           - '_in: [aaa, 22, "22"]'
-          - '_in: [aaa, bbb]'
-          - '_in: [aaa]'
-          - '_in: [false, null, zz, 0.1]'
-          - '_in: [true, bbb]'
+          - "_in: [aaa, bbb]"
+          - "_in: [aaa]"
+          - "_in: [false, null, zz, 0.1]"
+          - "_in: [true, bbb]"
       - name: reject invalid forms
         errorContains: _in
         text:
-          - '_in: .2'
-          - '_in: 22'
-          - '_in: [[]]'
-          - '_in: [{ _map }]'
-          - '_in: [{}]'
-          - '_in: aa'
-          - '_in: null'
-          - '_in: true'
+          - "_in: .2"
+          - "_in: 22"
+          - "_in: [[]]"
+          - "_in: [{ _map }]"
+          - "_in: [{}]"
+          - "_in: aa"
+          - "_in: null"
+          - "_in: true"
   - name: check for listChecker
     content:
       - name: accept if it is a valid form
         text:
-          - '_list: []'
+          - "_list: []"
           - |-
-              _list: []
-              _listFacultative: []
+            _list: []
+            _listFacultative: []
           - |-
-              _list: []
-              _listFacultative: []
-              _listOf: int
+            _list: []
+            _listFacultative: []
+            _listOf: int
           - |-
-              _list: []
-              _listFacultative: []
-              _listOf: int
-              _min: 1
-              _max: 2
+            _list: []
+            _listFacultative: []
+            _listOf: int
+            _min: 1
+            _max: 2
           - |-
-              _list: []
-              _listFacultative: []
-              _listOf: int
-              _nb: 2
+            _list: []
+            _listFacultative: []
+            _listOf: int
+            _nb: 2
           - |-
-              _list: []
-              _listOf: int
-          - '_listOf: int'
+            _list: []
+            _listOf: int
+          - "_listOf: int"
       - name: reject if is an invalid form
         text:
-          - '_list: string'
-          - '_list: word'
-          - '_listOf: []'
-          - 'list: string'
-          - 'listOf: string'
+          - "_list: string"
+          - "_list: word"
+          - "_listOf: []"
+          - "list: string"
+          - "listOf: string"
   - name: check for mapChecker
     content:
       - name: accept if its form is valid
         text:
-          - '_map: {}'
+          - "_map: {}"
           - |-
-              _map: {}
-              _mapFacultative: {}
+            _map: {}
+            _mapFacultative: {}
           - |-
-              _map
-              _mapFacultative: {}
-              _mapOf: { string: string }
+            _map
+            _mapFacultative: {}
+            _mapOf: { string: string }
           - |-
-              _map
-              _mapFacultative: {}
-              _mapOf: { string: string }
-              _min: 1
-              _max: 2
+            _map
+            _mapFacultative: {}
+            _mapOf: { string: string }
+            _min: 1
+            _max: 2
           - |-
-              _map: {}
-              _mapFacultative: {}
-              _mapOf: { string: string }
-              _nb: 2
+            _map: {}
+            _mapFacultative: {}
+            _mapOf: { string: string }
+            _nb: 2
           - |-
-              _map: {}
-              _mapOf: { string: string }
-          - '_mapFacultative: {}'
-          - '_mapOf: { string: string }'
+            _map: {}
+            _mapOf: { string: string }
+          - "_mapFacultative: {}"
+          - "_mapOf: { string: string }"
       - name: reject if its form is invalid
         text:
-          - '_map: 1'
-          - '_map: 1.1'
-          - '_map: []'
-          - '_map: false'
-          - '_map: null'
-          - '_map: string'
-          - '_map: true'
-          - '_mapOf: []'
-          - '_mapOf: [string]'
-          - '_mapOf: string'
-          - 'map: {}'
+          - "_map: 1"
+          - "_map: 1.1"
+          - "_map: []"
+          - "_map: false"
+          - "_map: null"
+          - "_map: string"
+          - "_map: true"
+          - "_mapOf: []"
+          - "_mapOf: [string]"
+          - "_mapOf: string"
+          - "map: {}"
   - name: check for min.checker, max.checker and nb.checker
     content:
       - name: accept valid forms
         text:
           - |-
-              _map
-              _max: 2
+            _map
+            _max: 2
           - |-
-              _map
-              _min: 2
+            _map
+            _min: 2
           - |-
-              _map
-              _nb: 2
+            _map
+            _nb: 2
       - name: reject invalid forms
         content:
           - errorContains: _max
             text:
               - |-
-                  _map: {}
-                  _max: []
+                _map: {}
+                _max: []
               - |-
-                  _map: {}
-                  _max: bc
+                _map: {}
+                _max: bc
               - |-
-                  _map: {}
-                  _max: {}
+                _map: {}
+                _max: {}
           - errorContains: _min
             text:
               - |-
-                  _map: {}
-                  _min: []
+                _map: {}
+                _min: []
               - |-
-                  _map: {}
-                  _min: aa
+                _map: {}
+                _min: aa
               - |-
-                  _map: {}
-                  _min: {}
+                _map: {}
+                _min: {}
           - errorContains: _nb
             text:
               - |-
-                  _map: {}
-                  _nb: []
+                _map: {}
+                _nb: []
               - |-
-                  _map: {}
-                  _nb: z_
+                _map: {}
+                _nb: z_
               - |-
-                    _map: {}
-                    _nb: {}
+                _map: {}
+                _nb: {}
   - name: check for oneOf.checker
     content:
       - name: accept valid forms
         text:
-          - '_oneOf: []'
-          - '_oneOf: [string, int, { _map }]'
-          - '_oneOf: [string]'
+          - "_oneOf: []"
+          - "_oneOf: [string, int, { _map }]"
+          - "_oneOf: [string]"
       - name: reject invalid forms
-        errorContains: '_oneOf'
+        errorContains: "_oneOf"
         text:
-          - '_oneOf: .2'
-          - '_oneOf: 22'
-          - '_oneOf: aa'
-          - '_oneOf: null'
-          - '_oneOf: true'
-          - '_oneOf'
+          - "_oneOf: .2"
+          - "_oneOf: 22"
+          - "_oneOf: aa"
+          - "_oneOf: null"
+          - "_oneOf: true"
+          - "_oneOf"
   - name: check that checkers are used with the right signature
     content:
       - name: reject
         text:
-          - '_map: 1'
-          - '_map: 1.1'
-          - '_map: []'
-          - '_map: false'
-          - '_map: null'
-          - '_map: string'
-          - '_map: true'
-          - '_map: word'
+          - "_map: 1"
+          - "_map: 1.1"
+          - "_map: []"
+          - "_map: false"
+          - "_map: null"
+          - "_map: string"
+          - "_map: true"
+          - "_map: word"
   - name: distinguish known and unknown identifiers
     content:
       - name: accept if known
         text:
-          - 'any'
-          - 'boolean'
-          - 'float'
-          - 'int'
-          - 'nullType'
-          - 'string'
-          - 'timestamp'
+          - "any"
+          - "boolean"
+          - "float"
+          - "int"
+          - "nullType"
+          - "string"
+          - "timestamp"
       - name: reject if the rule is unknown
         content:
           - text: bar

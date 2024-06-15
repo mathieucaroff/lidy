@@ -10,22 +10,22 @@ content:
             _mapFacultative: { a: int }
     content:
       - name: accept a and b too
-        text: '{ a: 2, b: 3, c: 1 }'
+        text: "{ a: 2, b: 3, c: 1 }"
       - name: accept when only c is provided
-        text: '{ c: 2 }'
+        text: "{ c: 2 }"
       - name: reject if a and b are not both ints
         text:
-          - '{ a: 2, b: b, c: 1 }'
-          - '{ a: a, b: 3, c: 1 }'
-          - '{ a: f, b: g, c: 1 }'
+          - "{ a: 2, b: b, c: 1 }"
+          - "{ a: a, b: 3, c: 1 }"
+          - "{ a: f, b: g, c: 1 }"
       - name: reject if c is not an int
-        text: '{ c: aa }'
+        text: "{ c: aa }"
       - name: reject if c is not provided
         text:
-          - '{ a: 1 }'
-          - '{ a: 1, b: 2 }'
-          - '{ b: 1 }'
-          - '{}'
+          - "{ a: 1 }"
+          - "{ a: 1, b: 2 }"
+          - "{ b: 1 }"
+          - "{}"
   - flag: PENDING
     name: _merge _map override
     schema: |-
@@ -44,28 +44,28 @@ content:
     content:
       - name: accept if all keys are present and matching
         text:
-          - '{ id: a, capacity: 0, engine: 3KZ_bc }'
-          - '{ id: a, capacity: 2.1, engine: 3KZ_bc }'
+          - "{ id: a, capacity: 0, engine: 3KZ_bc }"
+          - "{ id: a, capacity: 2.1, engine: 3KZ_bc }"
       - name: reject any entry is unknown
         text:
-          - '{ id: a, capacity: 0, engine: b, _alt: ok }'
-          - '{ id: a, capacity: 0, engine: b, extra: more }'
+          - "{ id: a, capacity: 0, engine: b, _alt: ok }"
+          - "{ id: a, capacity: 0, engine: b, extra: more }"
       - name: reject if any key is missing
         content:
-          - text: '{ capacity: 2.1, engine: 3KZ_bc }'
+          - text: "{ capacity: 2.1, engine: 3KZ_bc }"
             errorContains: id
-          - text: '{ id: a, capacity: 2.1 }'
+          - text: "{ id: a, capacity: 2.1 }"
             errorContains: engine
-          - text: '{ id: a, engine: bc }'
+          - text: "{ id: a, engine: bc }"
             errorContains: capacity
       - name: reject if some key do not match
         content:
-          - text: '{ id: 10, capacity: 2.1, engine: 3KZ_bc }'
+          - text: "{ id: 10, capacity: 2.1, engine: 3KZ_bc }"
              errorContains: id
-          - text: '{ id: a, capacity: large, engine: 3KZ_bc }'
+          - text: "{ id: a, capacity: large, engine: 3KZ_bc }"
             errorContains: capacity
       - name: reject nodes that are not mappings
-        text: '[]'
+        text: "[]"
         errorContains: type
   - name: _merge _mapOf behaves like a _oneOf and does not override
     schema: |-
@@ -80,40 +80,40 @@ content:
     content:
       - name: accept if valid
         text:
-          - '{ []: 2 }'
-          - '{ []: aa }'
-          - '{ [zz]: -3 }'
-          - '{ a: aa }'
-          - '{ a: aa, []: 2, [zz]: -3 }'
-          - '{ a: aa, []: 2, [zz]: -3, kkey: false, pkey: null }'
-          - '{ a: aa, kkey: true }'
-          - '{}'
-      - name: reject if there's a non-matching type
+          - "{ []: 2 }"
+          - "{ []: aa }"
+          - "{ [zz]: -3 }"
+          - "{ a: aa }"
+          - "{ a: aa, []: 2, [zz]: -3 }"
+          - "{ a: aa, []: 2, [zz]: -3, kkey: false, pkey: null }"
+          - "{ a: aa, kkey: true }"
+          - "{}"
+      - name: reject if there is a non-matching type
         text:
-          - '{ [a]: aa }'
-          - '{ b: 4 }'
-          - '{ kkey: bb }'
-          - '{ kkey: null }'
-          - '{ pkey: cc }'
-          - '{ pkey: false }'
+          - "{ [a]: aa }"
+          - "{ b: 4 }"
+          - "{ kkey: bb }"
+          - "{ kkey: null }"
+          - "{ pkey: cc }"
+          - "{ pkey: false }"
       - name: reject nodes that are not mappings
         text:
-          - text: '0.1'
-          - text: '[]'
-          - text: 'null'
+          - text: "0.1"
+          - text: "[]"
+          - text: "null"
   - name: _merge empty
     schema: |-
       main:
         _merge: []
     content:
       - name: accept if valid
-        text: '{}'
+        text: "{}"
       - name: reject any unknown entry
         text:
-          - text: '{ a: va }'
-          - text: '{ b: 4 }'
+          - "{ a: va }"
+          - "{ b: 4 }"
       - name: reject nodes that are not mappings
         content:
-          - '0.1'
-          - '[]'
-          - 'null'
+          - "0.1"
+          - "[]"
+          - "null"

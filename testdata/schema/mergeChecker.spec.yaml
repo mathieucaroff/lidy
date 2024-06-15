@@ -1,4 +1,4 @@
-target: 'lidySchemaDocument'
+box: "lidySchemaDocument"
 content:
   - name: _merge requires identifiers to refer to mapCheckers
     content:

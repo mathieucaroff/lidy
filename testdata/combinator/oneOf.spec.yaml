@@ -4,48 +4,48 @@ content:
     content:
       - name: accept dict with matching-matching entries
         text:
-          - '{ 0k: 0v }'
-          - '{ ka: va }'
-          - '{ ka: va, kb: vb }'
-          - '{ ka: va, kb: vb, 0k: 0v }'
+          - "{ 0k: 0v }"
+          - "{ ka: va }"
+          - "{ ka: va, kb: vb }"
+          - "{ ka: va, kb: vb, 0k: 0v }"
       - name: accept the empty dict
-        text: '{}'
+        text: "{}"
       - name: reject non-dicts
         content:
-          - text: '0.1'
-          - text: '[]'
-          - text: 'vz'
-  - name: _oneOf empty
-    expression: '_oneOf: []'
+          - text: "0.1"
+          - text: "[]"
+          - text: "vz"
+  - name: reject empty _oneOf
+    expression: "_oneOf: []"
     text:
-      - '0.2'
-      - '2'
-      - '[]'
-      - '[a]'
-      - 'a'
-      - 'null'
-      - 'true'
-      - '{ k: v }'
-      - '{}'
+      - "0.2"
+      - "2"
+      - "[]"
+      - "[a]"
+      - "a"
+      - "null"
+      - "true"
+      - "{ k: v }"
+      - "{}"
   - name: _oneOf scalar
-    expression: '_oneOf: [boolean, int]'
+    expression: "_oneOf: [boolean, int]"
     content:
       - name: accept booleans
         text:
-          - 'false'
-          - 'true'
+          - "false"
+          - "true"
       - name: accept integers
         text:
-          - '-0'
-          - '-1'
-          - '-99999'
-          - '0'
-          - '1'
-          - '99999'
+          - "-0"
+          - "-1"
+          - "-99999"
+          - "0"
+          - "1"
+          - "99999"
       - name: reject non-booleans non-integers
         text:
-          - '0.1'
-          - '2020-06-17T10:13:46'
-          - '[]'
-          - 'vz'
-          - '{}'
+          - "0.1"
+          - "2020-06-17T10:13:46"
+          - "[]"
+          - "vz"
+          - "{}"

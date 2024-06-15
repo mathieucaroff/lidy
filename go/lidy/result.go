@@ -1,5 +1,7 @@
 package lidy
 
+import yaml "gopkg.in/yaml.v3"
+
 type Position struct {
 	filename string
 	// The beginning line of the position
@@ -38,4 +40,22 @@ type KeyValueData struct {
 type ListData struct {
 	List   []Result
 	ListOf []Result
+}
+
+func makeResult(parserData tParserData, content *yaml.Node, data interface{}) Result {
+	ruleName := parserData.ruleTrace[len(parserData.ruleTrace)-1]
+
+	return Result{
+		Position: Position{
+			filename:  parserData.contentFileName,
+			line:      content.Line,
+			column:    content.Column,
+			lineEnd:   content.Line,
+			columnEnd: content.Column + len(content.Value),
+		},
+		ruleName:     ruleName,
+		hasBeenBuilt: false,
+		isLidyData:   true,
+		data:         data,
+	}
 }

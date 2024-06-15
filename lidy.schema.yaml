@@ -1,0 +1,76 @@
+main: document
+
+document:
+  _mapOf:
+    identifier: expression
+
+identifier:
+  _regex: "[A-Za-z][0-9A-Za-z_.]*"
+
+expression:
+  _oneOf:
+    - identifier
+    - checkerForm
+
+checkerForm:
+  _oneOf:
+    - regexChecker
+    - inChecker
+    - mapChecker
+    - listChecker
+    - oneOfChecker
+
+regexChecker:
+  _map:
+    "_regex": string
+
+inChecker:
+  _map:
+    "_in":
+      _listOf: scalar
+
+scalar:
+  _oneOf:
+    - string
+    - float
+    - bool
+    - nullType
+
+mapChecker:
+  _mapFacultative:
+    "_map":
+      _mapOf:
+        string: expression
+    "_mapFacultative":
+      _mapOf:
+        string: expression
+    "_mapOf":
+      _mapOf:
+        expression: expression
+      _nb: 1
+    "_merge":
+      _listOf:
+        _oneOf:
+          - identifier
+          - mapChecker
+  _merge: sizedCheckerKeywordSet
+
+listChecker:
+  _mapFacultative:
+    "_list":
+      _listOf: expression
+    "_listFacultative":
+      _listOf: expression
+    "_listOf": expression
+  _merge: sizedCheckerKeywordSet
+
+sizedCheckerKeywordSet:
+  _mapFacultative:
+    "_min": int
+    "_max": int
+    "_nb": int
+
+oneOfChecker:
+  _map:
+    "_oneOf":
+      _listOf: expression

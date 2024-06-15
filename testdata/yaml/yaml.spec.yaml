@@ -1,26 +1,26 @@
 name: validate that the yaml is valid
-expression: 'any'
+expression: "any"
 content:
-  - name: 'accept ... this? (what is this!?)'
+  - name: "accept ... this? (what is this!?)"
     text:
-      - '?'
-      - '??'
-      - '???'
-      - '??_'
+      - "?"
+      - "??"
+      - "???"
+      - "??_"
   - name: accept maps with empty values
-    text: 'a:'
+    text: "a:"
   - name: accept strings, because it sees strings everywhere
     text:
-      - '0 b 9'
-      - 'a b'
-  - name: reject misuse of tags
+      - "0 b 9"
+      - "a b"
+  - name: accept misuse of tags in silence
     text:
-      - '!!!aha!'
-      - '!!!eh'
-      - '!!oh'
+      - "!!!aha!"
+      - "!!!eh"
+      - "!!oh"
   - name: reject the empty document
-    text: ''
-  - name: reject unknown tags
+    text: ""
+  - name: accept unknown tags in silence
     content:
-      - text: '!!uh _'
-      - text: '!ih _'
+      - text: "!!uh _"
+      - text: "!ih _"

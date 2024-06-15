@@ -1,4 +1,4 @@
-target: 'lidySchemaDocument'
+box: "lidySchemaDocument"
 content:
   - name: detect invalid self-references in documents
     content:
@@ -42,55 +42,55 @@ content:
       - name: accept if the self-reference is sufficiently indirect
         text:
           - |-
-              main:
-                _listFacultative: [main]
+            main:
+              _listFacultative: [main]
           - |-
-              main:
-                _mapFacultative: { content: main }
+            main:
+              _mapFacultative: { content: main }
           - |-
-              main: animal
-              animal:
-                _map:
-                  name: string
-                  age: string
-                  eat: edible
-              edible:
-                _oneOf:
-                  - _in: [grass, leaves]
-                  - animal
+            main: animal
+            animal:
+              _map:
+                name: string
+                age: string
+                eat: edible
+            edible:
+              _oneOf:
+                - _in: [grass, leaves]
+                - animal
           - |-
-              main: person
-              person:
-                _map:
-                  name: string
-                  mother: person
-                  father: person
+            main: person
+            person:
+              _map:
+                name: string
+                mother: person
+                father: person
       - name: accept indirect even if no finite schema can be matched
         text:
           - |-
-              main:
-                _list: [main]
+            main:
+              _list: [main]
           - |-
-              main:
-                _listOf: main
+            main:
+              _listOf: main
           - |-
-              main:
-                _map: { content: main }
+            main:
+              _map: { content: main }
           - |-
-              main:
-                _mapOf: { main: main }
+            main:
+              _mapOf: { main: main }
           - |-
-              main:
-                _mapOf: { string: main }
+            main:
+              _mapOf: { string: main }
   - name: tell valid documents from invalid ones
     content:
       - flag: PENDING
         name: reject if a reference cannot be resolved
-        text: 'main: animal'
+        text: "main: animal"
         errorContains: animal
       - flag: PENDING
         name: reject if the target rule (main) is missing
-        text: 'animal: string'
+        text: "animal: string"
         errorContains: main
       - name: accept if the document is valid
         text: |-

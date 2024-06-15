@@ -1,22 +1,22 @@
-expression: '_listOf: string'
+expression: "_listOf: string"
 content:
-  - name: 'accept a lot of strings'
+  - name: "accept a lot of strings"
     text:
-      - '[va, vb, vc, vd, ve, vf]'
-      - '[va, vb]'
-  - name: 'accept one string'
-    text: '[va]'
-  - name: 'accept the empty list'
-    text: '[]'
-  - name: 'reject lists with non-matching elements'
+      - "[va, vb, vc, vd, ve, vf]"
+      - "[va, vb]"
+  - name: "accept one string"
+    text: "[va]"
+  - name: "accept the empty list"
+    text: "[]"
+  - name: "reject lists with non-matching elements"
     text:
-      - '[2]'
-      - '[3, 4]'
-      - '[5, va]'
-      - '[va, 4]'
-  - name: 'reject non-lists'
+      - "[2]"
+      - "[3, 4]"
+      - "[5, va]"
+      - "[va, 4]"
+  - name: "reject non-lists"
     text:
-      - '0'
-      - 'a'
-      - 'true'
-      - '{}'
+      - "0"
+      - "a"
+      - "true"
+      - "{}"

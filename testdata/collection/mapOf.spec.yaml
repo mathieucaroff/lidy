@@ -1,40 +1,40 @@
 content:
   - name: _mapOf basic
-    expression: '_mapOf: { string: int }'
+    expression: "_mapOf: { string: int }"
     content:
       - name: accept dict with one matching-matching entry
-        text: '{ va: 0 }'
+        text: "{ va: 0 }"
       - name: accept dict with several matching-matching entries
-        text: '{ va: 0, vb: 1, vc: 2 }'
+        text: "{ va: 0, vb: 1, vc: 2 }"
       - name: accept the empty dict
-        text: '{}'
+        text: "{}"
       - name: reject dict with non-matching keys
         text:
-          - '{ 0.1: 9 }'
-          - '{ 2: 9 }'
-          - '{ []: 9 }'
-          - '{ true: 9 }'
-          - '{ {}: 9 }'
+          - "{ 0.1: 9 }"
+          - "{ 2: 9 }"
+          - "{ []: 9 }"
+          - "{ true: 9 }"
+          - "{ {}: 9 }"
       - name: reject dict with non-matching values
         text:
-          - '{ va: 0.1 }'
-          - '{ va: 2020-06-17T10:13:46 }'
-          - '{ va: [] }'
-          - '{ va: true }'
-          - '{ va: vz }'
-          - '{ va }'
+          - "{ va: 0.1 }"
+          - "{ va: 2020-06-17T10:13:46 }"
+          - "{ va: [] }"
+          - "{ va: true }"
+          - "{ va: vz }"
+          - "{ va }"
       - name: reject non-dict
         text:
-          - '0'
-          - '[]'
-          - 'a'
-          - 'true'
+          - "0"
+          - "[]"
+          - "a"
+          - "true"
   - name: _mapOf more
-    expression: '_mapOf: { string: string }'
+    expression: "_mapOf: { string: string }"
     content:
       - name: accept string-string mappings
         text:
-          - '{ 0k: 0v }'
-          - '{ ka: va }'
-          - '{ ka: va, kb: vb }'
-          - '{ ka: va, kb: vb, 0k: 0v }'
+          - "{ 0k: 0v }"
+          - "{ ka: va }"
+          - "{ ka: va, kb: vb }"
+          - "{ ka: va, kb: vb, 0k: 0v }"

@@ -1,30 +1,30 @@
-target: 'lidySchemaRegexChecker'
+box: "lidySchemaRegexChecker"
 name: validate regexes
 content:
   - name: accept \0, which, after all, cannot be a reference
     text: 'a\0'
   - name: accept empty group
-    text: '()'
+    text: "()"
   - name: accept regexes
     text:
-      - '(a[bc])'
-      - '.?'
-      - '^$'
+      - "(a[bc])"
+      - ".?"
+      - "^$"
       - a
   - name: accept silenced groups
-    text: '(?:a)'
+    text: "(?:a)"
   - name: accept the empty regex
     text: '""'
   - name: accept the use of {} and [] as literal sequences
     text:
-      - '[[]'
-      - '[]]'
-      - ']'
-      - 'a{b}'
-      - '{'
-      - '{c}'
-      - '}'
-  - name: reject backreferences
+      - "[[]"
+      - "[]]"
+      - "]"
+      - "a{b}"
+      - "{"
+      - "{c}"
+      - "}"
+  - name: accept backreferences in silence
     text:
       - '(?:a)\1'
       - 'a(b)(?:c)\2'
@@ -32,26 +32,26 @@ content:
       - 'a(b)\2'
       - 'a\1'
       - 'a\1(a)'
-  - name: reject empty class
-    text: '[]'
-  - name: reject lookaheads and lookbehinds, positive or negative
+  - name: accept empty class in silence
+    text: "[]"
+  - name: accept lookaheads and lookbehinds, positive or negative in silence
     text:
-      - '(?!a)'
-      - '(?<!a)'
-      - '(?<=a)'
-      - '(?=a)'
-  - name: reject misplaced quantifier
+      - "(?!a)"
+      - "(?<!a)"
+      - "(?<=a)"
+      - "(?=a)"
+  - name: accept misplaced quantifier in silence
     text:
-      - '*'
-      - '+'
-      - '?'
-      - '{2}'
-  - name: reject unbalanced regexes
+      - "*"
+      - "+"
+      - "?"
+      - "{2}"
+  - name: accept unbalanced regexes in silence
     text:
-      - '('
-      - '(()'
-      - '())'
-      - ')'
-      - ')('
-      - ')]'
-      - '['
+      - "("
+      - "(()"
+      - "())"
+      - ")"
+      - ")("
+      - ")]"
+      - "["

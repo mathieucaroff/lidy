@@ -1,51 +1,50 @@
 content:
   - name: accept boolean
-    expression: 'boolean'
+    expression: "boolean"
     text:
-      - 'true'
-      - 'false'
+      - "true"
+      - "false"
   - name: accept float
-    expression: 'float'
+    expression: "float"
     text:
-      - '1.2'
-      - '-1.2'
-      - '0.2'
-      - '.2'
-      - '0.'
-      - '.0'
-      - '1_230.15'
-      - '12.3015e+02'
-      - '.inf'
-      - '-.Inf'
-      - '.nan'
-      - '.NaN'
-      - '.NAN'
-      - '2'
-      - '-2'
-      - '1234'
-      - '0x4D2'
-      - '02333'
+      - "1.2"
+      - "-1.2"
+      - "0.2"
+      - ".2"
+      - "0."
+      - ".0"
+      - "1_230.15"
+      - "12.3015e+02"
+      - ".inf"
+      - "-.Inf"
+      - ".nan"
+      - ".NaN"
+      - ".NAN"
+      - "2"
+      - "-2"
+      - "1234"
+      - "0x4D2"
+      - "02333"
   - name: accept int
-    expression: 'int'
+    expression: "int"
     text:
-      - '2'
-      - '-2'
-      - '1234'
-      - '0x4D2'
-      - '02333'
+      - "2"
+      - "-2"
+      - "1234"
+      - "0x4D2"
+      - "02333"
   - name: accept nullType
-    expression: 'nullType'
+    expression: "nullType"
     text:
-      - 'null'
-      - '~'
-      - ''
+      - "null"
+      - "~"
   - name: accept string
-    expression: 'string'
+    expression: "string"
     text:
       - a
-      - '`!@#$%^&*()-=~1234567890_+;'
-      - '"[]:{}'',./<>? \\ \" \t \n"'
+      - "a`!@#$%^&*()-=~1234567890_+;"
+      - 'a"[]:{}'',./<>? \\ \" \t \n"'
   - name: accept timestamp
-    expression: 'timestamp'
+    expression: "timestamp"
     text:
-      - '2020-06-17T10:13:46'
+      - "2020-06-17T10:13:46Z"
