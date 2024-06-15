@@ -2,8 +2,7 @@ box: "lidySchemaDocument"
 content:
   - name: _merge requires identifiers to refer to mapCheckers
     content:
-      - flag: PENDING (requires on-demand-rule-loading)
-        name: accept if merging mapCheckers'
+      - name: accept if merging mapCheckers'
         text: |-
           main:
             _merge: [animal, plant, shroom]
@@ -23,20 +22,18 @@ content:
         text: |-
           main:
             _merge: []
-      - name: reject if not solving only to mapCheckers
-        content:
-          - text: |-
-              main:
-                _merge:
-                  - oneOf:
-                    - _map: {}
-                    - string
-            errorContains: main
-          - text: |-
-              main:
-                _merge:
-                  - { _in: [] }
-            errorContains: main
+      - name: reject if it encounters a predefined type while resolving
+        text: |-
+          main:
+            _merge:
+              - string
+        errorContains: main
+      - name: reject if it encounters a non-mapping checker while resolving
+        text: |-
+          main:
+            _merge:
+              - { _in: [] }
+        errorContains: _in
       - name: reject if not used with a sequence
         text: |-
           main:
@@ -46,10 +43,9 @@ content:
         errorContains: main
   - name: detect invalid self-references in _merge expressions
     content:
-      - flag: PENDING (requires on-demand-rule-loading)
-        name: accept if the self-reference is sufficiently indirect
+      - name: accept if the self-reference is sufficiently indirect
         text: |-
-          main: a
+          main: aa
           aa:
             _map:
               ka: bb

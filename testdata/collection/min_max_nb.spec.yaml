@@ -1,4 +1,3 @@
-flag: PENDING
 content:
   - name: _min_max_nb for _listOf
     schemaTemplate: |-
@@ -11,11 +10,11 @@ content:
       - "_nb: 2"
     content:
       - name: accept when there's the right number of entries
-        text: "[a b]"
+        text: "[a, b]"
   - name: _min_max_nb for _mapOf
     schemaTemplate: |-
       main:
-        _mapOf: any
+        _mapOf: { any: any }
         ${checker}
     text: "{ ka: va, kb: vb }"
     content:

@@ -1,6 +1,8 @@
 package lidy
 
 import (
+	"fmt"
+
 	yaml "gopkg.in/yaml.v3"
 )
 
@@ -43,6 +45,9 @@ func MakeParser(file File, builderMap map[string]Builder) (Parser, error) {
 	_, metaParsingError := makeMetaParserFor(parser).parseData(schema)
 	if metaParsingError != nil {
 		return parser, metaParsingError
+	}
+	if _, mainRuleFound := parser["main"]; !mainRuleFound {
+		return parser, fmt.Errorf("could not find the 'main' rule")
 	}
 
 	return parser, nil

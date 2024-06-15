@@ -1,6 +1,5 @@
 content:
-  - flag: PENDING
-    name: _map contaning one entry whose property is Lidy keyword
+  - name: _map contaning one entry whose property is Lidy keyword
     expressionTemplate: '_map: { "${keyword}": int }'
     keyword:
       - "_map"

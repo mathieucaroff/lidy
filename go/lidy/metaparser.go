@@ -1,17 +1,47 @@
 package lidy
 
-import "fmt"
+import (
+	"fmt"
+
+	yaml "gopkg.in/yaml.v3"
+)
 
 func makeMetaParserFor(parser Parser) Parser {
-	schema := YamlFile{
+	metaSchema := YamlFile{
 		File: ReadLocalFile("../../lidy.schema.yaml"),
 	}
-	err := schema.Unmarshal()
+	err := metaSchema.Unmarshal()
 	if err != nil {
 		panic(err)
 	}
 
-	builderMap := map[string]Builder{
+	var checkMergedNode func(string) error
+	checkMergedNode = func(name string) error {
+		rule, ruleFound := parser[name]
+		if !ruleFound {
+			return fmt.Errorf("unknown rule '%s' encountered in _merge keyword", name)
+		} else if rule.node.Kind == yaml.ScalarNode {
+			if rule.node.Tag != "!!str" {
+				return fmt.Errorf("encountered the non-string scalar '%s' where an identifier was expected", rule.node.Value)
+			}
+			return checkMergedNode(rule.node.Value)
+		} else if rule.node.Kind == yaml.MappingNode {
+			isMapChecker := false
+			for k := 0; k < len(rule.node.Content); k += 2 {
+				key := rule.node.Content[k].Value
+				if key == "_map" || key == "_mapFacultative" || key == "_mapOf" || key == "_merge" {
+					isMapChecker = true
+					break
+				}
+			}
+			if !isMapChecker {
+				return checkError("_merge", "reference lead to a non-map-checker node", rule.node)
+			}
+		}
+		return nil
+	}
+
+	metaBuilderMap := map[string]Builder{
 		"identifier": func(input Result) (interface{}, bool, error) {
 			var err error
 			identifier := input.data.(string)
@@ -27,11 +57,24 @@ func makeMetaParserFor(parser Parser) Parser {
 			_, _mapFound := mapData.Map["_map"]
 			_, _mapFacultativeFound := mapData.Map["_mapFacultative"]
 			_, _mapOfFound := mapData.Map["_mapOf"]
-			_, _mergeFound := mapData.Map["_merge"]
+			_merge, _mergeFound := mapData.Map["_merge"]
 			if !_mapFound && !_mapFacultativeFound && !_mapOfFound && !_mergeFound {
 				return nil, true, fmt.Errorf("expression maps must contain at least one mapChecker or listChecker keyword")
 			}
-			return input.data, true, nil
+			var errorSlice []error
+			if _mergeFound {
+				mergedNodeSlice := _merge.data.(ListData).ListOf
+				for _, result := range mergedNodeSlice {
+					if _, isMapData := result.data.(MapData); isMapData {
+						continue
+					} else if name, isString := result.data.(string); isString {
+						errorSlice = append(errorSlice, checkMergedNode(name))
+					} else {
+						panic("_merge result data slice should contain only MapData for map checkers and strings for identifiers")
+					}
+				}
+			}
+			return input.data, true, joinError(errorSlice...)
 		},
 		"sizedCheckerKeywordSet": func(input Result) (interface{}, bool, error) {
 			mapData := input.data.(MapData)
@@ -51,7 +94,7 @@ func makeMetaParserFor(parser Parser) Parser {
 		},
 	}
 
-	ruleSet := makeRuleSet(schema, builderMap)
+	metaRuleSet := makeRuleSet(metaSchema, metaBuilderMap)
 
-	return Parser(ruleSet)
+	return Parser(metaRuleSet)
 }

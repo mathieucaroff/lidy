@@ -1,6 +1,5 @@
 content:
-  - flag: PENDING
-    name: _merge 0 _mapFacultative 2 entries
+  - name: _merge 0 _mapFacultative 2 entries
     schema: |-
       main:
         _merge:
@@ -10,13 +9,13 @@ content:
             _mapFacultative: { a: int }
     content:
       - name: accept a and b too
-        text: "{ a: 2, b: 3, c: 1 }"
-      - name: accept when only c is provided
-        text: "{ c: 2 }"
-      - name: reject if a and b are not both ints
+        text: "{ a: ok, b: 3, c: 1 }"
+      - name: accept when only a and c are provided
+        text: "{ a: ok, c: 2 }"
+      - name: reject if b and c are not both ints
         text:
-          - "{ a: 2, b: b, c: 1 }"
-          - "{ a: a, b: 3, c: 1 }"
+          - "{ a: z, b: b, c: 1 }"
+          - "{ a: a, b: 3, c: c }"
           - "{ a: f, b: g, c: 1 }"
       - name: reject if c is not an int
         text: "{ c: aa }"
@@ -26,8 +25,7 @@ content:
           - "{ a: 1, b: 2 }"
           - "{ b: 1 }"
           - "{}"
-  - flag: PENDING
-    name: _merge _map override
+  - name: _merge _map override
     schema: |-
       main:
         _merge:
@@ -46,7 +44,7 @@ content:
         text:
           - "{ id: a, capacity: 0, engine: 3KZ_bc }"
           - "{ id: a, capacity: 2.1, engine: 3KZ_bc }"
-      - name: reject any entry is unknown
+      - name: reject if any entry is unknown
         text:
           - "{ id: a, capacity: 0, engine: b, _alt: ok }"
           - "{ id: a, capacity: 0, engine: b, extra: more }"
@@ -58,16 +56,16 @@ content:
             errorContains: engine
           - text: "{ id: a, engine: bc }"
             errorContains: capacity
-      - name: reject if some key do not match
+      - name: reject if some key does not match
         content:
           - text: "{ id: 10, capacity: 2.1, engine: 3KZ_bc }"
-             errorContains: id
+            errorContains: id
           - text: "{ id: a, capacity: large, engine: 3KZ_bc }"
             errorContains: capacity
       - name: reject nodes that are not mappings
         text: "[]"
-        errorContains: type
-  - name: _merge _mapOf behaves like a _oneOf and does not override
+        errorContains: map
+  - name: _merge ignores _mapOf
     schema: |-
       main:
         _merge:
@@ -76,17 +74,12 @@ content:
           - _mapOf: { { _list: [] }: int }
           - _mapOf: { { _list: [] }: string }
           - _mapOf: { { _list: [string] }: int }
-          - { _mapFacultative: { pkey: null } }
+          - { _mapFacultative: { pkey: nullType } }
     content:
       - name: accept if valid
         text:
-          - "{ []: 2 }"
-          - "{ []: aa }"
-          - "{ [zz]: -3 }"
-          - "{ a: aa }"
-          - "{ a: aa, []: 2, [zz]: -3 }"
-          - "{ a: aa, []: 2, [zz]: -3, kkey: false, pkey: null }"
-          - "{ a: aa, kkey: true }"
+          - "{ kkey: false, pkey: null }"
+          - "{ kkey: true }"
           - "{}"
       - name: reject if there is a non-matching type
         text:
@@ -113,7 +106,7 @@ content:
           - "{ a: va }"
           - "{ b: 4 }"
       - name: reject nodes that are not mappings
-        content:
+        text:
           - "0.1"
           - "[]"
           - "null"

@@ -27,7 +27,7 @@ func templateReadEntry(input specimen.Dict, key string) (string, bool) {
 
 	// The template was found. We need to parse it and replace the placeholders.
 	resultValue := interpolationRegex.ReplaceAllStringFunc(templateValue, func(match string) string {
-		key := match[2 : len(match)-3]
+		key := match[2 : len(match)-1]
 		value, found := input[key]
 		if !found {
 			panic(fmt.Sprintf("The template interpolation key '%s' was not found in the input", key))

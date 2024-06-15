@@ -58,7 +58,12 @@ func contributeToMapData(parserData tParserData, mapDataRef *tMapData, _map *yam
 		for k := 0; k < len(_mapFacultative.Content); k += 2 {
 			key := _mapFacultative.Content[k]
 			schema := _mapFacultative.Content[k+1]
-			mapDataRef.Map[key.Value] = schema
+			_, isMandatory := mapDataRef.MandatoryKeys[key.Value]
+			if !isMandatory {
+				// We only update the map if the key is not mandatory:
+				// A facultative key cannot override a mandatory one.
+				mapDataRef.Map[key.Value] = schema
+			}
 		}
 	}
 }
@@ -113,7 +118,9 @@ func applyMapMatcher(parserData tParserData, _map *yaml.Node, _mapFacultative *y
 				unknownKey = false
 				result, err := applyExpression(parserData, schema, value)
 				data.Map[key.Value] = result
-				errorSlice = append(errorSlice, err)
+				if err != nil {
+					errorSlice = append(errorSlice, fmt.Errorf("key %s: %w", key.Value, err))
+				}
 			}
 		}
 		if unknownKey {

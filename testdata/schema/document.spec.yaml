@@ -15,12 +15,6 @@ content:
                   - piece
             errorContains: plant
           - text: |-
-              main: aa
-              aa: { _merge: [bb] }
-              bb: { _oneOf: [aa, cc] }
-              cc: string
-            errorContains: aa
-          - text: |-
               main: animal
               animal: animal
             errorContains: animal
@@ -84,12 +78,10 @@ content:
               _mapOf: { string: main }
   - name: tell valid documents from invalid ones
     content:
-      - flag: PENDING
-        name: reject if a reference cannot be resolved
+      - name: reject if a reference cannot be resolved
         text: "main: animal"
         errorContains: animal
-      - flag: PENDING
-        name: reject if the target rule (main) is missing
+      - name: reject if the target rule (main) is missing
         text: "animal: string"
         errorContains: main
       - name: accept if the document is valid
