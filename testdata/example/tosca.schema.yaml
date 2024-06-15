@@ -1,41 +1,41 @@
 
-unbounded::TUnbounded:
+unbounded:
   _in: ["unbounded"]
 
-namespace::TNamespace: string
+namespace: string
 
 description: string
 
-range::TRange:
+range:
   _list: [scalarOrUnbounded, scalarOrUnbounded]
 
-metadata::TMetadata:
+metadata:
   _mapFacultative:
     template_version: version
     template_author: string
     template_name: string
   _mapOf: { string: string }
 
-version::TVersion:
+version:
   _regex: '^[0-d]+(\.[0-d]+(\.[0-9]+(.[a-zA-Z0-9_]+(\-[0-9]+)?)?)?)?$'
 
-url::TUrl:
+url:
   _regex: '^(https?:\\/\\/)?((([a-z\\d]([a-z\\d_-]*[a-z\\d])*)\\.?)+[a-z\\d_-]{2,}|((\\d{1,3}\\.){3}\\d{1,3}))(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*(\\?[;&a-z\\d%_.~+=-]*)?(\\#[-a-z\\d_]*)?$'
 
 size: scalar_unit.size
-scalar_unit.size::TSize:
+scalar_unit.size:
   _regex: '((?<sign>[+-]) *)?(?<value>[0-9]+(\.[0-9]+)?) *(?<unit>B|kB|KiB|MB|MiB|GB|GiB|TB|TiB)$'
 
 time: scalar_unit.time
-scalar_unit.time::TTime:
+scalar_unit.time:
   _regex: '((?<sign>[+-]) *)?(?<value>[0-9]+(\.[0-9]+)?) *(?<unit>d|h|m|s|ms|us|ns)$'
 
 frequency: scalar_unit.frequency
-scalar_unit.frequency::TFreq:
+scalar_unit.frequency:
   _regex: '((?<sign>[+-]) *)?(?<value>[0-9]+(\.[0-9]+)?) *(?<unit>Hz|kHz|MHz|GHz)$'
 
 bitrate: scalar_unit.bitrate
-scalar_unit.bitrate::TBitrate:
+scalar_unit.bitrate:
   _regex: '((?<sign>[+-]) *)?(?<value>[0-9]+(\.[0-9]+)?) *(?<unit>bps|Kbps|Kibps|Mbps|Mibps|Gbps|Gibps|Tbps|Tibps|Bps|KBps|KiBps|MBps|MiBps|GBps|GiBps|TBps|TiBps)$'
 
 string_value_expresion:
@@ -75,7 +75,7 @@ value:
     - { _mapOf: { any: any } }
     - nullType
 
-value_expression::TValueExpression:
+value_expression:
   _max: 1
   _mapFacultative:
     concat:               value_expression.concat
@@ -122,7 +122,7 @@ value_expression.get_artifact:
     - _list: [string, string, boolean]
     - _list: [string, string, string, boolean]
 
-import::TImport:
+import:
     _oneOf:
       - string
       - _nb: 1
@@ -138,11 +138,11 @@ import.target:
     namespace_prefix: string
     namespace_uri: string
 
-imports::TList:
+imports:
   _listOf: import
   _min: 1
 
-constraint::TConstraint:
+constraint:
   _max: 1
   _mapFacultative:
     equal: value
@@ -158,7 +158,7 @@ constraint::TConstraint:
     pattern: string
     schema: string
 
-constraints::TConstraints:
+constraints:
   _listOf: constraint
   _min: 1
 
@@ -172,7 +172,7 @@ entry_schema:
         constraints: constraints
         entry_schema: entry_schema
 
-parameter_assignment::TParameterAssignment:
+parameter_assignment:
   _oneOf:
     - value_expression
     - value
@@ -180,7 +180,7 @@ parameter_assignment::TParameterAssignment:
         description: description
         value: { _oneOf: [value_expression, value] }
 
-property::TProperty:
+property:
   _map:
     type: string
   _mapFacultative:
@@ -192,13 +192,13 @@ property::TProperty:
     metadata: metadata
     entry_schema: entry_schema
 
-properties::TProperties:
+properties:
   _mapOf: { string: property }
 
-property_assignments::TPropertyAssignments:
+property_assignments:
   _mapOf: { string: parameter_assignment }
 
-attribute::TAttribute:
+attribute:
   _map:
     type: string
   _mapFacultative:
@@ -207,13 +207,13 @@ attribute::TAttribute:
     status: { _in: [supported, unsupported, experimental, deprecated, optional] }
     entry_schema: entry_schema
 
-attributes::TAttributes:
+attributes:
   _mapOf: { string: attribute }
 
-attribute_assignments::TAttributeAssignments:
+attribute_assignments:
   _mapOf: { string: parameter_assignment }
 
-input_parameter::TInput:
+input_parameter:
   _map:
     type: string
   _mapFacultative:
@@ -225,13 +225,13 @@ input_parameter::TInput:
     entry_schema: entry_schema
     value: { _oneOf: [value, value_expression] }
 
-input_parameters::TInputs:
+input_parameters:
   _mapOf: { string: input_parameter }
 
-input_assignments::TInputAssignments:
+input_assignments:
   _mapOf: { string: parameter_assignment }
 
-output_parameter::TOutput:
+output_parameter:
   _mapFacultative:
     type: string
     description: description
@@ -242,10 +242,10 @@ output_parameter::TOutput:
     entry_schema: entry_schema
     value: { _oneOf: [value, value_expression] }
 
-output_parameters::TOutputs:
+output_parameters:
   _mapOf: { string: output_parameter }
 
-repository::TRepository:
+repository:
   _oneOf:
     - string
     - _map:
@@ -260,10 +260,10 @@ repository::TRepository:
             token_type: string
             user: string
 
-repositories::TRepositories:
+repositories:
   _mapOf: { string: output_parameter }
 
-artifact_def::TArtifactDef:
+artifact_def:
   _oneOf:
     - string
     - _map:
@@ -278,7 +278,7 @@ artifact_def::TArtifactDef:
         checksum_algorithm: string
         properties: property_assignments
 
-artifact_defs::TArtifactDefs:
+artifact_defs:
   _mapOf: { string: artifact_def }
 
 type_common_keys:
@@ -288,17 +288,17 @@ type_common_keys:
     metadata: metadata
     description: description
 
-artifact_type::TArtifactType:
+artifact_type:
   _mapFacultative:
     file_ext: { _listOf: string, _min: 1 }
     mime_type: string
     properties: properties
   _merge: type_common_keys
 
-artifact_types::TArtifactTypes:
+artifact_types:
   _mapOf: { string: artifact_type }
 
-data_type::TDataType:
+data_type:
   _mapFacultative:
     properties: properties
     constraints: constraints
@@ -306,10 +306,10 @@ data_type::TDataType:
     entry_schema: entry_schema
   _merge: type_common_keys
 
-data_types::TDataTypes:
+data_types:
   _mapOf: { string: data_type }
 
-implementation::TImplementation:
+implementation:
   _oneOf:
     - string
     - _mapFacultative:
@@ -319,7 +319,7 @@ implementation::TImplementation:
           _listOf: { _oneOf: [string, artifact_def] }
           _min: 1
 
-operation_def::TOperationDef:
+operation_def:
   _oneOf:
     - string
     - _mapFacultative:
@@ -327,7 +327,7 @@ operation_def::TOperationDef:
         inputs: properties
         implementation: implementation
 
-operation_def_template::TOperationDefTemplate:
+operation_def_template:
   _oneOf:
     - string
     - _mapFacultative:
@@ -335,17 +335,17 @@ operation_def_template::TOperationDefTemplate:
         inputs: input_assignments
         implementation: implementation
 
-interface_type::TInterfaceType:
+interface_type:
   _mapFacultative:
     inputs: properties
   _mapOf:
     string: operation_def
   _merge: type_common_keys
 
-interface_types::TInterfaceTypes:
+interface_types:
   _mapOf: { string: interface_type }
 
-interface_def::TInterfaceDef:
+interface_def:
   # _map:
   #   type: string
   _mapFacultative:
@@ -354,29 +354,29 @@ interface_def::TInterfaceDef:
   _mapOf:
     string: operation_def
 
-interface_defs::TInterfaceDefs:
+interface_defs:
   _mapOf: { string: interface_def }
 
-interface_assignment::TInterfaceAssignment:
+interface_assignment:
   _mapFacultative:
     inputs: property_assignments
   _mapOf:
     string: operation_def_template
 
-interface_assignments::TInterfaceAssignments:
+interface_assignments:
   _mapOf: { string: interface_assignment }
 
-capability_type::TCapabilityType:
+capability_type:
   _mapFacultative:
     properties: properties
     attributes: attributes
     valid_source_types: { _listOf: string, _min: 1 }
   _merge: type_common_keys
 
-capability_types::TCapabilityTypes:
+capability_types:
   _mapOf: { string: capability_type }
 
-capability_def::TCapabilityDef:
+capability_def:
   _oneOf:
     - _map:
         type: string
@@ -388,19 +388,19 @@ capability_def::TCapabilityDef:
         occurrences: range
     - string
 
-capability_defs::TCapabilityDefs:
+capability_defs:
   _mapOf: { string: capability_def }
 
-capability_assignment::TCapabilityAssignment:
+capability_assignment:
   _mapFacultative:
     properties: property_assignments
     attributes: attribute_assignments
     occurences: range
 
-capability_assignments::TCapabilityAssignments:
+capability_assignments:
   _mapOf: { string: capability_assignment }
 
-property_filter::TPropertyFilter:
+property_filter:
   _nb: 1
   _mapOf:
     string:
@@ -411,32 +411,32 @@ property_filter::TPropertyFilter:
             _oneOf: [constraint, value]
           _min: 1
 
-properties_filter::TPropertiesFilter:
+properties_filter:
   _listOf:
     property_filter
 
-capability_filter::TCapabilityFilter:
+capability_filter:
   _nb: 1
   _mapOf:
     string: { _mapFacultative: { properties: properties_filter } }
 
-capabilities_filter::TCapabilitiesFilter:
+capabilities_filter:
   _listOf:
     capability_filter
 
-node_filter::TNodeFilter:
+node_filter:
   _mapFacultative:
     properties: properties_filter
     capabilities: capabilities_filter
 
-relationship_def::TRelationshipDef:
+relationship_def:
   _oneOf:
     - string
     - _mapFacultative:
         type: string
         interfaces: interface_defs
 
-requirement_def::TRequirementDef:
+requirement_def:
   _nb: 1
   _mapOf:
     string:
@@ -450,11 +450,11 @@ requirement_def::TRequirementDef:
             occurrences: range
             relationship: relationship_def
 
-requirement_defs::TRequirementDefs:
+requirement_defs:
   _listOf:
     requirement_def
 
-relationship_assignment::TRelationshipAssignment:
+relationship_assignment:
   _oneOf:
     - string
     - _mapFacultative:
@@ -462,7 +462,7 @@ relationship_assignment::TRelationshipAssignment:
         properties: property_assignments
         interfaces: interface_defs_template
 
-requirement_assignment::TRequirementAssignment:
+requirement_assignment:
   _nb: 1
   _mapOf:
     string:
@@ -475,11 +475,11 @@ requirement_assignment::TRequirementAssignment:
             occurrences: range
             node_filter: node_filter
 
-requirement_assignments::TRequirementAssignments:
+requirement_assignments:
   _listOf:
     requirement_assignment
 
-workflow_condition_operator::TWorkflowConditionOperator:
+workflow_condition_operator:
   _nb: 1
   _mapFacultative:
     or: workflow_condition_clause
@@ -489,25 +489,25 @@ workflow_condition_operator::TWorkflowConditionOperator:
   _mapOf:
     string: constraints
 
-workflow_condition_clause::TWorkflowConditionClause:
+workflow_condition_clause:
   _listOf: workflow_condition_operator
   _min: 1
 
-workflow_preconditions::TWorkflowPrecondition:
+workflow_preconditions:
   _listOf: workflow_precondition
   _min: 1
 
-workflow_precondition::TWorkflowPreconditions:
+workflow_precondition:
   _mapFacultative:
     target: string
     target_relationship: string
     condition: workflow_condition_clause
 
-workflow_activities::TWorkflowActivities:
+workflow_activities:
   _listOf: workflow_activity
   _min: 1
 
-workflow_activity::TWorkflowActivity:
+workflow_activity:
   _nb: 1
   _mapFacultative:
     delegate: workflow_activity.inline
@@ -534,15 +534,15 @@ workflow_activity.call_operation:
 workflow_activity.state:
   _in: [initial, creating, created, configuring, configured, starting, started, stopping, stopped, deleting, deleted, error]
 
-declarative_workflow_steps::TWorkflowSteps:
+declarative_workflow_steps:
   _mapOf:
     string: declarative_workflow_step
 
-imperative_workflow_steps::TWorkflowSteps:
+imperative_workflow_steps:
   _mapOf:
     string: imperative_workflow_step
 
-declarative_workflow_step::TWorkflowStep:
+declarative_workflow_step:
   _map:
     activities: workflow_activities
   _mapFacultative:
@@ -553,7 +553,7 @@ declarative_workflow_step::TWorkflowStep:
     on_failure:
       _oneOf: [string, { _listOf: string, _min: 1 }]
 
-imperative_workflow_step::TWorkflowStep:
+imperative_workflow_step:
   _map:
     target: string
     activities: workflow_activities
@@ -566,11 +566,11 @@ imperative_workflow_step::TWorkflowStep:
     on_failure:
       _oneOf: [string, { _listOf: string, _min: 1 }]
 
-workflow_source_weaving_list::TWorkflowSourceWeavingList:
+workflow_source_weaving_list:
   _listOf: workflow_source_weaving
   _min: 1
 
-workflow_source_weaving::TWorkflowSourceWeaving:
+workflow_source_weaving:
   _mapFacultative:
     after: string
     before: string
@@ -578,11 +578,11 @@ workflow_source_weaving::TWorkflowSourceWeaving:
     after_target: string
     activity: string
 
-workflow_target_weaving_list::TWorkflowTargetWeavingList:
+workflow_target_weaving_list:
   _listOf: workflow_target_weaving
   _min: 1
 
-workflow_target_weaving::TWorkflowTargetWeaving:
+workflow_target_weaving:
   _mapFacultative:
     after: string
     before: string
@@ -590,11 +590,11 @@ workflow_target_weaving::TWorkflowTargetWeaving:
     after_source: string
     activity: string
 
-declarative_workflow_node_defs::TDeclarativeWorkflowNodeDefs:
+declarative_workflow_node_defs:
   _mapOf:
     string: declarative_workflow_node_def
 
-declarative_workflow_node_def::TDeclarativeWorkflowNodeDef:
+declarative_workflow_node_def:
   _mapFacultative:
     description: description
     metadata: metadata
@@ -602,11 +602,11 @@ declarative_workflow_node_def::TDeclarativeWorkflowNodeDef:
     preconditions: workflow_preconditions
     steps: declarative_workflow_steps
 
-declarative_workflow_rel_defs::TDeclarativeWorkflowRelDefs:
+declarative_workflow_rel_defs:
   _mapOf:
     string: declarative_workflow_rel_def
 
-declarative_workflow_rel_def::TDeclarativeWorkflowRelDef:
+declarative_workflow_rel_def:
   _mapFacultative:
     description: description
     metadata: metadata
@@ -615,11 +615,11 @@ declarative_workflow_rel_def::TDeclarativeWorkflowRelDef:
     source_weaving: workflow_source_weaving_list
     target_weaving: workflow_target_weaving_list
 
-imperative_workflow_defs::TImperativeWorkflowDefs:
+imperative_workflow_defs:
   _mapOf:
     string: imperative_workflow_def
 
-imperative_workflow_def::TImperativeWorkflowDef:
+imperative_workflow_def:
       _mapFacultative:
         description: description
         metadata: metadata
@@ -627,7 +627,7 @@ imperative_workflow_def::TImperativeWorkflowDef:
         preconditions: workflow_preconditions
         steps: imperative_workflow_steps
 
-node_type::TNodeType:
+node_type:
   _mapFacultative:
     properties: properties
     attributes: attributes
@@ -638,10 +638,10 @@ node_type::TNodeType:
     artifacts: artifact_defs
   _merge: type_common_keys
 
-node_types::TNodeTypes:
+node_types:
   _mapOf: { string: node_type }
 
-node_template::TNodeTemplate:
+node_template:
   _merge:
     _oneOf:
       - _map:
@@ -660,10 +660,10 @@ node_template::TNodeTemplate:
     artifacts: artifact_defs
     node_filter: node_filter
 
-node_templates::TNodeTemplates:
+node_templates:
   _mapOf: { string: node_template }
 
-relationship_type::TRelationshipType:
+relationship_type:
   _mapFacultative:
     properties: properties
     attributes: attributes
@@ -672,10 +672,10 @@ relationship_type::TRelationshipType:
     workflows: declarative_workflow_rel_defs
   _merge: type_common_keys
 
-relationship_types::TRelationshipTypes:
+relationship_types:
   _mapOf: { string: relationship_type }
 
-relationship_template::TRelationshipTemplate:
+relationship_template:
   _merge:
     _oneOf:
       - _map:
@@ -689,10 +689,10 @@ relationship_template::TRelationshipTemplate:
     attributes: attributes
     interfaces: interface_assignments
 
-relationship_templates::TRelationshipTemplates:
+relationship_templates:
   _mapOf: { string: relationship_template }
 
-group_type::TGroupType:
+group_type:
   _mapFacultative:
     properties: properties
     capabilities: capability_defs
@@ -701,10 +701,10 @@ group_type::TGroupType:
     members: { _listOf: string, _min: 1 }
   _merge: type_common_keys
 
-group_types::TGroupTypes:
+group_types:
   _mapOf: { string: group_type }
 
-group_def::TGroupDef:
+group_def:
   _map:
     type: string
   _mapFacultative:
@@ -713,26 +713,26 @@ group_def::TGroupDef:
     members: { _listOf: string, _min: 1 }
     interfaces: interface_assignments
 
-group_defs::TGroupDefs:
+group_defs:
   _mapOf: { string: group_def }
 
-trigger_defs::TTriggerDef:
+trigger_defs:
   _listOf: trigger_def
   _min: 1
 
-event::TEvent:
+event:
   _oneOf:
     - string
     - _mapFacultative:
         type: string
 
-target_filter::TTargetFilter:
+target_filter:
   _mapFacultative:
     node: string
     requirement: string
     capability: string
 
-trigger_def::TTriggerDef:
+trigger_def:
   _nb: 1
   _mapOf: { string: trigger_def.value }
 
@@ -751,25 +751,25 @@ trigger_def.value:
     method: string
     action: { _oneOf: [string, operation_def] }
 
-trigger_defs::TTriggerDefs:
+trigger_defs:
   _listOf: trigger_def
   _min: 1
 
-policy_type::TPolicyType:
+policy_type:
   _mapFacultative:
     properties: properties
     targets: { _listOf: string, _min: 1 }
     triggers: trigger_defs
   _merge: type_common_keys
 
-policy_types::TPolicyTypes:
+policy_types:
   _mapOf: { string:  policy_type }
 
-policy_defs::TPolicyDefs:
+policy_defs:
   _listOf: policy_def
   _min: 1
 
-policy_def::TPolicyDef:
+policy_def:
   _nb: 1
   _mapOf:
     string:
@@ -780,11 +780,11 @@ policy_def::TPolicyDef:
         targets: { _listOf: string, _min: 1 }
         triggers: trigger_defs
 
-properties_mapping::TPropertiesMapping:
+properties_mapping:
   _mapOf:
     string: property_mapping
 
-property_mapping::TPropertyMapping:
+property_mapping:
   _oneOf:
     - value
     - value_expression
@@ -798,11 +798,11 @@ property_mapping::TPropertyMapping:
         value:
           _oneOf: [value, value_expression]
 
-attributes_mapping::TAttributesMapping:
+attributes_mapping:
   _mapOf:
     string: attribute_mapping
 
-attribute_mapping::TAttributeMapping:
+attribute_mapping:
   _oneOf:
     - value
     - value_expression
@@ -816,11 +816,11 @@ attribute_mapping::TAttributeMapping:
         value:
           _oneOf: [value, value_expression]
 
-capabilities_mapping::TCapabilitiesMapping:
+capabilities_mapping:
   _mapOf:
     string: capability_mapping
 
-capability_mapping::TCapabilityMapping:
+capability_mapping:
   _oneOf:
     - { _listOf: string, _min: 1, max: 2 }
     - _mapFacultative:
@@ -828,11 +828,11 @@ capability_mapping::TCapabilityMapping:
         properties: property_assignments
         attributes: attribute_assignments
 
-requirements_mapping::TRequirementsMapping:
+requirements_mapping:
   _mapOf:
     string: requirement_mapping
 
-requirement_mapping::TRequirementMapping:
+requirement_mapping:
   _oneOf:
     - { _listOf: string, _min: 1, max: 2 }
     - _mapFacultative:
@@ -840,16 +840,16 @@ requirement_mapping::TRequirementMapping:
         properties: property_assignments
         attributes: attribute_assignments
 
-interfaces_mapping::TInterfacesMapping:
+interfaces_mapping:
   _mapOf:
     string: interface_mapping
 
-interface_mapping::TInterfaceMapping:
+interface_mapping:
   _nb: 1
   _mapOf:
     string: string
 
-substitution_mappings::TSubstitutionMappings:
+substitution_mappings:
   _map:
     node_type: string
   _mapFacultative:
@@ -860,7 +860,7 @@ substitution_mappings::TSubstitutionMappings:
     attributes: attributes_mapping
     interfaces: interfaces_mapping
 
-topology_template::TTopologyTemplate:
+topology_template:
   _mapFacultative:
     description: description
     inputs: input_parameters
@@ -872,7 +872,7 @@ topology_template::TTopologyTemplate:
     substitution_mappings: substitution_mappings
     workflows: imperative_workflow_defs
 
-service_template::TServiceTemplate:
+service_template:
   _map:
     tosca_definitions_version: string
   _mapFacultative:
