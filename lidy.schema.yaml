@@ -53,7 +53,7 @@ mapChecker:
         _oneOf:
           - identifier
           - mapChecker
-  _merge: sizedCheckerKeywordSet
+  _merge: [sizedCheckerKeywordSet]
 
 listChecker:
   _mapFacultative:
@@ -62,7 +62,7 @@ listChecker:
     "_listFacultative":
       _listOf: expression
     "_listOf": expression
-  _merge: sizedCheckerKeywordSet
+  _merge: [sizedCheckerKeywordSet]
 
 sizedCheckerKeywordSet:
   _mapFacultative:

@@ -64,11 +64,11 @@ content:
             _map: {}
             _mapFacultative: {}
           - |-
-            _map
+            _map: {}
             _mapFacultative: {}
             _mapOf: { string: string }
           - |-
-            _map
+            _map: {}
             _mapFacultative: {}
             _mapOf: { string: string }
             _min: 1
@@ -101,13 +101,13 @@ content:
       - name: accept valid forms
         text:
           - |-
-            _map
+            _map: {}
             _max: 2
           - |-
-            _map
+            _map: {}
             _min: 2
           - |-
-            _map
+            _map: {}
             _nb: 2
       - name: reject invalid forms
         content:

@@ -18,12 +18,12 @@ func resolveMergeReference(parserData tParserData, node *yaml.Node) *yaml.Node {
 	if node.Kind != yaml.ScalarNode {
 		panic("The merge values must be mappings or references to mappings")
 	}
-	ruleNode, ruleNodeFound := parserData.ruleSet[node.Value]
-	if !ruleNodeFound {
+	rule, ruleFound := parserData.parser[node.Value]
+	if !ruleFound {
 		panic("The merge value reference must exist in the schema")
 	}
 
-	return resolveMergeReference(parserData, ruleNode.node)
+	return resolveMergeReference(parserData, rule.node)
 }
 
 func contributeToMapData(parserData tParserData, mapDataRef *tMapData, _map *yaml.Node, _mapFacultative *yaml.Node, _merge *yaml.Node) {

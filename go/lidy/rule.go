@@ -22,11 +22,11 @@ type tRule struct {
 
 func applyRule(parserData tParserData, ruleName string, content *yaml.Node) (Result, error) {
 	newParserData := tParserData{
-		ruleSet:   parserData.ruleSet,
+		parser:    parserData.parser,
 		ruleTrace: append(parserData.ruleTrace, ruleName),
 	}
 
-	rule, ruleFound := parserData.ruleSet[ruleName]
+	rule, ruleFound := parserData.parser[ruleName]
 	if !ruleFound {
 		return applyPredefinedRule(newParserData, ruleName, content)
 	}
@@ -50,10 +50,21 @@ func applyRule(parserData tParserData, ruleName string, content *yaml.Node) (Res
 	if err != nil {
 		text := err.Error()
 		text = strings.ReplaceAll(text, "\n", "\n  ")
-		err = fmt.Errorf("%s failed (\n%s\n)", ruleName, text)
+		err = fmt.Errorf("%s failed (\n  %s\n)", ruleName, text)
 	}
 
 	return result, err
+}
+
+var predefinedRuleNameSet = map[string]bool{
+	"string":    true,
+	"int":       true,
+	"float":     true,
+	"binary":    true,
+	"boolean":   true,
+	"nullType":  true,
+	"timestamp": true,
+	"any":       true,
 }
 
 func applyPredefinedRule(parserData tParserData, ruleName string, content *yaml.Node) (Result, error) {

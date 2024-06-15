@@ -1,9 +1,10 @@
 flag: PENDING
 content:
   - name: _min_max_nb for _listOf
-    expressionTemplate: |-
-      _listOf: any
-      ${checker}
+    schemaTemplate: |-
+      main:
+        _listOf: any
+        ${checker}
     checker:
       - "_min: 2"
       - "_max: 2"
@@ -12,9 +13,10 @@ content:
       - name: accept when there's the right number of entries
         text: "[a b]"
   - name: _min_max_nb for _mapOf
-    expressionTemplate: |-
-      _mapOf: any
-      ${checker}
+    schemaTemplate: |-
+      main:
+        _mapOf: any
+        ${checker}
     text: "{ ka: va, kb: vb }"
     content:
       - name: accept when there's the right number of entries

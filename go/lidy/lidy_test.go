@@ -63,7 +63,7 @@ func specimenHandler(s *specimen.S, input specimen.Dict) {
 			s.Fail("One of 'expression' and 'schema' must be specified")
 		}
 		if expressionFound {
-			schema = fmt.Sprintf("main:\n  %s", expression)
+			schema = fmt.Sprintf("main:\n  %s", strings.ReplaceAll(expression, "\n", "\n  "))
 		}
 	} else {
 		word := ""
@@ -111,7 +111,7 @@ func specimenHandler(s *specimen.S, input specimen.Dict) {
 	} else {
 		switch box {
 		case "lidySchemaExpression":
-			schema = fmt.Sprintf("main:\n  %s", text)
+			schema = fmt.Sprintf("main:\n  %s", strings.ReplaceAll(text, "\n", "\n  "))
 		case "lidySchemaDocument":
 			schema = text
 		case "lidySchemaRegexChecker":
@@ -132,7 +132,7 @@ func specimenHandler(s *specimen.S, input specimen.Dict) {
 	errorContains, errorContainsFound := input["errorContains"]
 	if outcome == "accept" {
 		if errorContainsFound {
-			s.Fail("'errorContains' cannot be specified when the expected outcome is 'accept'")
+			s.Abort("'errorContains' cannot be specified when the expected outcome is 'accept'")
 		}
 		if err != nil {
 			s.Fail(fmt.Sprintf("error: %s", err.Error()))
