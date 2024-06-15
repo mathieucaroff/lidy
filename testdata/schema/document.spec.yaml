@@ -2,8 +2,7 @@ box: "lidySchemaDocument"
 content:
   - name: detect invalid self-references in documents
     content:
-      - flag: PENDING
-        name: reject if the self-reference is too direct
+      - name: reject if the self-reference is too direct
         content:
           - text: |-
               main: plant

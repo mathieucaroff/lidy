@@ -14,10 +14,11 @@ const regexBase64Source = `^[a-zA-Z0-9_\- \n]*[= \n]*$`
 var regexBase64 = regexp.MustCompile(regexBase64Source)
 
 type tRule struct {
-	name           string
-	node           *yaml.Node
-	builder        Builder
-	ruleIsMatching map[*yaml.Node]bool
+	name       string
+	node       *yaml.Node
+	builder    Builder
+	isMatching map[*yaml.Node]bool
+	isUsed     bool
 }
 
 func applyRule(parserData tParserData, ruleName string, content *yaml.Node) (Result, error) {
@@ -30,14 +31,14 @@ func applyRule(parserData tParserData, ruleName string, content *yaml.Node) (Res
 	if !ruleFound {
 		return applyPredefinedRule(newParserData, ruleName, content)
 	}
-	_, ruleIsAlreadyProcsesingThisNode := rule.ruleIsMatching[content]
+	_, ruleIsAlreadyProcsesingThisNode := rule.isMatching[content]
 	if ruleIsAlreadyProcsesingThisNode {
 		panic(fmt.Sprintf("Infinite loop: Rule %s encountered multiple times for the same node (%s %s)", ruleName, content.Tag, content.Value))
 	}
 
-	rule.ruleIsMatching[content] = true
+	rule.isMatching[content] = true
 	result, err := applyExpression(newParserData, rule.node, content)
-	delete(rule.ruleIsMatching, content)
+	delete(rule.isMatching, content)
 
 	if rule.builder != nil && err == nil {
 		result.hasBeenBuilt = true

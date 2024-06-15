@@ -42,13 +42,17 @@ func makeMetaParserFor(parser Parser) Parser {
 	}
 
 	metaBuilderMap := map[string]Builder{
-		"identifier": func(input Result) (interface{}, bool, error) {
+		"ruleReference": func(input Result) (interface{}, bool, error) {
 			var err error
 			identifier := input.data.(string)
-			_, ruleFound := parser[identifier]
+			rule, ruleFound := parser[identifier]
 			_, predefinedRuleFound := predefinedRuleNameSet[identifier]
 			if !ruleFound && !predefinedRuleFound {
-				err = fmt.Errorf("encountered unknown identifier '%s'", identifier)
+				err = fmt.Errorf("encountered unknown rule identifier '%s'", identifier)
+			}
+			if ruleFound {
+				rule.isUsed = true
+				parser[identifier] = rule
 			}
 			return input.data, true, err
 		},
@@ -97,4 +101,65 @@ func makeMetaParserFor(parser Parser) Parser {
 	metaRuleSet := makeRuleSet(metaSchema, metaBuilderMap)
 
 	return Parser(metaRuleSet)
+}
+
+func checkDirectRuleReference(ruleSet map[string]tRule, ruleNode *yaml.Node, ruleNameSlice []string) error {
+	if ruleNode.Kind == yaml.ScalarNode {
+		for _, ruleName := range ruleNameSlice {
+			if ruleNode.Value == ruleName {
+				return fmt.Errorf("rule '%s' references itself", ruleNode.Value)
+			}
+		}
+		if targetRule, targetRuleFound := ruleSet[ruleNode.Value]; targetRuleFound {
+			return checkDirectRuleReference(
+				ruleSet,
+				targetRule.node,
+				append(ruleNameSlice, ruleNode.Value),
+			)
+		} else {
+			// The rule is a predefined rule
+			return nil
+		}
+	} else if ruleNode.Kind != yaml.MappingNode {
+		panic("rule node should be either a scalar or a mapping")
+	}
+	var directChildNode *yaml.Node
+	for k := 0; k < len(ruleNode.Content); k += 2 {
+		key := ruleNode.Content[k]
+		if key.Kind == yaml.ScalarNode && (key.Value == "_oneOf" || key.Value == "_merge") {
+			directChildNode = ruleNode.Content[k+1]
+			break
+		}
+	}
+	var errorSlice []error
+	if directChildNode != nil {
+		for k := 0; k < len(directChildNode.Content); k++ {
+			err := checkDirectRuleReference(ruleSet, directChildNode.Content[k], ruleNameSlice)
+			errorSlice = append(errorSlice, err)
+		}
+	}
+	return joinError(errorSlice...)
+}
+
+func checkRuleSet(ruleSet map[string]tRule) error {
+	var errorSlice []error
+	mainRule, mainRuleFound := ruleSet["main"]
+	if !mainRuleFound {
+		err := fmt.Errorf("could not find the 'main' rule")
+		errorSlice = append(errorSlice, err)
+	} else {
+		mainRule.isUsed = true
+		ruleSet["main"] = mainRule
+	}
+	for name, rule := range ruleSet {
+		if !rule.isUsed {
+			err := fmt.Errorf("rule '%s' is defined but never used", name)
+			errorSlice = append(errorSlice, err)
+		}
+	}
+	for name, rule := range ruleSet {
+		err := checkDirectRuleReference(ruleSet, rule.node, []string{name})
+		errorSlice = append(errorSlice, err)
+	}
+	return joinError(errorSlice...)
 }

@@ -1,8 +1,6 @@
 package lidy
 
 import (
-	"fmt"
-
 	yaml "gopkg.in/yaml.v3"
 )
 
@@ -46,8 +44,10 @@ func MakeParser(file File, builderMap map[string]Builder) (Parser, error) {
 	if metaParsingError != nil {
 		return parser, metaParsingError
 	}
-	if _, mainRuleFound := parser["main"]; !mainRuleFound {
-		return parser, fmt.Errorf("could not find the 'main' rule")
+
+	err := checkRuleSet(ruleSet)
+	if err != nil {
+		return parser, err
 	}
 
 	return parser, nil
@@ -61,10 +61,10 @@ func makeRuleSet(schema YamlFile, builderMap map[string]Builder) map[string]tRul
 		ruleName := parserDocument.Content[k].Value
 		builder := builderMap[ruleName]
 		ruleSet[ruleName] = tRule{
-			name:           ruleName,
-			node:           parserDocument.Content[k+1],
-			builder:        builder,
-			ruleIsMatching: map[*yaml.Node]bool{},
+			name:       ruleName,
+			node:       parserDocument.Content[k+1],
+			builder:    builder,
+			isMatching: map[*yaml.Node]bool{},
 		}
 	}
 

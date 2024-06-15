@@ -2,14 +2,17 @@ main: document
 
 document:
   _mapOf:
-    identifier: expression
+    ruleDeclaration: expression
+
+ruleDeclaration: identifier
+ruleReference: identifier
 
 identifier:
   _regex: "[A-Za-z][0-9A-Za-z_.]*"
 
 expression:
   _oneOf:
-    - identifier
+    - ruleReference
     - checkerForm
 
 checkerForm:
@@ -51,7 +54,7 @@ mapChecker:
     "_merge":
       _listOf:
         _oneOf:
-          - identifier
+          - ruleReference
           - mapChecker
   _merge: [sizedCheckerKeywordSet]
 
