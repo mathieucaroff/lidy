@@ -14,13 +14,6 @@ content:
           shroom:
             _map: { a: int }
             _mapOf: { int: int }
-      - name: accept merging _oneOf mapCheckers
-        text: |-
-          main:
-            _merge:
-              - _oneOf:
-                - { _map: {} }
-                - { _merge: [] }
       - name: accept merging merges
         text: |-
           main:

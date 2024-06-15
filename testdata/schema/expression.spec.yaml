@@ -149,7 +149,7 @@ content:
       - name: accept valid forms
         text:
           - "_oneOf: []"
-          - "_oneOf: [string, int, { _map }]"
+          - "_oneOf: [string, int, { _map: {} }]"
           - "_oneOf: [string]"
       - name: reject invalid forms
         errorContains: "_oneOf"

@@ -33,7 +33,7 @@ scalar:
   _oneOf:
     - string
     - float
-    - bool
+    - boolean
     - nullType
 
 mapChecker:

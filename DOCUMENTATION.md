@@ -79,7 +79,7 @@ The predefined lidy rules are [the scalars](#scalars), [the predefined string ch
 Scalars, as defined in the [YAML specification](https://yaml.org/type/#id838503)
 
 - `string`, a YAML string
-- `bool`, a YAML boolean
+- `boolean`, a YAML boolean
 - `int`, a YAML integer
 - `float`, a YAML floating-point value
 - `null`, the YAML null value

@@ -5,7 +5,7 @@ import (
 )
 
 // Builder is a user-implemented input-validation and creation of user objects
-type Builder func(input Result) (interface{}, error)
+type Builder func(input Result) (interface{}, bool, error)
 
 // Parser gathers the properties necessary to perform lidy parsing
 type Parser struct {

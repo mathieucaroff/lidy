@@ -109,8 +109,6 @@ func specimenHandler(s *specimen.S, input specimen.Dict) {
 		)
 		err = contentError
 	} else {
-		s.Abort("not a content test")
-		return
 		switch box {
 		case "lidySchemaExpression":
 			schema = fmt.Sprintf("main:\n  %s", text)
@@ -120,6 +118,7 @@ func specimenHandler(s *specimen.S, input specimen.Dict) {
 			schema = fmt.Sprintf("main:\n  _regex: '%s'", text)
 		default:
 			s.Fail(fmt.Sprintf("Unknown test box: %s", box))
+			return
 		}
 		_, parserError := lidy.MakeParser(
 			lidy.File{Name: "<schema>.yaml", Content: []byte(schema)},

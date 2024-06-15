@@ -27,7 +27,7 @@ func applySizeCheck(_min *yaml.Node, _max *yaml.Node, _nb *yaml.Node, content *y
 	if _nb != nil {
 		nb, _ := strconv.Atoi(_nb.Value)
 		if count != nb {
-			return checkError("_max", fmt.Sprintf("Expected container to have exactly %d entries but it has %d.", nb, count), content)
+			return checkError("_nb", fmt.Sprintf("Expected container to have exactly %d entries but it has %d.", nb, count), content)
 		}
 	}
 

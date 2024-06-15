@@ -40,8 +40,10 @@ func applyRule(parserData tParserData, ruleName string, content *yaml.Node) (Res
 	delete(rule.ruleIsMatching, content)
 
 	if rule.builder != nil && err == nil {
-		data, buildErr := rule.builder(result)
+		result.hasBeenBuilt = true
+		data, isLidyData, buildErr := rule.builder(result)
 		result.data = data
+		result.isLidyData = isLidyData
 		err = buildErr
 	}
 
