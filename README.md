@@ -51,7 +51,6 @@ However, the way to invoke the parsers currently differs between the two impleme
   - [Container checkers](#container-checkers-1)
   - [Scalar checkers](#scalar-checkers)
 - [Not yet in Lidy](#not-yet-in-lidy)
-  - [Parameter-less string checkers](#parameter-less-string-checkers)
   - [Functional types (aka type parameter aka template types)](#functional-types-aka-type-parameter-aka-template-types)
 - [Contributing](#contributing)
   - [Developing](#developing)
@@ -238,25 +237,6 @@ The difference between `any` and `anyData` is in how they process the yaml struc
 - [`_range`](DOCUMENTATION.md#_range) -- a range over integers or floats with inclusive or exclusive boundaries
 
 ## Not yet in Lidy
-
-### Parameter-less string checkers
-
-Somewhat likely to be added (because it wouldn't make lidy heavier):
-
-- `lang.regex.re2`
-- `lang.json`
-- `lang.yaml`
-
-Less likely to be added, but still considered:
-
-- `lang.regex.pcre`
-- `lang.csv`
-- `lang.jsonc`
-- `lang.json4`
-- `lang.hjson`
-- `lang.strictyaml`
-- `lang.html`
-- `lang.xml`
 
 ### Functional types (aka type parameter aka template types)
 
