@@ -33,6 +33,8 @@ func applyExpression(parserData tParserData, schema *yaml.Node, content *yaml.No
 			return applyRegexMatcher(parserData, value, content)
 		case "_in":
 			return applyInMatcher(parserData, value, content)
+		case "_range":
+			return applyRangeMatcher(parserData, value, content)
 		case "_oneOf":
 			return applyOneOfMatcher(parserData, value, content)
 		case "_map":

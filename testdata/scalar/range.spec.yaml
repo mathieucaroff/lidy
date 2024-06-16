@@ -1,0 +1,35 @@
+content:
+  - name: _range int
+    content:
+      - expression: "_range: 0 <= int < 10"
+        content:
+          - name: accept
+            text: ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
+          - name: reject
+            text: ["-1", "10", "a", "1.1", "[]", "null", "true", "{}"]
+      - expression: "_range: 0 < int <= 3"
+        content:
+          - name: accept
+            text: ["1", "2", "3"]
+          - name: reject
+            text: ["0", "4", "zz", "1.1", "false"]
+      - expression: "_range: 0.5 < int < 2.5"
+        content:
+          - name: accept
+            text: ["1", "2"]
+          - name: reject
+            text: ["0", "3", "1.3", "2.2"]
+  - name: _range float
+    content:
+      - expression: "_range: 0.0 <= float < 10.0"
+        content:
+          - name: accept
+            text: ["0.0", "0", "0.9", "1.0", "1", "1.4", "9.0", "9", "9.9"]
+          - name: reject
+            text: ["-1.0", "-1", "10.0", "10", "a", "[]", "true"]
+      - expression: "_range: 0.0 < float <= 1.0"
+        content:
+          - name: accept
+            text: ["0.1", "0.9", "1.0"]
+          - name: reject
+            text: ["0.0", "1.1"]

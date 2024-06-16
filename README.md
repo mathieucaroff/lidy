@@ -234,14 +234,9 @@ Also see [Predefined string checker rules](DOCUMENTATION#predefined-string-check
 
 - [`_regex`](DOCUMENTATION.md#_regex) -- applies only to strings. Accepted syntax at https://github.com/google/re2/wiki/Syntax
 - [`_in`](DOCUMENTATION.md#_in) -- an exact enumeration of terminal YAML values the value must be part of
+- [`_range`](DOCUMENTATION.md#_range) -- a range over integers or floats with inclusive or exclusive boundaries
 
 ## Not yet in Lidy
-
-### Range
-
-- `_range` -- would apply only to numbers
-  - Examples for floats: `(0 <= float)`, `(1 < float < 10)`, `(float < 0)`
-  - Examples for integers: `(0 <= int <= 9)`
 
 ### Parameter-less string checkers
 

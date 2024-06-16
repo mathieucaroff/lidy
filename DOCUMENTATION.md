@@ -11,43 +11,57 @@
     - [Predefined Lidy rules](#predefined-lidy-rules)
     - [Scalar rules](#scalar-rules)
     - [Predefined string checker rules](#predefined-string-checker-rules)
-    - [Special checkers](#special-checkers) - [any](#any)
+    - [Special checkers](#special-checkers)
+          - [any](#any)
     - [Lidy checker forms](#lidy-checker-forms)
     - [`_regex: ...`, define your own string checker](#_regex--define-your-own-string-checker)
-      - [\_regex](#_regex)
-    - [Hashmap, Dict, Object, !!map, **Map-related checkers**](#hashmap-dict-object-map-map-related-checkers) - [mapChecker](#mapchecker)
+        - [\_regex](#_regex)
+    - [`_range: ... <= ... < ...`, bound number values](#_range------bound-number-values)
+        - [\_range](#_range)
+    - [Hashmap, Dict, Object, !!map, **Map-related checkers**](#hashmap-dict-object-map-map-related-checkers)
+          - [mapChecker](#mapchecker)
       - [`_map`, the structured type](#_map-the-structured-type)
-        - [\_map](#_map)
+          - [\_map](#_map)
       - [`_mapOf`, the associative container](#_mapof-the-associative-container)
-        - [\_mapOf](#_mapof)
-        - [\_merge](#_merge)
+          - [\_mapOf](#_mapof)
+          - [\_merge](#_merge)
       - [Using `_map` and `_mapOf` together: Specify a fallback rule](#using-_map-and-_mapof-together-specify-a-fallback-rule)
-        - [\_map and \_mapOf together](#_map-and-_mapof-together)
+          - [\_map and \_mapOf together](#_map-and-_mapof-together)
       - [`MapResult`, the common output type for map-related checkers](#mapresult-the-common-output-type-for-map-related-checkers)
-        - [MapResult](#mapresult)
-    - [Array, Sequence, Slice, Tuple, !!seq, **List-related checkers**](#array-sequence-slice-tuple-seq-list-related-checkers) - [listChecker](#listchecker) - [\_list](#_list) - [\_listFacultative](#_listfacultative) - [\_listOf](#_listof)
-    - [OneOf, choose, select, alternaives, options, pick, OR](#oneof-choose-select-alternaives-options-pick-or) - [\_oneOf](#_oneof)
-    - [In, exact scalar match in a list of scalars](#in-exact-scalar-match-in-a-list-of-scalars) - [\_in](#_in)
-    - [`_nb`, `_min`, `_max`, specify the number of entries in a container](#_nb-_min-_max-specify-the-number-of-entries-in-a-container) - [container sizing](#container-sizing) - [\_nb](#_nb) - [\_min](#_min) - [\_max](#_max)
+          - [MapResult](#mapresult)
+    - [Array, Sequence, Slice, Tuple, !!seq, **List-related checkers**](#array-sequence-slice-tuple-seq-list-related-checkers)
+          - [listChecker](#listchecker)
+          - [\_list](#_list)
+          - [\_listFacultative](#_listfacultative)
+          - [\_listOf](#_listof)
+    - [OneOf, choose, select, alternaives, options, pick, OR](#oneof-choose-select-alternaives-options-pick-or)
+          - [\_oneOf](#_oneof)
+    - [In, exact scalar match in a list of scalars](#in-exact-scalar-match-in-a-list-of-scalars)
+          - [\_in](#_in)
+    - [`_nb`, `_min`, `_max`, specify the number of entries in a container](#_nb-_min-_max-specify-the-number-of-entries-in-a-container)
+          - [container sizing](#container-sizing)
+          - [\_nb](#_nb)
+          - [\_min](#_min)
+          - [\_max](#_max)
   - [Go API](#go-api)
     - [Invocation in Go, simple use case](#invocation-in-go-simple-use-case)
       - [Create a parser](#create-a-parser)
-        - [NewParser](#newparser)
+          - [NewParser](#newparser)
       - [Create a file](#create-a-file)
-        - [NewFile](#newfile)
+          - [NewFile](#newfile)
       - [Parse the file](#parse-the-file)
-        - [Parse](#parse)
+          - [Parse](#parse)
       - [Set the Builder Map](#set-the-builder-map)
-        - [With](#with)
+          - [With](#with)
       - [Set the parse options](#set-the-parse-options)
-        - [Option](#option)
+          - [Option](#option)
     - [Invocation in Go, advanced use case](#invocation-in-go-advanced-use-case)
       - [Check that a file is Yaml](#check-that-a-file-is-yaml)
-        - [Yaml](#yaml)
+          - [Yaml](#yaml)
       - [Check that a file is a Lidy schema](#check-that-a-file-is-a-lidy-schema)
-        - [Schema](#schema)
+          - [Schema](#schema)
       - [Set the schema target](#set-the-schema-target)
-        - [Target](#target)
+          - [Target](#target)
     - [Builder Map | TODO](#builder-map--todo)
     - [Errors | TODO](#errors--todo)
 
@@ -145,10 +159,29 @@ Example:
 url:
   _regex: 'https?://[^/]+\.[a-zA-Z0-9()]{1,6}(/.*)?'
 phoneNumber:
-  _regex: '\+?[0-9]+( [0-9]+)*'
+  _regex: '\\+?[0-9]+( [0-9]+)*'
 ```
 
 Note: In [single quoted strings](https://yaml.org/spec/1.1/#id905860) the backslashes `\` are not interpreted. This makes them a good choice of delimiter for regexes.
+
+### `_range: ... <= ... < ...`, bound number values
+
+##### \_range
+
+The `_range` keyword allows you to accept only integers (`int`) or floats (`float`) within certain bounds.
+
+Example:
+
+```yaml
+diceResult:
+  _range: 1 <= int <= 6
+
+random:
+  _range: 0 <= float < 1
+
+logisticMapTakesTwoValues:
+  _range: 3.0 < float <= 3.45
+```
 
 ### Hashmap, Dict, Object, !!map, **Map-related checkers**
 
@@ -168,7 +201,7 @@ _mapFacultative?: <map of strings to lidy expressions>
 _min?: <int>
 _max?: <int>
 _nb?: <int>
-```
+````
 
 Example:
 

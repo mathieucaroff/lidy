@@ -19,6 +19,7 @@ checkerForm:
   _oneOf:
     - regexChecker
     - inChecker
+    - rangeChecker
     - mapChecker
     - listChecker
     - oneOfChecker
@@ -31,6 +32,11 @@ inChecker:
   _map:
     "_in":
       _listOf: scalar
+
+rangeChecker:
+  _map:
+    "_range":
+      _regex: "[0-9]+([.][0-9]+)? *<=? *(int|float) *<=? *[0-9]+([.][0-9]+)?"
 
 scalar:
   _oneOf:

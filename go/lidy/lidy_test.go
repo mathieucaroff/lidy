@@ -162,6 +162,7 @@ func TestLidy(t *testing.T) {
 			specimen.ReadLocalFile("../../testdata/collection/tuple.spec.yaml"),
 			specimen.ReadLocalFile("../../testdata/combinator/oneOf.spec.yaml"),
 			specimen.ReadLocalFile("../../testdata/scalar/in.spec.yaml"),
+			specimen.ReadLocalFile("../../testdata/scalar/range.spec.yaml"),
 			specimen.ReadLocalFile("../../testdata/scalar/regexp.spec.yaml"),
 			specimen.ReadLocalFile("../../testdata/scalarType/scalar.spec.yaml"),
 			specimen.ReadLocalFile("../../testdata/schema/document.spec.yaml"),
