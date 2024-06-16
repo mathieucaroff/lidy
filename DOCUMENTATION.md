@@ -171,7 +171,7 @@ Note: In [single quoted strings](https://yaml.org/spec/1.1/#id905860) the backsl
 
 ##### \_range
 
-The `_range` keyword allows you to accept only integers (`int`) or floats (`float`) within certain bounds.
+The `_range` keyword allows you to accept only integers (`int`) or floats (`float`) within certain bounds. The lower and upper bounds are each optional.
 
 Example:
 
@@ -184,6 +184,12 @@ random:
 
 logisticMapTakesTwoValues:
   _range: 3.0 < float <= 3.45
+
+natural:
+  _range: 0 <= int
+
+strictlyNegativeNumber:
+  _range: float < 0
 ```
 
 ### Hashmap, Dict, Object, !!map, **Map-related checkers**

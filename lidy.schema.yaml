@@ -49,7 +49,7 @@ inChecker:
 rangeChecker:
   _map:
     "_range":
-      _regex: "[0-9]+([.][0-9]+)? *<=? *(int|float) *<=? *[0-9]+([.][0-9]+)?"
+      _regex: "([0-9]+([.][0-9]+)? *<=? *)?(int|float)( *<=? *[0-9]+([.][0-9]+)?)?"
 
 scalar:
   _oneOf:

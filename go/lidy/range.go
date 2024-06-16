@@ -7,7 +7,7 @@ import (
 	yaml "gopkg.in/yaml.v3"
 )
 
-var rangeRegex = regexp.MustCompile(`([0-9]+(\.[0-9]+)?) *(<=?) *(int|float) *(<=?) *([0-9]+(\.[0-9]+)?)`)
+var rangeRegex = regexp.MustCompile(`(([0-9]+(\.[0-9]+)?) *(<=?) *)?(int|float)( *(<=?) *([0-9]+(\.[0-9]+)?))?`)
 
 func applyRangeMatcher(parserData tParserData, node *yaml.Node, content *yaml.Node) (Result, error) {
 	if content.Kind != yaml.ScalarNode || (content.Tag != "!!int" && content.Tag != "!!float") {
@@ -15,11 +15,11 @@ func applyRangeMatcher(parserData tParserData, node *yaml.Node, content *yaml.No
 	}
 
 	submatchSlice := rangeRegex.FindStringSubmatch(node.Value)
-	leftBoundary, _ := strconv.ParseFloat(submatchSlice[1], 64)
-	leftOperator := submatchSlice[3]
-	numberType := submatchSlice[4]
-	rightOperator := submatchSlice[5]
-	rightBoundary, _ := strconv.ParseFloat(submatchSlice[6], 64)
+	leftBoundary, _ := strconv.ParseFloat(submatchSlice[2], 64)
+	leftOperator := submatchSlice[4]
+	numberType := submatchSlice[5]
+	rightOperator := submatchSlice[7]
+	rightBoundary, _ := strconv.ParseFloat(submatchSlice[8], 64)
 
 	var value float64
 	var intValue int
@@ -37,14 +37,23 @@ func applyRangeMatcher(parserData tParserData, node *yaml.Node, content *yaml.No
 		}
 	}
 
-	if leftBoundary < value && value < rightBoundary ||
-		leftOperator == "<=" && value == leftBoundary ||
-		rightOperator == "<=" && value == rightBoundary {
-		if numberType == "int" {
-			return makeResult(parserData, content, intValue), nil
-		}
-		return makeResult(parserData, content, value), nil
-	}
+	ok := true
 
-	return Result{}, checkError("_range", "must be inside the specified range", content)
+	ok = ok &&
+		(leftOperator == "" ||
+			leftOperator == "<" && leftBoundary < value ||
+			leftOperator == "<=" && leftBoundary <= value)
+
+	ok = ok &&
+		(rightOperator == "" ||
+			rightOperator == "<" && value < rightBoundary ||
+			rightOperator == "<=" && value <= rightBoundary)
+
+	if !ok {
+		return Result{}, checkError("_range", "must be inside the specified range", content)
+	}
+	if numberType == "int" {
+		return makeResult(parserData, content, intValue), nil
+	}
+	return makeResult(parserData, content, value), nil
 }
