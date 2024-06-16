@@ -46,8 +46,7 @@ func makeMetaParserFor(parser Parser) Parser {
 			var err error
 			identifier := input.data.(string)
 			rule, ruleFound := parser[identifier]
-			_, predefinedRuleFound := predefinedRuleNameSet[identifier]
-			if !ruleFound && !predefinedRuleFound {
+			if !ruleFound {
 				err = fmt.Errorf("encountered unknown rule identifier '%s'", identifier)
 			}
 			if ruleFound {

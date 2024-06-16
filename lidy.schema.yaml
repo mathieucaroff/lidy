@@ -10,8 +10,21 @@ ruleReference: identifier
 identifier:
   _regex: "[A-Za-z][0-9A-Za-z_.]*"
 
+predefinedRule:
+  _in:
+    - "string"
+    - "int"
+    - "float"
+    - "binary"
+    - "boolean"
+    - "nullType"
+    - "timestamp"
+    - "any"
+    - "anyData"
+
 expression:
   _oneOf:
+    - predefinedRule
     - ruleReference
     - checkerForm
 

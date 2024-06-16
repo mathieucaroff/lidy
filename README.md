@@ -43,7 +43,7 @@ However, the way to invoke the parsers currently differs between the two impleme
   - [Predefined lidy rules](#predefined-lidy-rules)
     - [Scalar types](#scalar-types)
     - [Predefined string checker rules](#predefined-string-checker-rules)
-    - [`any` - Any yaml content](#any---any-yaml-content)
+    - [`any` and `anyData` - Any yaml content](#any-and-anydata---any-yaml-content)
   - [Container checkers](#container-checkers)
     - [Map checkers](#map-checkers)
     - [List checkers](#list-checkers)
@@ -51,7 +51,6 @@ However, the way to invoke the parsers currently differs between the two impleme
   - [Container checkers](#container-checkers-1)
   - [Scalar checkers](#scalar-checkers)
 - [Not yet in Lidy](#not-yet-in-lidy)
-  - [Range](#range)
   - [Parameter-less string checkers](#parameter-less-string-checkers)
   - [Functional types (aka type parameter aka template types)](#functional-types-aka-type-parameter-aka-template-types)
 - [Contributing](#contributing)
@@ -201,9 +200,11 @@ Also see [Scalar rules](DOCUMENTATION.md#scalar-rules).
 
 Also see [Predefined string checker rules](DOCUMENTATION#predefined-string-checker-rules).
 
-#### `any` - Any yaml content
+#### `any` and `anyData` - Any yaml content
 
-- `any` -- any yaml structure. See [any](DOCUMENTATION.md#any)
+- `any`, `anyData` -- any yaml structure. See [any](DOCUMENTATION.md#any)
+
+The difference between `any` and `anyData` is in how they process the yaml structure that they match. `any` simply ignores the data and produces a result whose data is `null` (`nil` or `null` or `None`), while `anyData` processes the yaml structure it matches into a tree of `Result` elements.
 
 ### Container checkers
 

@@ -57,17 +57,6 @@ func applyRule(parserData tParserData, ruleName string, content *yaml.Node) (Res
 	return result, err
 }
 
-var predefinedRuleNameSet = map[string]bool{
-	"string":    true,
-	"int":       true,
-	"float":     true,
-	"binary":    true,
-	"boolean":   true,
-	"nullType":  true,
-	"timestamp": true,
-	"any":       true,
-}
-
 func applyPredefinedRule(parserData tParserData, ruleName string, content *yaml.Node) (Result, error) {
 	var data interface{}
 	errorText := ""
@@ -132,6 +121,8 @@ func applyPredefinedRule(parserData tParserData, ruleName string, content *yaml.
 		}
 		data = content.Value
 	case "any":
+		data = nil
+	case "anyData":
 		data = mapYamlToResultData(parserData, content)
 	default:
 		errorText = fmt.Sprintf("rule '%s' not found in the schema", ruleName)

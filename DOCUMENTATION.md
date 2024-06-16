@@ -13,6 +13,7 @@
     - [Predefined string checker rules](#predefined-string-checker-rules)
     - [Special checkers](#special-checkers)
           - [any](#any)
+          - [anyData](#anydata)
     - [Lidy checker forms](#lidy-checker-forms)
     - [`_regex: ...`, define your own string checker](#_regex--define-your-own-string-checker)
         - [\_regex](#_regex)
@@ -111,7 +112,9 @@ Also see the [`_regex`](#_regex) keyword.
 
 ###### any
 
-There's only one: `any`. It matches any YAML content. It can be defined in Lidy schema as follows:
+###### anyData
+
+There's only two: `any` and `anyData`. They match any YAML content. They can be defined in Lidy schema as follows:
 
 ```yaml
 any:
@@ -125,7 +128,7 @@ any:
     - { _listOf: any }
 ```
 
-Please note that `any` will store YAML map contents in the `mapOf` field of `MapResult` instances.
+Please note that the `anyData` predefined rule stores YAML map contents in the `mapOf` field of `MapResult` instances. The `any` predefined rule ignores the data that it matches. It thus produces a result containing the `null` value instead of the data from the YAML file. If you mean to process the data using a builder, you should use `anyData`. If you don't need to process the data, you can use `any`.
 
 ### Lidy checker forms
 
