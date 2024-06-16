@@ -83,6 +83,7 @@ content:
             _mapOf: { string: string }
           - "_mapFacultative: {}"
           - "_mapOf: { string: string }"
+          - "_mapOf: { string: string, int: int }"
       - name: reject if its form is invalid
         text:
           - "_map: 1"

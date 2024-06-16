@@ -69,7 +69,7 @@ mapChecker:
     "_mapOf":
       _mapOf:
         expression: expression
-      _nb: 1
+      _min: 1
     "_merge":
       _listOf:
         _oneOf:

@@ -38,3 +38,18 @@ content:
           - "{ ka: va }"
           - "{ ka: va, kb: vb }"
           - "{ ka: va, kb: vb, 0k: 0v }"
+  - name: _mapOf multiple associations
+    expression: "_mapOf: { string: string, int: int }"
+    content:
+      - name: accept string-string mappings
+        text:
+          - "{ 0k: 0v }"
+          - "{ ka: va }"
+      - name: accept int-int mappings
+        text:
+          - "{ 1: 10 }"
+          - "{ 20: 200 }"
+      - name: reject associations mixing ints and strings
+        text:
+          - "{ 10: hello }"
+          - "{ goodbye: 20 }"

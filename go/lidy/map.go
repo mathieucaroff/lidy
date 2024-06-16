@@ -6,7 +6,7 @@ import (
 	yaml "gopkg.in/yaml.v3"
 )
 
-type tMapData struct {
+type tMapInfo struct {
 	MandatoryKeys map[string]bool
 	Map           map[string]*yaml.Node
 }
@@ -26,7 +26,7 @@ func resolveMergeReference(parserData tParserData, node *yaml.Node) *yaml.Node {
 	return resolveMergeReference(parserData, rule.node)
 }
 
-func contributeToMapData(parserData tParserData, mapDataRef *tMapData, _map *yaml.Node, _mapFacultative *yaml.Node, _merge *yaml.Node) {
+func contributeToMapInfo(parserData tParserData, mapInfoRef *tMapInfo, _map *yaml.Node, _mapFacultative *yaml.Node, _merge *yaml.Node) {
 	if _merge != nil {
 		for _, node := range _merge.Content {
 			resolvedNode := resolveMergeReference(parserData, node)
@@ -43,26 +43,26 @@ func contributeToMapData(parserData tParserData, mapDataRef *tMapData, _map *yam
 					mergeNode = value
 				}
 			}
-			contributeToMapData(parserData, mapDataRef, mapNode, mapFacultativeNode, mergeNode)
+			contributeToMapInfo(parserData, mapInfoRef, mapNode, mapFacultativeNode, mergeNode)
 		}
 	}
 	if _map != nil {
 		for k := 0; k < len(_map.Content); k += 2 {
 			key := _map.Content[k]
 			schema := _map.Content[k+1]
-			mapDataRef.Map[key.Value] = schema
-			mapDataRef.MandatoryKeys[key.Value] = true
+			mapInfoRef.Map[key.Value] = schema
+			mapInfoRef.MandatoryKeys[key.Value] = true
 		}
 	}
 	if _mapFacultative != nil {
 		for k := 0; k < len(_mapFacultative.Content); k += 2 {
 			key := _mapFacultative.Content[k]
 			schema := _mapFacultative.Content[k+1]
-			_, isMandatory := mapDataRef.MandatoryKeys[key.Value]
+			_, isMandatory := mapInfoRef.MandatoryKeys[key.Value]
 			if !isMandatory {
 				// We only update the map if the key is not mandatory:
 				// A facultative key cannot override a mandatory one.
-				mapDataRef.Map[key.Value] = schema
+				mapInfoRef.Map[key.Value] = schema
 			}
 		}
 	}
@@ -73,19 +73,11 @@ func applyMapMatcher(parserData tParserData, _map *yaml.Node, _mapFacultative *y
 		return Result{}, checkError("_map*", "must be a mapping node", content)
 	}
 
-	mapData := tMapData{
+	mapInfo := tMapInfo{
 		MandatoryKeys: map[string]bool{},
 		Map:           map[string]*yaml.Node{},
 	}
-	contributeToMapData(parserData, &mapData, _map, _mapFacultative, _merge)
-
-	var MapOfKey *yaml.Node
-	var MapOfValue *yaml.Node
-
-	if _mapOf != nil {
-		MapOfKey = _mapOf.Content[0]
-		MapOfValue = _mapOf.Content[1]
-	}
+	contributeToMapInfo(parserData, &mapInfo, _map, _mapFacultative, _merge)
 
 	data := MapData{
 		Map:   map[string]Result{},
@@ -100,7 +92,7 @@ func applyMapMatcher(parserData tParserData, _map *yaml.Node, _mapFacultative *y
 		mapContent[key.Value] = value
 	}
 
-	for key := range mapData.MandatoryKeys {
+	for key := range mapInfo.MandatoryKeys {
 		_, valueFound := mapContent[key]
 		if !valueFound {
 			err := checkError("_map", fmt.Sprintf("missing key '%s' in mapping", key), content)
@@ -113,7 +105,7 @@ func applyMapMatcher(parserData tParserData, _map *yaml.Node, _mapFacultative *y
 		value := content.Content[k+1]
 		unknownKey := true
 		if key.Kind == yaml.ScalarNode {
-			schema, schemaFound := mapData.Map[key.Value]
+			schema, schemaFound := mapInfo.Map[key.Value]
 			if schemaFound {
 				unknownKey = false
 				result, err := applyExpression(parserData, schema, value)
@@ -124,13 +116,27 @@ func applyMapMatcher(parserData tParserData, _map *yaml.Node, _mapFacultative *y
 			}
 		}
 		if unknownKey {
-			if MapOfKey != nil {
-				keyResult, keyErr := applyExpression(parserData, MapOfKey, key)
-				valueResult, valueErr := applyExpression(parserData, MapOfValue, value)
-				if keyErr == nil && valueErr == nil {
-					data.MapOf = append(data.MapOf, KeyValueData{Key: keyResult, Value: valueResult})
-				} else {
-					errorSlice = append(errorSlice, keyErr, valueErr)
+			if _mapOf != nil {
+				maybeErrorSlice := []error{fmt.Errorf("none of the %d _mapOf associations matched", len(_mapOf.Content)/2)}
+				matchFound := false
+				for k := 0; k < len(_mapOf.Content); k += 2 {
+					keyResult, keyErr := applyExpression(parserData, _mapOf.Content[k], key)
+					valueResult, valueErr := applyExpression(parserData, _mapOf.Content[k+1], value)
+					if keyErr == nil && valueErr == nil {
+						data.MapOf = append(data.MapOf, KeyValueData{Key: keyResult, Value: valueResult})
+						matchFound = true
+						break
+					} else {
+						if keyErr != nil {
+							maybeErrorSlice = append(maybeErrorSlice, checkError("_mapOf[key]", keyErr.Error(), key))
+						}
+						if valueErr != nil {
+							maybeErrorSlice = append(maybeErrorSlice, checkError("_mapOf[value]", valueErr.Error(), value))
+						}
+					}
+				}
+				if !matchFound {
+					errorSlice = append(errorSlice, joinError(maybeErrorSlice...))
 				}
 			} else {
 				var err error

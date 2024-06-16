@@ -289,8 +289,8 @@ git clone https://github.com/ditrit/lidy
 cd lidy
 ```
 
-Running Lidy's tests:
+Running Lidy's go tests:
 
 ```sh
-go test
+cd go/lidy; go test
 ```
