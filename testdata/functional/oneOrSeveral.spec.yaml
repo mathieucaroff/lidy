@@ -1,0 +1,20 @@
+schemaTemplate: |
+  main: oneOrSeveral<${type}>
+  <T>: []
+  oneOrSeveral<T>:
+    _oneOf:
+      - T
+      - _listOf: T
+        _min: 1
+content:
+  - type: int
+    content:
+      - name: accept
+        text:
+          - "10"
+          - "[10]"
+          - "[10, 20]"
+      - name: reject
+        text:
+          - "[]"
+          - "[[10]]"

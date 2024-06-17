@@ -3,12 +3,17 @@ main: document
 document:
   _mapOf:
     ruleDeclaration: expression
+    typeVariableDeclaration:
+      _listOf: ruleReference
 
 ruleDeclaration: identifier
 ruleReference: identifier
 
 identifier:
-  _regex: "[A-Za-z][0-9A-Za-z_.]*"
+  _regex: "[A-Za-z][0-9A-Za-z_.]*(<[A-Za-z][0-9A-Za-z_.]*(, *[A-Za-z][0-9A-Za-z_.]*)>)?"
+
+typeVariableDeclaration:
+  _regex: "<[A-Za-z][0-9A-Za-z_.]*>"
 
 predefinedRule:
   _in:

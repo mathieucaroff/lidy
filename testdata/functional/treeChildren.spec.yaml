@@ -1,0 +1,54 @@
+schemaTemplate: |
+  main: tree<type>
+
+  type: ${type}
+
+  <ContentType>: []
+
+  tree<ContentType>:
+    _map:
+      name: string
+      children: treeChildren
+
+  treeChildren<ContentType>:
+    _listOf: treeOrContent
+
+  treeOrContent<ContentType>:
+    _oneOf:
+      - tree
+      - ContentType
+content:
+  - type: int
+    content:
+      - name: accept
+        text: |
+          name: MyTree
+          children:
+            - 10
+            - 20
+            - name: MyNode
+              children: []
+      - name: reject
+        text: |
+          name: BadTree
+          children:
+            name: BadNode
+            children: []
+  - type: "{ listOf: int, _nb: 1 }"
+    content:
+      - name: accept
+        text: |
+          name: MyBigTree
+          children:
+            - [10]
+            - [20]
+            - name: MyNode
+              children:
+                - [30]
+            - name: More
+              children: []
+      - name: reject
+        text: |
+          name: BigBadTree
+          children:
+            - 10

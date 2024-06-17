@@ -1,0 +1,32 @@
+schemaTemplate: |
+  main: either<cat, dog>
+  cat: ${catType}
+  dog: ${dogType}
+  <TLeft>: []
+  <TRight>: []
+  either<TLeft, TRight>:
+    _oneOf:
+      - TLeft
+      - TRight
+      - both
+  both<TLeft, TRight>:
+    _map:
+      left: TLeft
+      right: TRight
+catType: "{ _regex: 'cat.*' }"
+dogType: "{ _regex: 'dog.*' }"
+content:
+  - name: accept
+    text:
+      - "cat"
+      - "dog"
+      - |
+        left: "cat"
+        right: "dog"
+  - name: reject
+    text:
+      - camel
+      - lion
+      - |
+        up: "cat"
+        down: "dog"

@@ -1,0 +1,40 @@
+schemaTemplate: |
+  main: listOfList<${type}>
+  <T>: []
+  listOfList<T>:
+    _listOf:
+      _listOf: T
+content:
+  - type: int
+    content:
+      - name: accept
+        text:
+          - "[]"
+          - "[[]]"
+          - "[[], []]"
+          - "[[10], []]"
+          - "[[10], [100]]"
+      - name: reject
+        text:
+          - "{}"
+          - "true"
+          - "10"
+          - "[10]"
+          - "[[a]]"
+          - "[a]"
+          - "a"
+  - type: listOf<int>
+    content:
+      - name: accept
+        text:
+          - "[]"
+          - "[[]]"
+          - "[[[]]]"
+          - "[[[[]]]]"
+          - "[[[[10]]]]"
+      - name: reject
+        text:
+          - "10"
+          - "[10]"
+          - "[[10]]"
+          - "[[[10]]]"

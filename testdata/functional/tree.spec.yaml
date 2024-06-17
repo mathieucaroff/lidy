@@ -1,0 +1,19 @@
+schemaTemplate: |
+  main: tree<${type}>
+  <T>: []
+  tree<T>:
+    _oneOf:
+      - T
+      - _listOf: tree
+type: "int"
+content:
+  - name: accept
+    text:
+      - "10"
+      - "[20, 30, 40]"
+      - "[[50], [[60]], 70]"
+  - name: reject
+    text:
+      - "a"
+      - "[10, b]"
+      - "[true, 20]"

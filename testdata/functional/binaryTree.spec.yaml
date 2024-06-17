@@ -1,0 +1,21 @@
+schemaTemplate: |
+  main: binaryTree<${type}>
+  <T>: []
+  binaryTree<T>:
+    _oneOf:
+      - T
+      - _list: [binaryTree, binaryTree]
+type: int
+content:
+  - name: accept
+    text:
+      - "10"
+      - "[20, 30]"
+      - "[[40, 50], 60]"
+      - "[70, [80, 90]]"
+  - name: reject
+    text:
+      - "a"
+      - "[10]"
+      - "[20, 30, 40]"
+      - "[[50], 60]"
