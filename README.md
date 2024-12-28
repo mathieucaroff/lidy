@@ -205,6 +205,10 @@ Also see [Predefined string checker rules](DOCUMENTATION#predefined-string-check
 
 The difference between `any` and `anyData` is in how they process the yaml structure that they match. `any` simply ignores the data and produces a result whose data is `null` (`nil` or `null` or `None`), while `anyData` processes the yaml structure it matches into a tree of `Result` elements.
 
+#### `never`
+
+- The `never` predefined rule never matches anything. It is used to produce an error when a rule is applied to a value that should never be encountered.
+
 ### Container checkers
 
 #### Map checkers

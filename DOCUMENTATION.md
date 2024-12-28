@@ -12,57 +12,51 @@
     - [Scalar rules](#scalar-rules)
     - [Predefined string checker rules](#predefined-string-checker-rules)
     - [Special checkers](#special-checkers)
-          - [any](#any)
-          - [anyData](#anydata)
+      - [any](#any)
+      - [anyData](#anydata)
+      - [never](#never)
     - [Lidy checker forms](#lidy-checker-forms)
     - [`_regex: ...`, define your own string checker](#_regex--define-your-own-string-checker)
-        - [\_regex](#_regex)
+      - [\_regex](#_regex)
     - [`_range: ... <= ... < ...`, bound number values](#_range------bound-number-values)
-        - [\_range](#_range)
-    - [Hashmap, Dict, Object, !!map, **Map-related checkers**](#hashmap-dict-object-map-map-related-checkers)
-          - [mapChecker](#mapchecker)
+      - [\_range](#_range)
+    - [Hashmap, Dict, Object, !!map, **Map-related checkers**](#hashmap-dict-object-map-map-related-checkers) - [mapChecker](#mapchecker)
       - [`_map`, the structured type](#_map-the-structured-type)
-          - [\_map](#_map)
+        - [\_map](#_map)
       - [`_mapOf`, the associative container](#_mapof-the-associative-container)
-          - [\_mapOf](#_mapof)
-          - [\_merge](#_merge)
+        - [\_mapOf](#_mapof)
+        - [\_merge](#_merge)
       - [Using `_map` and `_mapOf` together: Specify a fallback rule](#using-_map-and-_mapof-together-specify-a-fallback-rule)
-          - [\_map and \_mapOf together](#_map-and-_mapof-together)
+        - [\_map and \_mapOf together](#_map-and-_mapof-together)
       - [`MapResult`, the common output type for map-related checkers](#mapresult-the-common-output-type-for-map-related-checkers)
-          - [MapResult](#mapresult)
-    - [Array, Sequence, Slice, Tuple, !!seq, **List-related checkers**](#array-sequence-slice-tuple-seq-list-related-checkers)
-          - [listChecker](#listchecker)
-          - [\_list](#_list)
-          - [\_listFacultative](#_listfacultative)
-          - [\_listOf](#_listof)
-    - [OneOf, choose, select, alternaives, options, pick, OR](#oneof-choose-select-alternaives-options-pick-or)
-          - [\_oneOf](#_oneof)
-    - [In, exact scalar match in a list of scalars](#in-exact-scalar-match-in-a-list-of-scalars)
-          - [\_in](#_in)
+        - [MapResult](#mapresult)
+    - [Array, Sequence, Slice, Tuple, !!seq, **List-related checkers**](#array-sequence-slice-tuple-seq-list-related-checkers) - [listChecker](#listchecker) - [\_list](#_list) - [\_listFacultative](#_listfacultative) - [\_listOf](#_listof)
+    - [OneOf, choose, select, alternaives, options, pick, OR](#oneof-choose-select-alternaives-options-pick-or) - [\_oneOf](#_oneof)
+    - [In, exact scalar match in a list of scalars](#in-exact-scalar-match-in-a-list-of-scalars) - [\_in](#_in)
     - [`_nb`, `_min`, `_max`, specify the number of entries in a container](#_nb-_min-_max-specify-the-number-of-entries-in-a-container)
-          - [container sizing](#container-sizing)
-          - [\_nb](#_nb)
-          - [\_min](#_min)
-          - [\_max](#_max)
+      - [container sizing](#container-sizing)
+      - [\_nb](#_nb)
+      - [\_min](#_min)
+      - [\_max](#_max)
   - [Go API](#go-api)
     - [Invocation in Go, simple use case](#invocation-in-go-simple-use-case)
       - [Create a parser](#create-a-parser)
-          - [NewParser](#newparser)
+        - [NewParser](#newparser)
       - [Create a file](#create-a-file)
-          - [NewFile](#newfile)
+        - [NewFile](#newfile)
       - [Parse the file](#parse-the-file)
-          - [Parse](#parse)
+        - [Parse](#parse)
       - [Set the Builder Map](#set-the-builder-map)
-          - [With](#with)
+        - [With](#with)
       - [Set the parse options](#set-the-parse-options)
-          - [Option](#option)
+        - [Option](#option)
     - [Invocation in Go, advanced use case](#invocation-in-go-advanced-use-case)
       - [Check that a file is Yaml](#check-that-a-file-is-yaml)
-          - [Yaml](#yaml)
+        - [Yaml](#yaml)
       - [Check that a file is a Lidy schema](#check-that-a-file-is-a-lidy-schema)
-          - [Schema](#schema)
+        - [Schema](#schema)
       - [Set the schema target](#set-the-schema-target)
-          - [Target](#target)
+        - [Target](#target)
     - [Builder Map | TODO](#builder-map--todo)
     - [Errors | TODO](#errors--todo)
 
@@ -129,6 +123,10 @@ any:
 ```
 
 Please note that the `anyData` predefined rule stores YAML map contents in the `mapOf` field of `MapResult` instances. The `any` predefined rule ignores the data that it matches. It thus produces a result containing the `null` value instead of the data from the YAML file. If you mean to process the data using a builder, you should use `anyData`. If you don't need to process the data, you can use `any`.
+
+###### never
+
+The `never` predefined rule never matches anything. It is used to produce an error when a rule is applied to a value that should never be encountered.
 
 ### Lidy checker forms
 
@@ -210,7 +208,7 @@ _mapFacultative?: <map of strings to lidy expressions>
 _min?: <int>
 _max?: <int>
 _nb?: <int>
-````
+```
 
 Example:
 
@@ -528,7 +526,7 @@ Expect(chainable).To(Equal(parser))
 
 ###### Target
 
-The default target it `main`.
+The default target is `main`.
 
 ```go
 chainable := parser.Target("tree")
