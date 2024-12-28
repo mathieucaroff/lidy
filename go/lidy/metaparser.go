@@ -6,7 +6,7 @@ import (
 	yaml "gopkg.in/yaml.v3"
 )
 
-func makeMetaParserFor(parser Parser) Parser {
+func makeMetaParserFor(subparser Parser) Parser {
 	metaSchema := YamlFile{
 		File: ReadLocalFile("../../lidy.schema.yaml"),
 	}
@@ -17,12 +17,12 @@ func makeMetaParserFor(parser Parser) Parser {
 
 	var checkMergedNode func(string) error
 	checkMergedNode = func(name string) error {
-		rule, ruleFound := parser[name]
+		rule, ruleFound := subparser[name]
 		if !ruleFound {
-			return fmt.Errorf("unknown rule '%s' encountered in _merge keyword", name)
+			return checkError("_merge", fmt.Sprintf("unknown rule '%s' encountered in _merge keyword", name), rule.node)
 		} else if rule.node.Kind == yaml.ScalarNode {
 			if rule.node.Tag != "!!str" {
-				return fmt.Errorf("encountered the non-string scalar '%s' where an identifier was expected", rule.node.Value)
+				return checkError("_merge", fmt.Sprintf("encountered the non-string scalar '%s' where an identifier was expected", rule.node.Value), rule.node)
 			}
 			return checkMergedNode(rule.node.Value)
 		} else if rule.node.Kind == yaml.MappingNode {
@@ -35,7 +35,7 @@ func makeMetaParserFor(parser Parser) Parser {
 				}
 			}
 			if !isMapChecker {
-				return checkError("_merge", "reference lead to a non-map-checker node", rule.node)
+				return checkError("_merge", "reference leads to a non-map-checker node", rule.node)
 			}
 		}
 		return nil
@@ -45,13 +45,13 @@ func makeMetaParserFor(parser Parser) Parser {
 		"ruleReference": func(input Result) (interface{}, bool, error) {
 			var err error
 			identifier := input.data.(string)
-			rule, ruleFound := parser[identifier]
+			rule, ruleFound := subparser[identifier]
 			if !ruleFound {
 				err = fmt.Errorf("encountered unknown rule identifier '%s'", identifier)
 			}
 			if ruleFound {
 				rule.isUsed = true
-				parser[identifier] = rule
+				subparser[identifier] = rule
 			}
 			return input.data, true, err
 		},

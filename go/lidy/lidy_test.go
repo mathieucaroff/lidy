@@ -27,10 +27,10 @@ func templateReadEntry(input specimen.Dict, key string) (string, bool) {
 
 	// The template was found. We need to parse it and replace the placeholders.
 	resultValue := interpolationRegex.ReplaceAllStringFunc(templateValue, func(match string) string {
-		key := match[2 : len(match)-1]
-		value, found := input[key]
+		name := match[2 : len(match)-1]
+		value, found := input[name]
 		if !found {
-			panic(fmt.Sprintf("The template interpolation key '%s' was not found in the input", key))
+			panic(fmt.Sprintf("the template interpolation key '%s' was not found in the input", name))
 		}
 		return value
 	})
@@ -49,7 +49,7 @@ func specimenHandler(s *specimen.S, input specimen.Dict) {
 	// Text
 	text, textFound := templateReadEntry(input, "text")
 	if !textFound {
-		s.Fail("The 'text' field is required")
+		s.Fail("The 'text' entry is required")
 	}
 	// Expression and Schema
 	expression, expressionFound := templateReadEntry(input, "expression")
@@ -60,7 +60,7 @@ func specimenHandler(s *specimen.S, input specimen.Dict) {
 			s.Fail("'expression' and 'schema' cannot be specified together")
 		}
 		if !expressionFound && !schemaFound {
-			s.Fail("One of 'expression' and 'schema' must be specified")
+			s.Fail("one of 'expression' and 'schema' must be specified")
 		}
 		if expressionFound {
 			schema = fmt.Sprintf("main:\n  %s", strings.ReplaceAll(expression, "\n", "\n  "))
@@ -69,8 +69,7 @@ func specimenHandler(s *specimen.S, input specimen.Dict) {
 		word := ""
 		if expressionFound {
 			word = "expression"
-		}
-		if schemaFound {
+		} else if schemaFound {
 			word = "schema"
 		}
 		if word != "" {
@@ -87,14 +86,14 @@ func specimenHandler(s *specimen.S, input specimen.Dict) {
 		outcome = "reject"
 	}
 	if outcome == "" {
-		s.Fail(fmt.Sprintf("The name should begin by 'accept' or 'reject', but it is: %s", name))
+		s.Fail(fmt.Sprintf("the 'name' entry should begin by 'accept' or 'reject', but it is: %s", name))
 	}
 
 	// // // // // // // // // // // // // // // // // // // // //
 	var err error
 	if box == "content" {
 		if schema == "" {
-			s.Fail("The schema cannot be empty")
+			s.Fail("the schema cannot be empty")
 		}
 		parser, parserError := lidy.MakeParser(
 			lidy.File{Name: "<schema>.yaml", Content: []byte(schema)},
@@ -117,8 +116,7 @@ func specimenHandler(s *specimen.S, input specimen.Dict) {
 		case "lidySchemaRegexChecker":
 			schema = fmt.Sprintf("main:\n  _regex: '%s'", text)
 		default:
-			s.Fail(fmt.Sprintf("Unknown test box: %s", box))
-			return
+			s.Fail(fmt.Sprintf("unknown test box: %s", box))
 		}
 		_, parserError := lidy.MakeParser(
 			lidy.File{Name: "<schema>.yaml", Content: []byte(schema)},
@@ -139,7 +137,12 @@ func specimenHandler(s *specimen.S, input specimen.Dict) {
 		}
 	} else {
 		if err == nil {
-			s.Fail("no error was found")
+			name, nameFound := input["name"]
+			if nameFound {
+				s.Fail(fmt.Sprintf("no error was found (%s)", name))
+			} else {
+				s.Fail("no error was found")
+			}
 		}
 		if errorContainsFound {
 			if !strings.Contains(err.Error(), errorContains) {

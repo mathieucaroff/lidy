@@ -14,11 +14,13 @@ const regexBase64Source = `^[a-zA-Z0-9_\- \n]*[= \n]*$`
 var regexBase64 = regexp.MustCompile(regexBase64Source)
 
 type tRule struct {
-	name       string
-	node       *yaml.Node
-	builder    Builder
+	name    string
+	node    *yaml.Node
+	builder Builder
+	// isMatching is used to detect cycles in the rule set
 	isMatching map[*yaml.Node]bool
-	isUsed     bool
+	// isUsed is used to detect unused rules
+	isUsed bool
 }
 
 func applyRule(parserData tParserData, ruleName string, content *yaml.Node) (Result, error) {
@@ -92,7 +94,7 @@ func applyPredefinedRule(parserData tParserData, ruleName string, content *yaml.
 		if content.Tag != "!!str" && content.Tag != "!!binary" {
 			errorText = "expected a binary or string value"
 		} else if !regexBase64.MatchString(content.Value) {
-			errorText = fmt.Sprintf("expected a base64 value: a string which matches: /%s/", regexBase64Source)
+			errorText = fmt.Sprintf("expected a base64 value: a string which matches: /%s/", regexBase64)
 		}
 		data = content.Value
 	case "boolean":
@@ -124,6 +126,8 @@ func applyPredefinedRule(parserData tParserData, ruleName string, content *yaml.
 		data = nil
 	case "anyData":
 		data = mapYamlToResultData(parserData, content)
+	case "never":
+		errorText = "encountered the never value"
 	default:
 		errorText = fmt.Sprintf("rule '%s' not found in the schema", ruleName)
 	}

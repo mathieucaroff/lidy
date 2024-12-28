@@ -109,15 +109,18 @@ func applyMapMatcher(parserData tParserData, _map *yaml.Node, _mapFacultative *y
 			if schemaFound {
 				unknownKey = false
 				result, err := applyExpression(parserData, schema, value)
-				data.Map[key.Value] = result
-				if err != nil {
+				if err == nil {
+					data.Map[key.Value] = result
+				} else {
 					errorSlice = append(errorSlice, fmt.Errorf("key %s: %w", key.Value, err))
 				}
 			}
 		}
 		if unknownKey {
 			if _mapOf != nil {
-				maybeErrorSlice := []error{fmt.Errorf("none of the %d _mapOf associations matched", len(_mapOf.Content)/2)}
+				maybeErrorSlice := []error{
+					checkError("_mapOf", fmt.Sprintf("none of the %d _mapOf associations matched", len(_mapOf.Content)/2), _mapOf),
+				}
 				matchFound := false
 				for k := 0; k < len(_mapOf.Content); k += 2 {
 					keyResult, keyErr := applyExpression(parserData, _mapOf.Content[k], key)

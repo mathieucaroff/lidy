@@ -5,6 +5,7 @@ import (
 )
 
 // Builder is a user-implemented input-validation and creation of user objects
+// The output values are (data, isLidyData, buildErr)
 type Builder func(input Result) (interface{}, bool, error)
 
 // Parser gathers the properties necessary to perform lidy parsing
@@ -53,8 +54,12 @@ func MakeParser(file File, builderMap map[string]Builder) (Parser, error) {
 	return parser, nil
 }
 
+// makeRuleSet creates a map of rules from the given schema and builder map
 func makeRuleSet(schema YamlFile, builderMap map[string]Builder) map[string]tRule {
 	parserDocument := schema.Yaml.Content[0]
+	if parserDocument.Kind != yaml.MappingNode {
+		panic("The document should be a YAML map")
+	}
 	ruleSet := map[string]tRule{}
 
 	for k := 0; k < len(parserDocument.Content); k += 2 {
