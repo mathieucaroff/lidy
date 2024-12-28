@@ -20,7 +20,7 @@ content:
           - "[12, 4]"
           - "[va, vb]"
       - name: reject lists with too few elements
-        text: "[va, 4, extra]"
+        text: "[va]"
       - name: reject lists with too many elements
         text: "[va, 4, extra]"
       - name: reject nodes that are not lists

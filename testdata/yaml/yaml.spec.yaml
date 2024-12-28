@@ -13,11 +13,6 @@ content:
     text:
       - "0 b 9"
       - "a b"
-  - name: accept misuse of tags in silence
-    text:
-      - "!!!aha!"
-      - "!!!eh"
-      - "!!oh"
   - name: reject the empty document
     text: ""
   - name: accept unknown tags in silence

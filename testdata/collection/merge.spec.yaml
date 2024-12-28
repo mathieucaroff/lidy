@@ -91,9 +91,9 @@ content:
           - "{ pkey: false }"
       - name: reject nodes that are not mappings
         text:
-          - text: "0.1"
-          - text: "[]"
-          - text: "null"
+          - "0.1"
+          - "[]"
+          - "null"
   - name: _merge empty
     schema: |-
       main:

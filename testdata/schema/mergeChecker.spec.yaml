@@ -81,8 +81,8 @@ content:
               animal: { _merge: [animal] }
             errorContains: animal
           - text: |-
-              'main: { _merge: [main] }'
+              main: { _merge: [main] }
             errorContains: main
           - text: |-
-              'main: { _merge: [{ _merge: [main] }] }'
+              main: { _merge: [{ _merge: [main] }] }
             errorContains: main
