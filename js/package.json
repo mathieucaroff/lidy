@@ -1,0 +1,12 @@
+{
+  "name": "lidy",
+  "packageManager": "yarn@4.1.1",
+  "dependencies": {
+    "yaml": "^2.6.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "specimen-test": "link:C:/ox/ditrit/specimen/js",
+    "tsx": "^4.19.2"
+  }
+}
