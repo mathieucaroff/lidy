@@ -5,6 +5,8 @@ document:
     ruleDeclaration: expression
 
 ruleDeclaration: identifier
+# ruleReference has extra builder checks which ensure that the referenced rule
+# does exist in the schema (or is a predefined rule)
 ruleReference: identifier
 
 identifier:
@@ -21,6 +23,7 @@ predefinedRule:
     - "timestamp"
     - "any"
     - "anyData"
+    - "never"
 
 expression:
   _oneOf:
@@ -58,6 +61,8 @@ scalar:
     - boolean
     - nullType
 
+# mapChecker has extra builder checks which ensure that _merge, if present,
+# refers to existing mapChecker rules
 mapChecker:
   _mapFacultative:
     "_map":
@@ -69,13 +74,14 @@ mapChecker:
     "_mapOf":
       _mapOf:
         expression: expression
-      _min: 1
+      _min: 1 # mapOf must have at least one expression-to-expression entry
     "_merge":
       _listOf:
         _oneOf:
           - ruleReference
           - mapChecker
   _merge: [sizedCheckerKeywordSet]
+  _min: 1 # mapChecker must have at least one of its four keywords present
 
 listChecker:
   _mapFacultative:
@@ -85,7 +91,13 @@ listChecker:
       _listOf: expression
     "_listOf": expression
   _merge: [sizedCheckerKeywordSet]
+  _min: 1 # listChecker must have at least one of its three keywords present
 
+# sizedCheckerKeywordSet has extra builder checks which ensure that:
+# - _min, _max, _nb are all positive
+# - _nb and _min are not used together
+# - _nb and _max are not used together
+# - _min is not greater than _max
 sizedCheckerKeywordSet:
   _mapFacultative:
     "_min": int
