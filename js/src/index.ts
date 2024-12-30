@@ -1,1 +1,2 @@
-export { Parser, makeParser } from "./lidy"
+export { makeParser } from "./lidy"
+export type { Parser } from "./lidy"

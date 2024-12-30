@@ -1,12 +1,38 @@
 {
   "name": "lidy",
-  "packageManager": "yarn@4.1.1",
+  "version": "0.1.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mathieucaroff/lidy.git"
+  },
+  "author": "Mathieu CAROFF <mathieu.caroff@free.fr>",
+  "license": "MPL-2.0",
+  "packageManager": "yarn@4.3.1",
+  "type": "commonjs",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist/index.js",
+    "dist/index.d.ts"
+  ],
+  "scripts": {
+    "test": "tsx src/lidy_test.ts",
+    "build": "parcel build src/index.ts"
+  },
   "dependencies": {
     "yaml": "^2.6.1"
   },
   "devDependencies": {
+    "@parcel/packager-ts": "2.13.3",
+    "@parcel/transformer-typescript-types": "2.13.3",
     "@types/node": "^22.10.2",
-    "specimen-test": "link:C:/ox/ditrit/specimen/js",
-    "tsx": "^4.19.2"
+    "@types/path-browserify": "^1",
+    "buffer": "^5.5.0||^6.0.0",
+    "parcel": "^2.13.3",
+    "path-browserify": "^1.0.0",
+    "process": "^0.11.10",
+    "specimen-test": "0.3.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
   }
 }
