@@ -76,7 +76,7 @@ function specimenHandler(
     }
   }
 
-  // Name
+  // Name and Outcome
   const name = input.name
   let outcome = ""
   if (name.startsWith("accept")) {

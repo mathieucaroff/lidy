@@ -14,8 +14,11 @@ const regexBase64Source = `^[a-zA-Z0-9_\- \n]*[= \n]*$`
 var regexBase64 = regexp.MustCompile(regexBase64Source)
 
 type tRule struct {
+	// Name of the rule in the schema
 	name    string
+	// Node associated to the rule in the schema
 	node    *yaml.Node
+	// Builder given by the user for that rule, if any
 	builder Builder
 	// isMatching is used to detect cycles in the rule set
 	isMatching map[*yaml.Node]bool
@@ -43,7 +46,6 @@ func applyRule(parserData tParserData, ruleName string, content *yaml.Node) (Res
 	delete(rule.isMatching, content)
 
 	if rule.builder != nil && err == nil {
-		result.hasBeenBuilt = true
 		data, isLidyData, buildErr := rule.builder(result)
 		result.data = data
 		result.isLidyData = isLidyData

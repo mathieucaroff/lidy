@@ -77,7 +77,7 @@ func specimenHandler(s *specimen.S, input specimen.Dict) {
 		}
 	}
 
-	// Name
+	// Name and Outcome
 	name := input["name"]
 	outcome := ""
 	if strings.HasPrefix(name, "accept") {

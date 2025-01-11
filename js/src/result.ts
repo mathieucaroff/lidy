@@ -12,7 +12,6 @@ export interface Position {
 export interface Result<T> {
   position: Position
   ruleName: string
-  hasBeenBuilt: boolean
   isLidyData: boolean
   data: T
 }
@@ -54,7 +53,6 @@ export function makeResult<T>(
       columnEnd,
     },
     ruleName,
-    hasBeenBuilt: false,
     isLidyData: true,
     data,
   }

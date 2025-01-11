@@ -144,7 +144,7 @@ func applyMapMatcher(parserData tParserData, _map *yaml.Node, _mapFacultative *y
 			} else {
 				var err error
 				if key.Kind != yaml.ScalarNode {
-					err = checkError("_map*", "expected a scalar key in mapping", key)
+					err = checkError("_map*", "unrecognized non-scalar key in mapping", key)
 				} else {
 					err = checkError("_map*", fmt.Sprintf("unknown key '%s'", key.Value), key)
 				}

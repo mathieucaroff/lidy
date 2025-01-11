@@ -17,7 +17,6 @@ type Position struct {
 type Result struct {
 	Position
 	ruleName     string
-	hasBeenBuilt bool
 	isLidyData   bool
 	data         interface{}
 }
@@ -54,7 +53,6 @@ func makeResult(parserData tParserData, content *yaml.Node, data interface{}) Re
 			columnEnd: content.Column + len(content.Value),
 		},
 		ruleName:     ruleName,
-		hasBeenBuilt: false,
 		isLidyData:   true,
 		data:         data,
 	}

@@ -31,8 +31,9 @@ export function applyRule(
     return applyPredefinedRule(newParserData, ruleName, content)
   }
 
-  const ruleIsAlreadyProcsesingThisNode = rule.isMatching.get(content)
-  if (ruleIsAlreadyProcsesingThisNode) {
+  // Detect infinite loops while processing the data
+  const ruleIsAlreadyProcessingThisNode = rule.isMatching.get(content)
+  if (ruleIsAlreadyProcessingThisNode) {
     throw new CheckError(
       "_rule",
       `Infinite loop: Rule ${ruleName} encountered multiple times for the same node (${JSON.stringify(
@@ -53,7 +54,6 @@ export function applyRule(
     }
 
     if (rule.builder) {
-      result.hasBeenBuilt = true
       const { data, isLidyData } = rule.builder(result)
       result.data = data
       result.isLidyData = isLidyData

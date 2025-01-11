@@ -44,8 +44,11 @@ func applyListMatcher(parserData tParserData, _list *yaml.Node, _listFacultative
 	if _listOf != nil {
 		for k := offset; k < len(content.Content); k++ {
 			result, err := applyExpression(parserData, _listOf, content.Content[k])
-			errorSlice = append(errorSlice, err)
-			data.ListOf = append(data.ListOf, result)
+			if err != nil {
+				errorSlice = append(errorSlice, err)
+			} else {
+				data.ListOf = append(data.ListOf, result)
+			}
 		}
 	} else if offset < len(content.Content) {
 		errorSlice = append(errorSlice, checkError("_list*", "too many entries", content))

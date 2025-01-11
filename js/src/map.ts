@@ -52,13 +52,13 @@ export function contributeToMapInfo(
   }
   if (_map) {
     _map.items.forEach(({ key, value }) => {
-      mapInfoRef.map[key] = value
-      mapInfoRef.mandatoryKeys[key] = true
+      mapInfoRef.map[key.value] = value
+      mapInfoRef.mandatoryKeys[key.value] = true
     })
   }
   if (_mapFacultative) {
     _mapFacultative.items.forEach(({ key, value }) => {
-      if (!mapInfoRef.mandatoryKeys[key]) {
+      if (!mapInfoRef.mandatoryKeys[key.value]) {
         // We only update the map if the key is not mandatory:
         // A facultative key cannot override a mandatory one.
         mapInfoRef.map[key] = value
@@ -191,7 +191,7 @@ export function applyMapMatcher(
           joinErrors.add(
             new CheckError(
               "_map*",
-              `expected a scalar key in mapping`,
+              `unrecognized non-scalar key in mapping`,
               parserData,
               item.key as yaml.Node,
             ),

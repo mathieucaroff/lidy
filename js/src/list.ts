@@ -87,7 +87,9 @@ export function applyListMatcher(
       } catch (e) {
         joinError.add(e)
       }
-      data.listOf.push(result)
+      if (result) {
+        data.listOf.push(result)
+      }
     }
   } else if (offset < content.items.length) {
     joinError.add(
