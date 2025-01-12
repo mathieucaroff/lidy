@@ -10,8 +10,6 @@ export interface Rule {
   name: string
   node: yaml.YAMLMap<any, any>
   builder: Builder
-  // isMatching is used to detect cycles in the rule set
-  isMatching: Map<yaml.Node, boolean>
   // isUsed is used to detect unused rules
   isUsed: boolean
 }
@@ -32,7 +30,10 @@ export function applyRule(
   }
 
   // Detect infinite loops while processing the data
-  const ruleIsAlreadyProcessingThisNode = rule.isMatching.get(content)
+  const ruleIsAlreadyProcessingThisNode = parserData.ruleIsMatchingNode.has(
+    rule.name,
+    content,
+  )
   if (ruleIsAlreadyProcessingThisNode) {
     throw new CheckError(
       "_rule",
@@ -47,10 +48,10 @@ export function applyRule(
   let result: Result<any>
   try {
     try {
-      rule.isMatching.set(content, true)
+      parserData.ruleIsMatchingNode.set(ruleName, content, true)
       result = applyExpression(newParserData, rule.node, content)
     } finally {
-      rule.isMatching.delete(content)
+      parserData.ruleIsMatchingNode.delete(ruleName, content)
     }
 
     if (rule.builder) {

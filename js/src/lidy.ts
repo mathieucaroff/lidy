@@ -4,6 +4,7 @@ import { File } from "./file"
 import { checkRuleSet, makeMetaParserFor } from "./metaparser"
 import { Result } from "./result"
 import { applyRule, Rule } from "./rule"
+import { PairMap } from "./util/pairMap"
 import { createYamlFile, unmarshalYamlFile, YamlFile } from "./yamlfile"
 
 // Builder is a user-implemented input-validation and creation of user objects
@@ -21,6 +22,8 @@ export interface ParserData {
   contentFileName: string
   parser: Parser
   ruleTrace: string[]
+  // ruleIsMatchingNode is used to detect cycles in the rule set
+  ruleIsMatchingNode: PairMap<string, yaml.Node, boolean>
   lineCounter: yaml.LineCounter
 }
 
@@ -63,7 +66,6 @@ export function makeRuleSet(
       name: ruleName,
       node: value,
       builder,
-      isMatching: new Map(),
       isUsed: false,
     }
   })
@@ -87,6 +89,7 @@ export function makeParserFromRuleSet(ruleSet: Record<string, Rule>): Parser {
         parser,
         contentFileName: content.file.name,
         ruleTrace: [],
+        ruleIsMatchingNode: new PairMap(),
         lineCounter: content.lineCounter,
       }
 
