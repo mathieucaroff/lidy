@@ -2,6 +2,7 @@ import { readFileSync } from "fs"
 import * as path from "path"
 import * as specimen from "specimen-test"
 import * as lidy from "."
+import { pairMapTestHandler } from "./util/pairMap.test"
 
 var interpolationRegex = /\$\{([a-zA-Z0-9_]+)\}/g
 
@@ -39,6 +40,11 @@ function specimenHandler(
   s: specimen.SpecimenContext,
   input: Record<string, string>,
 ) {
+  if (input.box === "pairMap") {
+    pairMapTestHandler(s, input)
+    return
+  }
+
   // Target
   const box = input.box ?? "content"
 
@@ -47,7 +53,7 @@ function specimenHandler(
   // Text
   const text = templateReadEntry(input, "text")
   if (text === undefined) {
-    s.fail("The 'text' entry is required")
+    throw new Error("The 'text' entry is required")
   }
 
   // Expression and Schema
@@ -56,10 +62,10 @@ function specimenHandler(
 
   if (box === "content") {
     if (expression !== undefined && schema !== undefined) {
-      s.fail("'expression' and 'schema' cannot be specified together")
+      throw new Error("'expression' and 'schema' cannot be specified together")
     }
     if (expression === undefined && schema === undefined) {
-      s.fail("one of 'expression' and 'schema' must be specified")
+      throw new Error("one of 'expression' and 'schema' must be specified")
     }
     if (expression !== undefined) {
       schema = `main:\n  ${expression.replace(/\n/g, "\n  ")}`
@@ -175,4 +181,5 @@ specimen.run(specimenHandler, [
   readLocalFile("../../testdata/schema/mergeChecker.spec.yaml"),
   readLocalFile("../../testdata/schema/regex.spec.yaml"),
   readLocalFile("../../testdata/yaml/yaml.spec.yaml"),
+  readLocalFile("util/pairMap.spec.yaml"),
 ])

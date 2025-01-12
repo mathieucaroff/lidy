@@ -1,0 +1,73 @@
+box: pairMap
+data: |
+  - [a, b, 1]
+  - [a, c, 2]
+  - [b, a, 3]
+  - [b, c, 4]
+  - [c, a, 5]
+  - [c, b, 6]
+content:
+  - property: size
+    is: "6"
+  - target: has
+    content:
+      - with: "[a, b]"
+        is: "true"
+      - with: "[z, z]"
+        is: "false"
+  - target: get
+    content:
+      - with: "[a, b]"
+        is: "1"
+      - with: "[c, b]"
+        is: "6"
+      - with: "[a, z]"
+        isUndefined: "true"
+  - target: set
+    with: "[a, a, 7]"
+    then: |
+      property: size
+      is: "7"
+  - target: delete
+    content:
+      - with: "[a, b]"
+        is: "true"
+        then: |
+          property: size
+          is: "5"
+      - with: "[a, z]"
+        is: "false"
+        then: |
+          property: size
+          is: "6"
+  - target: clear
+    then: |
+      property: size
+      is: "0"
+  - target: keys
+    is: |
+      - [a, b]
+      - [a, c]
+      - [b, a]
+      - [b, c]
+      - [c, a]
+      - [c, b]
+  - target: values
+    is: |
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+  - target: entries
+    is: |
+      - [a, b, 1]
+      - [a, c, 2]
+      - [b, a, 3]
+      - [b, c, 4]
+      - [c, a, 5]
+      - [c, b, 6]
+  - target: forEach
+    callback: |
+      occurrence: 6
