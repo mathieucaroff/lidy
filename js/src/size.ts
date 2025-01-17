@@ -9,40 +9,35 @@ export function applySizeCheck(
   _max?: yaml.Scalar<number>,
   _nb?: yaml.Scalar<number>,
 ): Error | undefined {
-  const count = content.items?.length
-  if (count === undefined) {
-    return new CheckError(
-      "_(size)",
-      `Only containers (maps or sequences) have a size.`,
-      parserData,
-      content,
-    )
+  const size = content.items?.length
+  if (size === undefined) {
+    throw new Error("_(size), Only containers (maps or sequences) have a size.")
   }
   if (_min) {
-    if (count < Number(_min.value)) {
+    if (size < Number(_min.value)) {
       return new CheckError(
         "_min",
-        `Expected container to have at least ${_min.value} entries but it has only ${count}.`,
+        `Expected container to have at least ${_min.value} entries but it has only ${size}.`,
         parserData,
         content,
       )
     }
   }
   if (_max) {
-    if (count > Number(_max.value)) {
+    if (size > Number(_max.value)) {
       return new CheckError(
         "_max",
-        `Expected container to have at most ${_max.value} entries but it has ${count}.`,
+        `Expected container to have at most ${_max.value} entries but it has ${size}.`,
         parserData,
         content,
       )
     }
   }
   if (_nb) {
-    if (count !== Number(_nb.value)) {
+    if (size !== Number(_nb.value)) {
       return new CheckError(
         "_nb",
-        `Expected container to have exactly ${_nb.value} entries but it has ${count}.`,
+        `Expected container to have exactly ${_nb.value} entries but it has ${size}.`,
         parserData,
         content,
       )

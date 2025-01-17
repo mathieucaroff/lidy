@@ -30,7 +30,7 @@ export function makeMetaParserFor(subparser: Parser): Parser {
     const checkError = new CheckError(
       "_merge",
       `reference leads to a non-map-checker node`,
-      metaParserData,
+      metaParserData as any,
       rule.node,
     )
 

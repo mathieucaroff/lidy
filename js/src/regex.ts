@@ -8,7 +8,10 @@ export function applyRegexMatcher(
   node: yaml.Scalar<string>,
   content: yaml.Node,
 ): Result<any> {
+  // Compile the regex scheam pattern
   const regex = new RegExp(node.value)
+
+  // Check that the kind of the content node is a string
   if (!yaml.isScalar<string>(content)) {
     throw new CheckError("_regex", "must be a scalar node", parserData, content)
   }
