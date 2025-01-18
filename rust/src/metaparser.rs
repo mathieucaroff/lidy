@@ -6,19 +6,20 @@ use lidy__yaml::{LineCol, Yaml, YamlData};
 
 use crate::error::{AnyBoxedError, JoinError, SimpleError};
 use crate::file::File;
-use crate::lidy::{make_rule_set, Builder, BuilderFn, Parser, ParserData};
+use crate::lidy::{make_rule_set, Builder, Parser, ParserData};
 use crate::result::{Data, LidyResult, Position};
 use crate::rule::{apply_predefined_rule, Rule};
 use crate::yamlfile::YamlFile;
 
-fn check_merged_node<T>(
+fn check_merged_node<TV, TB>(
     name: &str,
     last_position: &Position,
     origin_position: &Position,
-    subparser: &Parser<T>,
+    subparser: &Parser<TV, TB>,
 ) -> Option<AnyBoxedError>
 where
-    T: Clone,
+    TV: Clone,
+    TB: Builder<TV>,
 {
     let rule = subparser.rule_set.get(name);
     if rule.is_none() {
@@ -67,9 +68,12 @@ where
     }
 }
 
-pub fn make_meta_parser_for<T>(subparser: &mut Parser<T>) -> Result<Parser<T>, AnyBoxedError>
+pub fn make_meta_parser_for<TV, TB>(
+    subparser: &mut Parser<TV, TB>,
+) -> Result<Parser<TV, TB>, AnyBoxedError>
 where
-    T: Clone + 'static,
+    TV: Clone + 'static,
+    TB: Builder<TV>,
 {
     let meta_schema_file = File::read_local_file("../../lidy.schema.yaml")?;
     let mut meta_schema = YamlFile::new(Rc::new(meta_schema_file));
@@ -77,10 +81,10 @@ where
 
     let subparser_ref = Rc::new(RefCell::new(subparser));
 
-    let rule_reference_builder: Builder<T> = {
+    let rule_reference_builder: Builder<TV> = {
         // let subparser_ref = Rc::clone(&subparser_ref);
-        let builder_fn: BuilderFn<T> = Box::new(
-            |input: &LidyResult<T>| -> Result<Data<T>, AnyBoxedError> {
+        let builder_fn = Box::new(
+            |input: &LidyResult<TV>| -> Result<Data<TV>, AnyBoxedError> {
                 let identifier = match &input.data {
                     Data::String(s) => s.to_string(),
                     _ => return Ok(input.data.clone()),
@@ -98,7 +102,7 @@ where
                     rule.is_used = true;
                 } else {
                     let rule_exists = match apply_predefined_rule(
-                        &ParserData::<()>::default(),
+                        &ParserData::<(), ()>::default(),
                         &identifier,
                         &Yaml::default(),
                         true,
@@ -129,14 +133,14 @@ where
                 Ok(input.data.clone())
             },
         )
-            as Box<dyn FnMut(&LidyResult<T>) -> Result<Data<T>, Box<(dyn std::error::Error)>>>;
+            as Box<dyn FnMut(&LidyResult<TV>) -> Result<Data<TV>, Box<(dyn std::error::Error)>>>;
         Rc::new(RefCell::new(builder_fn))
     };
 
-    let map_checker_builder: Builder<T> = {
+    let map_checker_builder: Builder<TV> = {
         let subparser_ref = Rc::clone(&subparser_ref);
-        let builder_fn: BuilderFn<T> =
-            Box::new(|input: &LidyResult<T>| -> Result<Data<T>, AnyBoxedError> {
+        let builder_fn = Box::new(
+            |input: &LidyResult<TV>| -> Result<Data<TV>, AnyBoxedError> {
                 if let Data::MapData(map_data) = &input.data {
                     if let Some(merge) = map_data.map.get("_merge") {
                         let mut join_error = JoinError::default();
@@ -163,14 +167,15 @@ where
                     }
                 }
                 Ok(input.data.clone())
-            })
-                as Box<dyn FnMut(&LidyResult<T>) -> Result<Data<T>, Box<(dyn std::error::Error)>>>;
+            },
+        )
+            as Box<dyn FnMut(&LidyResult<TV>) -> Result<Data<TV>, Box<(dyn std::error::Error)>>>;
         Rc::new(RefCell::new(builder_fn))
     };
 
-    let sized_checker_keyword_set_builder: Builder<T> = {
-        let builder_fn: BuilderFn<T> =
-            Box::new(|input: &LidyResult<T>| -> Result<Data<T>, AnyBoxedError> {
+    let sized_checker_keyword_set_builder: Builder<TV> = {
+        let builder_fn = Box::new(
+            |input: &LidyResult<TV>| -> Result<Data<TV>, AnyBoxedError> {
                 if let Data::MapData(map_data) = &input.data {
                     for keyword in &["_min", "_max", "_nb"] {
                         if let Some(value) = map_data.map.get(*keyword) {
@@ -235,12 +240,13 @@ where
                     }
                 }
                 Ok(input.data.clone())
-            })
-                as Box<dyn FnMut(&LidyResult<T>) -> Result<Data<T>, Box<(dyn std::error::Error)>>>;
+            },
+        )
+            as Box<dyn FnMut(&LidyResult<TV>) -> Result<Data<TV>, Box<(dyn std::error::Error)>>>;
         Rc::new(RefCell::new(builder_fn))
     };
 
-    let meta_builder_map: HashMap<Box<str>, Builder<T>> = HashMap::from([
+    let meta_builder_map: HashMap<Box<str>, Builder<TV>> = HashMap::from([
         (Box::from("ruleReference"), rule_reference_builder),
         (Box::from("mapChecker"), map_checker_builder),
         (
@@ -253,10 +259,7 @@ where
     Ok(Parser { rule_set })
 }
 
-pub fn check_rule_set<T>(rule_set: &mut HashMap<Box<str>, Rule<T>>) -> Result<(), AnyBoxedError>
-where
-    T: Clone,
-{
+pub fn check_rule_set(rule_set: &mut HashMap<Box<str>, Rule>) -> Result<(), AnyBoxedError> {
     let mut join_error = JoinError::default();
 
     // Check main rule exists and mark it as used
@@ -288,14 +291,11 @@ where
     join_error.into_result()
 }
 
-fn check_direct_rule_reference<T>(
-    rule_set: &HashMap<Box<str>, Rule<T>>,
+fn check_direct_rule_reference(
+    rule_set: &HashMap<Box<str>, Rule>,
     rule_node: &Yaml,
     rule_name_array: &[&str],
-) -> Option<AnyBoxedError>
-where
-    T: Clone,
-{
+) -> Option<AnyBoxedError> {
     match &rule_node.data {
         YamlData::String(s) => {
             // Check for self-reference

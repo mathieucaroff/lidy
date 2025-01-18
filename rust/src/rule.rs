@@ -11,28 +11,24 @@ lazy_static::lazy_static! {
 }
 
 #[derive(Clone)]
-pub struct Rule<T>
-where
-    T: Clone,
-{
+pub struct Rule {
     // Name of the rule in the schema
     pub name: Box<str>,
     // Node associated to the rule in the schema
     pub node: Yaml,
-    // Builder given by the user for that rule, if any
-    pub builder: Option<Builder<T>>,
     // Whether the rule is referenced anywhere in the schema. This is used
     // in the metaparser to report unused rules
     pub is_used: bool,
 }
 
-pub fn apply_rule<T>(
-    parser_data: &mut ParserData<T>,
+pub fn apply_rule<TV, TB>(
+    parser_data: &mut ParserData<TV, TB>,
     rule_name: &str,
     content: &Yaml,
-) -> Result<LidyResult<T>, AnyBoxedError>
+) -> Result<LidyResult<TV>, AnyBoxedError>
 where
-    T: Clone + 'static,
+    TV: Clone + 'static,
+    TB: Builder<TV>,
 {
     parser_data.rule_trace.push(rule_name.into());
 
@@ -74,19 +70,20 @@ where
     result
 }
 
-type RuleResult<T> = Result<Data<T>, AnyBoxedError>;
-type PredefinedRuleFn<'a, T> = Box<dyn 'a + FnOnce(&Yaml) -> RuleResult<T>>;
+type RuleResult<TV> = Result<Data<TV>, AnyBoxedError>;
+type PredefinedRuleFn<'a, TV> = Box<dyn 'a + FnOnce(&Yaml) -> RuleResult<TV>>;
 
-pub fn apply_predefined_rule<T>(
-    parser_data: &ParserData<T>,
+pub fn apply_predefined_rule<TV, TB>(
+    parser_data: &mut ParserData<TV, TB>,
     rule_name: &str,
     content: &Yaml,
     only_check_if_rule_exists: bool,
-) -> Result<LidyResult<T>, AnyBoxedError>
+) -> Result<LidyResult<TV>, AnyBoxedError>
 where
-    T: Clone,
+    TV: Clone,
+    TB: Builder<TV>,
 {
-    let predefined_rule: Option<PredefinedRuleFn<T>> = match rule_name {
+    let predefined_rule: Option<PredefinedRuleFn<TV>> = match rule_name {
         "string" => Some(Box::new(|content: &Yaml| {
             if let YamlData::String(value) = &content.data {
                 Ok(Data::String(value.clone().into()))
@@ -149,13 +146,16 @@ where
             }
         })),
         "any" => Some(Box::new(|_: &Yaml| Ok(Data::Null))),
-        "anyData" => Some(Box::new(|content: &Yaml| {
-            Ok(map_any_yaml_data_to_lidy_data(
-                &parser_data.content_file_name,
-                &parser_data.rule_trace.last().unwrap(),
-                content,
-            ))
-        })),
+        "anyData" => {
+            let filename = parser_data.content_file_name.clone();
+            let rule_name = parser_data.rule_trace.last().unwrap();
+
+            Some(Box::new(move |content: &Yaml| {
+                Ok(map_any_yaml_data_to_lidy_data(
+                    &filename, rule_name, content,
+                ))
+            }))
+        }
         "never" => Some(Box::new(|_: &Yaml| {
             Err("encountered the never value".into())
         })),

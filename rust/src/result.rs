@@ -2,7 +2,7 @@ use std::{collections::HashMap, rc::Rc};
 
 use lidy__yaml::{LineCol, Yaml};
 
-use crate::lidy::ParserData;
+use crate::lidy::{Builder, ParserData};
 
 #[derive(Clone, Debug, Default)]
 pub struct Position {
@@ -40,11 +40,11 @@ impl From<&Position> for LineCol {
     }
 }
 
-impl<T> From<&LidyResult<T>> for LineCol
+impl<TV> From<&LidyResult<TV>> for LineCol
 where
-    T: Clone,
+    TV: Clone,
 {
-    fn from(result: &LidyResult<T>) -> Self {
+    fn from(result: &LidyResult<TV>) -> Self {
         LineCol {
             line: result.position.line,
             column: result.position.column,
@@ -65,23 +65,26 @@ where
     pub data: Data<TValue>,
 }
 
-impl<TValue> LidyResult<TValue>
+impl<TV> LidyResult<TV>
 where
-    TValue: Clone,
+    TV: Clone,
 {
-    pub fn make(rule_name: &str, position: Position, data: Data<TValue>) -> LidyResult<TValue> {
-        LidyResult::<TValue> {
+    pub fn make(rule_name: &str, position: Position, data: Data<TV>) -> LidyResult<TV> {
+        LidyResult::<TV> {
             position,
             rule_name: rule_name.into(),
             data,
         }
     }
-    pub fn create(
-        parser_data: &ParserData<TValue>,
+    pub fn create<TB>(
+        parser_data: &ParserData<TV, TB>,
         content: &Yaml,
-        data: Data<TValue>,
-    ) -> LidyResult<TValue> {
-        LidyResult::<TValue> {
+        data: Data<TV>,
+    ) -> LidyResult<TV>
+    where
+        TB: Builder<TV>,
+    {
+        LidyResult::<TV> {
             position: Position::from_line_col_beginning_only(
                 parser_data.content_file_name.clone(),
                 content.line_col,

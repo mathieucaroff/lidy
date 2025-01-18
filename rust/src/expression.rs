@@ -2,7 +2,7 @@ use lidy__yaml::{Yaml, YamlData};
 
 use crate::error::{AnyBoxedError, JoinError, SimpleError};
 use crate::in_::apply_in_matcher;
-use crate::lidy::ParserData;
+use crate::lidy::{Builder, ParserData};
 use crate::list::apply_list_matcher;
 use crate::map::apply_map_matcher;
 use crate::one_of::apply_one_of_matcher;
@@ -12,13 +12,14 @@ use crate::result::LidyResult;
 use crate::rule::apply_rule;
 use crate::size::apply_size_check;
 
-pub fn apply_expression<T>(
-    parser_data: &mut ParserData<T>,
+pub fn apply_expression<TV, TB>(
+    parser_data: &mut ParserData<TV, TB>,
     schema: &Yaml,
     content: &Yaml,
-) -> Result<LidyResult<T>, AnyBoxedError>
+) -> Result<LidyResult<TV>, AnyBoxedError>
 where
-    T: Clone,
+    TV: Clone,
+    TB: Builder<TV>,
 {
     match &schema.data {
         YamlData::String(value) => apply_rule(parser_data, value, content),

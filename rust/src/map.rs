@@ -3,7 +3,7 @@ use std::collections::HashMap;
 
 use crate::error::{AnyBoxedError, JoinError, SimpleError};
 use crate::expression::apply_expression;
-use crate::lidy::ParserData;
+use crate::lidy::{Builder, ParserData};
 use crate::result::{Data, LidyResult, MapData};
 use crate::syaml::extract_kv_entry;
 use crate::KeyValueData;
@@ -13,12 +13,13 @@ struct MapInfo {
     map: HashMap<Box<str>, Yaml>,
 }
 
-pub fn resolve_merge_reference<'a, T>(
-    parser_data: &'a ParserData<T>,
-    node: &'a Yaml,
+fn resolve_merge_reference<'a, T, TB>(
+    parser_data: &'a ParserData<TV, TB>,
+    node: &Yaml,
 ) -> Result<&'a Vec<(Yaml, Yaml)>, AnyBoxedError>
 where
-    T: Clone,
+    TV: Clone,
+    TB: Builder<TV>,
 {
     match &node.data {
         YamlData::Mapping(yaml_mapping) => Ok(yaml_mapping),
@@ -41,15 +42,16 @@ where
     }
 }
 
-fn contribute_to_map_info<T>(
-    parser_data: &ParserData<T>,
+fn contribute_to_map_info<TV, TB>(
+    parser_data: &ParserData<TV, TB>,
     map_info: &mut MapInfo,
     map: Option<&Yaml>,
     map_facultative: Option<&Yaml>,
     merge: Option<&Yaml>,
 ) -> Result<(), AnyBoxedError>
 where
-    T: Clone,
+    TV: Clone,
+    TB: Builder<TV>,
 {
     // Extracting from _merge
     if let Some(merge_yaml) = merge {
@@ -103,16 +105,17 @@ where
     Ok(())
 }
 
-pub fn apply_map_matcher<T>(
-    parser_data: &mut ParserData<T>,
+pub fn apply_map_matcher<TV, TB>(
+    parser_data: &mut ParserData<TV, TB>,
     map: Option<&Yaml>,
     map_facultative: Option<&Yaml>,
     map_of: Option<&Yaml>,
     merge: Option<&Yaml>,
     content: &Yaml,
-) -> Result<LidyResult<T>, AnyBoxedError>
+) -> Result<LidyResult<TV>, AnyBoxedError>
 where
-    T: Clone,
+    TV: Clone,
+    TB: Builder<TV>,
 {
     if let YamlData::Mapping(content_mapping) = &content.data {
         let mut map_info = MapInfo {

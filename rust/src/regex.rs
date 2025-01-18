@@ -1,16 +1,18 @@
 use lidy__yaml::{Yaml, YamlData};
 use regex::Regex;
 
+use crate::lidy::Builder;
 use crate::result::Data;
 use crate::{error::AnyBoxedError, lidy::ParserData, LidyResult, SimpleError};
 
-pub fn apply_regex_matcher<T>(
-    parser_data: &mut ParserData<T>,
+pub fn apply_regex_matcher<TV, TB>(
+    parser_data: &mut ParserData<TV, TB>,
     node: &Yaml,
     content: &Yaml,
-) -> Result<LidyResult<T>, AnyBoxedError>
+) -> Result<LidyResult<TV>, AnyBoxedError>
 where
-    T: Clone,
+    TV: Clone,
+    TB: Builder<TV>,
 {
     // Obtain the regex pattern as string from the schema node
     let pattern = match &node.data {

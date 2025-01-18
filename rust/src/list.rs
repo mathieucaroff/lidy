@@ -2,18 +2,19 @@ use lidy__yaml::{Yaml, YamlData};
 
 use crate::error::{AnyBoxedError, JoinError, SimpleError};
 use crate::expression::apply_expression;
-use crate::lidy::ParserData;
+use crate::lidy::{Builder, ParserData};
 use crate::result::{Data, LidyResult, ListData};
 
-pub fn apply_list_matcher<T>(
-    parser_data: &mut ParserData<T>,
+pub fn apply_list_matcher<TV, TB>(
+    parser_data: &mut ParserData<TV, TB>,
     list: Option<&Yaml>,
     list_facultative: Option<&Yaml>,
     list_of: Option<&Yaml>,
     content: &Yaml,
-) -> Result<LidyResult<T>, AnyBoxedError>
+) -> Result<LidyResult<TV>, AnyBoxedError>
 where
-    T: Clone,
+    TV: Clone,
+    TB: Builder<TV>,
 {
     if let YamlData::List(content_list) = &content.data {
         let mut data = ListData {

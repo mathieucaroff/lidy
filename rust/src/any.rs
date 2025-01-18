@@ -10,13 +10,13 @@ use crate::{result::Data, KeyValueData, LidyResult, ListData, MapData, Position}
 // Info:
 //
 
-pub fn map_any_yaml_data_to_lidy_data<T>(
+pub fn map_any_yaml_data_to_lidy_data<TV>(
     filename: &Rc<str>,
     rule_name: &str,
     content: &Yaml,
-) -> Data<T>
+) -> Data<TV>
 where
-    T: Clone,
+    TV: Clone,
 {
     match &content.data {
         YamlData::String(value) => Data::String(value.clone().into()),
@@ -30,7 +30,7 @@ where
                 map_of: Vec::new(),
             };
             for (key, value) in value_mapping {
-                map_data.map_of.push(KeyValueData::<T> {
+                map_data.map_of.push(KeyValueData::<TV> {
                     key: LidyResult::make(
                         rule_name,
                         Position::from_line_col_beginning_only(filename.clone(), key.line_col),
