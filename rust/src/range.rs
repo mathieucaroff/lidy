@@ -5,7 +5,7 @@ use regex::Regex;
 use crate::result::Data;
 use crate::{
     error::AnyBoxedError,
-    lidy::{Builder, ParserData},
+    lidy::{Builder, Parser},
     LidyResult, SimpleError,
 };
 
@@ -15,14 +15,13 @@ lazy_static! {
             .unwrap();
 }
 
-pub fn apply_range_matcher<TV, TB>(
-    parser_data: &mut ParserData<TV, TB>,
+pub fn apply_range_matcher<TV>(
+    parser: &mut Parser<TV>,
     node: &Yaml,
     content: &Yaml,
 ) -> Result<LidyResult<TV>, AnyBoxedError>
 where
     TV: Clone,
-    TB: Builder<TV>,
 {
     // Check that content is a number
     let value = match &content.data {
@@ -91,5 +90,5 @@ where
         _ => panic!("never, content is no longer a number"),
     };
 
-    Ok(LidyResult::create(parser_data, content, data))
+    Ok(LidyResult::create(parser, content, data))
 }

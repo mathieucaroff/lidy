@@ -3,7 +3,7 @@ use std::collections::HashMap;
 
 use crate::error::{AnyBoxedError, JoinError, SimpleError};
 use crate::expression::apply_expression;
-use crate::lidy::{Builder, ParserData};
+use crate::lidy::Parser;
 use crate::result::{Data, LidyResult, MapData};
 use crate::syaml::extract_kv_entry;
 use crate::KeyValueData;
@@ -13,27 +13,22 @@ struct MapInfo {
     map: HashMap<Box<str>, Yaml>,
 }
 
-fn resolve_merge_reference<'a, T, TB>(
-    parser_data: &'a ParserData<TV, TB>,
+fn resolve_merge_reference<'a, T>(
+    parser: &'a Parser<TV>,
     node: &Yaml,
 ) -> Result<&'a Vec<(Yaml, Yaml)>, AnyBoxedError>
 where
     TV: Clone,
-    TB: Builder<TV>,
 {
     match &node.data {
         YamlData::Mapping(yaml_mapping) => Ok(yaml_mapping),
         YamlData::String(ref rule_name) => {
-            let rule = parser_data
-                .parser
-                .rule_set
-                .get(&**rule_name)
-                .ok_or_else(|| {
-                    SimpleError::from_message(
-                        "The merge value reference must exist in the schema".into(),
-                    )
-                })?;
-            resolve_merge_reference(parser_data, &rule.node)
+            let rule = parser.parser.rule_set.get(&**rule_name).ok_or_else(|| {
+                SimpleError::from_message(
+                    "The merge value reference must exist in the schema".into(),
+                )
+            })?;
+            resolve_merge_reference(parser, &rule.node)
         }
         _ => Err(SimpleError::from_message(
             "The merge values must be mappings or references to mappings".into(),
@@ -42,8 +37,8 @@ where
     }
 }
 
-fn contribute_to_map_info<TV, TB>(
-    parser_data: &ParserData<TV, TB>,
+fn contribute_to_map_info<TV>(
+    parser: &Parser<TV>,
     map_info: &mut MapInfo,
     map: Option<&Yaml>,
     map_facultative: Option<&Yaml>,
@@ -51,18 +46,17 @@ fn contribute_to_map_info<TV, TB>(
 ) -> Result<(), AnyBoxedError>
 where
     TV: Clone,
-    TB: Builder<TV>,
 {
     // Extracting from _merge
     if let Some(merge_yaml) = merge {
         if let YamlData::List(merge_list) = &merge_yaml.data {
             for node in merge_list {
-                let resolved_vec: &Vec<(Yaml, Yaml)> = resolve_merge_reference(parser_data, node)?;
+                let resolved_vec: &Vec<(Yaml, Yaml)> = resolve_merge_reference(parser, node)?;
                 let map_node = extract_kv_entry(resolved_vec, "_map");
                 let map_facultative_node = extract_kv_entry(resolved_vec, "_mapFacultative");
                 let merge_node = extract_kv_entry(resolved_vec, "_merge");
                 contribute_to_map_info(
-                    parser_data,
+                    parser,
                     map_info,
                     map_node,
                     map_facultative_node,
@@ -105,8 +99,8 @@ where
     Ok(())
 }
 
-pub fn apply_map_matcher<TV, TB>(
-    parser_data: &mut ParserData<TV, TB>,
+pub fn apply_map_matcher<TV>(
+    parser: &mut Parser<TV>,
     map: Option<&Yaml>,
     map_facultative: Option<&Yaml>,
     map_of: Option<&Yaml>,
@@ -115,7 +109,6 @@ pub fn apply_map_matcher<TV, TB>(
 ) -> Result<LidyResult<TV>, AnyBoxedError>
 where
     TV: Clone,
-    TB: Builder<TV>,
 {
     if let YamlData::Mapping(content_mapping) = &content.data {
         let mut map_info = MapInfo {
@@ -123,7 +116,7 @@ where
             map: HashMap::new(),
         };
 
-        contribute_to_map_info(parser_data, &mut map_info, map, map_facultative, merge)?;
+        contribute_to_map_info(parser, &mut map_info, map, map_facultative, merge)?;
 
         let mut map_data = MapData {
             map: HashMap::new(),
@@ -156,7 +149,7 @@ where
             if let YamlData::String(ref ks) = key.data {
                 if let Some(schema) = map_info.map.get(&**ks) {
                     unknown_key = false;
-                    match apply_expression(parser_data, schema, value) {
+                    match apply_expression(parser, schema, value) {
                         Ok(result) => {
                             map_data.map.insert(ks.clone().into(), result);
                         }
@@ -178,7 +171,7 @@ where
 
                             for (schema_key, schema_value) in map_of_mapping {
                                 // Key check
-                                let key_outcome = apply_expression(parser_data, schema_key, key);
+                                let key_outcome = apply_expression(parser, schema_key, key);
                                 if let Err(ref key_error) = key_outcome {
                                     maybe_join_error.add(
                                         SimpleError::from_check(
@@ -190,8 +183,7 @@ where
                                     )
                                 }
                                 // Value check
-                                let value_outcome =
-                                    apply_expression(parser_data, schema_value, value);
+                                let value_outcome = apply_expression(parser, schema_value, value);
                                 if let Err(ref value_error) = value_outcome {
                                     maybe_join_error.add(
                                         SimpleError::from_check(
@@ -237,11 +229,7 @@ where
 
         join_error.into_result()?;
 
-        Ok(LidyResult::create(
-            parser_data,
-            content,
-            Data::MapData(map_data),
-        ))
+        Ok(LidyResult::create(parser, content, Data::MapData(map_data)))
     } else {
         Err(SimpleError::from_check("_map*", "must be a mapping node", content).into())
     }

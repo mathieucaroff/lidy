@@ -1,7 +1,7 @@
 use crate::any::map_any_yaml_data_to_lidy_data;
 use crate::error::AnyBoxedError;
 use crate::expression::apply_expression;
-use crate::lidy::{Builder, ParserData, RuleNodePair};
+use crate::lidy::{Parser, RuleNodePair};
 use crate::result::{Data, LidyResult, Position};
 use lidy__yaml::{Yaml, YamlData};
 use regex::Regex;
@@ -21,28 +21,25 @@ pub struct Rule {
     pub is_used: bool,
 }
 
-pub fn apply_rule<TV, TB>(
-    parser_data: &mut ParserData<TV, TB>,
+pub fn apply_rule<TV>(
+    parser: &mut Parser<TV>,
     rule_name: &str,
     content: &Yaml,
 ) -> Result<LidyResult<TV>, AnyBoxedError>
 where
     TV: Clone + 'static,
-    TB: Builder<TV>,
 {
-    parser_data.rule_trace.push(rule_name.into());
+    parser.rule_trace.push(rule_name.into());
 
     let rule_node_pair = RuleNodePair::new(rule_name.into(), content);
 
-    let result = match parser_data.parser.rule_set.get(rule_name) {
-        None => apply_predefined_rule(parser_data, rule_name, content, false),
+    let result = match parser.parser.rule_set.get(rule_name) {
+        None => apply_predefined_rule(parser, rule_name, content, false),
         Some(rule) => {
             let rule = rule.clone();
 
             // Detect infinite loops while processing the data
-            let has_loop = parser_data
-                .rule_is_matching_node
-                .contains_key(&rule_node_pair);
+            let has_loop = parser.rule_is_matching_node.contains_key(&rule_node_pair);
 
             if has_loop {
                 return Err(format!(
@@ -52,12 +49,12 @@ where
                 .into());
             }
 
-            parser_data
+            parser
                 .rule_is_matching_node
                 .insert(rule_node_pair.clone(), ());
-            let mut lidy_result = apply_expression(parser_data, &rule.node, content)?;
+            let mut lidy_result = apply_expression(parser, &rule.node, content)?;
 
-            parser_data.rule_is_matching_node.remove(&rule_node_pair);
+            parser.rule_is_matching_node.remove(&rule_node_pair);
 
             if let Some(builder) = rule.builder {
                 lidy_result.data = builder.borrow_mut()(&lidy_result)?;
@@ -66,22 +63,21 @@ where
             Ok(lidy_result)
         }
     };
-    parser_data.rule_trace.pop();
+    parser.rule_trace.pop();
     result
 }
 
 type RuleResult<TV> = Result<Data<TV>, AnyBoxedError>;
 type PredefinedRuleFn<'a, TV> = Box<dyn 'a + FnOnce(&Yaml) -> RuleResult<TV>>;
 
-pub fn apply_predefined_rule<TV, TB>(
-    parser_data: &mut ParserData<TV, TB>,
+pub fn apply_predefined_rule<TV>(
+    parser: &mut Parser<TV>,
     rule_name: &str,
     content: &Yaml,
     only_check_if_rule_exists: bool,
 ) -> Result<LidyResult<TV>, AnyBoxedError>
 where
     TV: Clone,
-    TB: Builder<TV>,
 {
     let predefined_rule: Option<PredefinedRuleFn<TV>> = match rule_name {
         "string" => Some(Box::new(|content: &Yaml| {
@@ -147,8 +143,8 @@ where
         })),
         "any" => Some(Box::new(|_: &Yaml| Ok(Data::Null))),
         "anyData" => {
-            let filename = parser_data.content_file_name.clone();
-            let rule_name = parser_data.rule_trace.last().unwrap();
+            let filename = parser.content_file_name.clone();
+            let rule_name = parser.rule_trace.last().unwrap();
 
             Some(Box::new(move |content: &Yaml| {
                 Ok(map_any_yaml_data_to_lidy_data(
@@ -173,7 +169,7 @@ where
     match predefined_rule {
         None => Err(format!("rule '{rule_name}' not found in the schema").into()),
         Some(rule_fn) => match rule_fn(content) {
-            Ok(data) => Ok(LidyResult::create(&parser_data, content, data)),
+            Ok(data) => Ok(LidyResult::create(&parser, content, data)),
             Err(e) => Err(e),
         },
     }

@@ -1,19 +1,18 @@
 use crate::{
     any::map_any_yaml_data_to_lidy_data,
     error::AnyBoxedError,
-    lidy::{Builder, ParserData},
+    lidy::{Builder, Parser},
     syaml, LidyResult, SimpleError,
 };
 use lidy__yaml::{Yaml, YamlData};
 
-pub fn apply_in_matcher<TV, TB>(
-    parser_data: &mut ParserData<TV, TB>,
+pub fn apply_in_matcher<TV>(
+    parser: &mut Parser<TV>,
     node: &Yaml,
     content: &Yaml,
 ) -> Result<LidyResult<TV>, AnyBoxedError>
 where
     TV: Clone,
-    TB: Builder<TV>,
 {
     let valid_value_list = match &node.data {
         YamlData::List(list) => list,
@@ -28,11 +27,11 @@ where
     for valid_value in valid_value_list {
         if valid_value.data == content.data {
             return Ok(LidyResult::create(
-                parser_data,
+                parser,
                 content,
                 map_any_yaml_data_to_lidy_data(
-                    &parser_data.content_file_name,
-                    parser_data.rule_trace.last().unwrap(),
+                    &parser.content_file_name,
+                    parser.rule_trace.last().unwrap(),
                     content,
                 ),
             ));

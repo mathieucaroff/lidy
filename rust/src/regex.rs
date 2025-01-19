@@ -3,16 +3,15 @@ use regex::Regex;
 
 use crate::lidy::Builder;
 use crate::result::Data;
-use crate::{error::AnyBoxedError, lidy::ParserData, LidyResult, SimpleError};
+use crate::{error::AnyBoxedError, lidy::Parser, LidyResult, SimpleError};
 
-pub fn apply_regex_matcher<TV, TB>(
-    parser_data: &mut ParserData<TV, TB>,
+pub fn apply_regex_matcher<TV>(
+    parser: &mut Parser<TV>,
     node: &Yaml,
     content: &Yaml,
 ) -> Result<LidyResult<TV>, AnyBoxedError>
 where
     TV: Clone,
-    TB: Builder<TV>,
 {
     // Obtain the regex pattern as string from the schema node
     let pattern = match &node.data {
@@ -33,7 +32,7 @@ where
     // Test the regex against the content
     if regex.is_match(content_str) {
         Ok(LidyResult::create(
-            parser_data,
+            parser,
             content,
             Data::String(content_str.clone().into()),
         ))

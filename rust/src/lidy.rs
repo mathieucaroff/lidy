@@ -1,5 +1,4 @@
 use std::collections::HashMap;
-use std::marker::PhantomData;
 use std::rc::Rc;
 
 use lidy__yaml::{LineCol, Yaml, YamlData};
@@ -8,35 +7,23 @@ use crate::error::{AnyBoxedError, SimpleError};
 use crate::file::File;
 use crate::metaparser::{check_rule_set, make_meta_parser_for};
 use crate::result::{Data, LidyResult};
-use crate::rule::{apply_rule, Rule};
+use crate::rule::Rule;
 use crate::yamlfile::YamlFile;
 
-pub trait Builder<TV>
+pub struct Builder<TV>(Box<dyn FnMut(&LidyResult<TV>) -> Result<Data<TV>, AnyBoxedError>>)
+where
+    TV: Clone;
+
+#[derive(Default)]
+pub struct Parser<TV>
 where
     TV: Clone,
-{
-    fn build(&self, rule_name: &str, content: &LidyResult<TV>) -> Result<Data<TV>, AnyBoxedError>;
-}
-
-#[derive(Clone, Default)]
-pub struct Parser<TV, TB>
-where
-    TV: Clone,
-    TB: Builder<TV>,
-{
-    _t: PhantomData<TV>,
-    pub rule_set: HashMap<Box<str>, Rule>,
-    pub builder: TB,
-}
-
-#[derive(Clone, Default)]
-pub struct ParserData<TV, TB>
-where
-    TV: Clone + 'static,
-    TB: Builder<TV>,
 {
     pub content_file_name: Rc<str>,
-    pub parser: Parser<TV, TB>,
+    // The map of rule name to rule content
+    pub rule_set: HashMap<Box<str>, Rule>,
+    // The map of builder functions for each rule
+    pub builder_map: HashMap<Box<str>, Builder<TV>>,
     // The stack of the names of the rules
     pub rule_trace: Vec<Box<str>>,
     // Whether this rule is already being processed for a node. This is used
@@ -59,42 +46,26 @@ impl RuleNodePair {
     }
 }
 
-impl<TV, TB> Parser<TV, TB>
+impl<TV> Parser<TV>
 where
     TV: Clone,
-    TB: Builder<TV>,
 {
-    pub fn parse(&self, content_file: &Rc<File>) -> Result<LidyResult<TV>, AnyBoxedError> {
-        let mut yaml_content_file = YamlFile::new(content_file.clone());
-        yaml_content_file.unmarshal()?;
-        self._parse_data(&yaml_content_file)
-    }
-
-    fn _parse_data(&self, content: &YamlFile) -> Result<LidyResult<TV>, AnyBoxedError> {
-        let mut parser_data = ParserData::<TV, TB> {
-            content_file_name: content.file.name.clone().into(),
-            parser: self,
-            rule_is_matching_node: HashMap::new(),
-            rule_trace: Vec::new(),
-        };
-
-        return apply_rule(&mut parser_data, "main", &content.yaml);
-    }
-
-    pub fn make(file: &Rc<File>, builder: TB) -> Result<Self, AnyBoxedError> {
+    pub fn make(file: &Rc<File>, builder_map: HashMap<Box<str>>) -> Result<Self, AnyBoxedError> {
         let mut schema_file = YamlFile::new(file.clone());
-        schema_file.unmarshal()?;
+        schema_file.deserialize()?;
 
         let rule_set = make_rule_set(&schema_file)?;
         let mut parser = Parser {
-            _t: PhantomData,
+            content_file_name: file.name.into(),
             rule_set,
-            builder,
+            builder_map: builder_map,
+            rule_trace: Vec::new(),
+            rule_is_matching_node: HashMap::new(),
         };
 
         // METAPARSING VALIDATION
         // Validate that the provided schema is valid according to the lidy metaschema
-        let meta_parser = make_meta_parser_for::<TV, TB>(&mut parser)?;
+        let meta_parser = make_meta_parser_for::<TV>(&mut parser)?;
         meta_parser._parse_data(&schema_file)?;
         check_rule_set(&mut parser.rule_set);
 

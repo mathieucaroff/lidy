@@ -2,7 +2,7 @@ use std::{collections::HashMap, rc::Rc};
 
 use lidy__yaml::{LineCol, Yaml};
 
-use crate::lidy::{Builder, ParserData};
+use crate::lidy::{Builder, Parser};
 
 #[derive(Clone, Debug, Default)]
 pub struct Position {
@@ -56,13 +56,13 @@ where
 /// the data can be a mapping type, which itself requiers a key type and a
 /// value type.
 #[derive(Clone, Debug)]
-pub struct LidyResult<TValue>
+pub struct LidyResult<TV>
 where
-    TValue: Clone,
+    TV: Clone,
 {
     pub position: Position,
     pub rule_name: Box<str>,
-    pub data: Data<TValue>,
+    pub data: Data<TV>,
 }
 
 impl<TV> LidyResult<TV>
@@ -76,63 +76,57 @@ where
             data,
         }
     }
-    pub fn create<TB>(
-        parser_data: &ParserData<TV, TB>,
-        content: &Yaml,
-        data: Data<TV>,
-    ) -> LidyResult<TV>
-    where
-        TB: Builder<TV>,
-    {
+    pub fn create<TB>(parser: &Parser<TV>, content: &Yaml, data: Data<TV>) -> LidyResult<TV>
+where {
         LidyResult::<TV> {
             position: Position::from_line_col_beginning_only(
-                parser_data.content_file_name.clone(),
+                parser.content_file_name.clone(),
                 content.line_col,
             ),
-            rule_name: parser_data.rule_trace.last().unwrap().clone(),
+            rule_name: parser.rule_trace.last().unwrap().clone(),
             data,
         }
     }
 }
 
 #[derive(Clone, Debug)]
-pub struct MapData<TValue>
+pub struct MapData<TV>
 where
-    TValue: Clone,
+    TV: Clone,
 {
-    pub map: HashMap<Box<str>, LidyResult<TValue>>,
-    pub map_of: Vec<KeyValueData<TValue>>,
+    pub map: HashMap<Box<str>, LidyResult<TV>>,
+    pub map_of: Vec<KeyValueData<TV>>,
 }
 
 #[derive(Clone, Debug)]
-pub struct KeyValueData<TValue>
+pub struct KeyValueData<TV>
 where
-    TValue: Clone,
+    TV: Clone,
 {
-    pub key: LidyResult<TValue>,
-    pub value: LidyResult<TValue>,
+    pub key: LidyResult<TV>,
+    pub value: LidyResult<TV>,
 }
 
 #[derive(Clone, Debug)]
-pub struct ListData<TValue>
+pub struct ListData<TV>
 where
-    TValue: Clone,
+    TV: Clone,
 {
-    pub list: Vec<LidyResult<TValue>>,
-    pub list_of: Vec<LidyResult<TValue>>,
+    pub list: Vec<LidyResult<TV>>,
+    pub list_of: Vec<LidyResult<TV>>,
 }
 
 #[derive(Clone, Debug)]
-pub enum Data<TValue>
+pub enum Data<TV>
 where
-    TValue: Clone,
+    TV: Clone,
 {
     Float(f64),
     Integer(i64),
     String(Box<str>),
     Boolean(bool),
     Null,
-    MapData(MapData<TValue>),
-    ListData(ListData<TValue>),
-    CustomData(TValue),
+    MapData(MapData<TV>),
+    ListData(ListData<TV>),
+    CustomData(TV),
 }

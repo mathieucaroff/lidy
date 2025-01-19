@@ -2,7 +2,7 @@ use lidy__yaml::{Yaml, YamlData};
 
 use crate::error::{AnyBoxedError, JoinError, SimpleError};
 use crate::in_::apply_in_matcher;
-use crate::lidy::{Builder, ParserData};
+use crate::lidy::{Builder, Parser};
 use crate::list::apply_list_matcher;
 use crate::map::apply_map_matcher;
 use crate::one_of::apply_one_of_matcher;
@@ -12,17 +12,16 @@ use crate::result::LidyResult;
 use crate::rule::apply_rule;
 use crate::size::apply_size_check;
 
-pub fn apply_expression<TV, TB>(
-    parser_data: &mut ParserData<TV, TB>,
+pub fn apply_expression<TV>(
+    parser: &mut Parser<TV>,
     schema: &Yaml,
     content: &Yaml,
 ) -> Result<LidyResult<TV>, AnyBoxedError>
 where
     TV: Clone,
-    TB: Builder<TV>,
 {
     match &schema.data {
-        YamlData::String(value) => apply_rule(parser_data, value, content),
+        YamlData::String(value) => apply_rule(parser, value, content),
         YamlData::Mapping(mapping) => {
             let mut map = None;
             let mut map_facultative = None;
@@ -38,10 +37,10 @@ where
             for (key, value) in mapping {
                 if let YamlData::String(key_str) = &key.data {
                     match key_str.as_str() {
-                        "_regex" => return apply_regex_matcher(parser_data, value, content),
-                        "_in" => return apply_in_matcher(parser_data, value, content),
-                        "_range" => return apply_range_matcher(parser_data, value, content),
-                        "_oneOf" => return apply_one_of_matcher(parser_data, value, content),
+                        "_regex" => return apply_regex_matcher(parser, value, content),
+                        "_in" => return apply_in_matcher(parser, value, content),
+                        "_range" => return apply_range_matcher(parser, value, content),
+                        "_oneOf" => return apply_one_of_matcher(parser, value, content),
                         "_map" => map = Some(value),
                         "_mapFacultative" => map_facultative = Some(value),
                         "_mapOf" => map_of = Some(value),
@@ -73,7 +72,7 @@ where
 
             if map.is_some() || map_facultative.is_some() || map_of.is_some() || merge.is_some() {
                 result = Some(apply_map_matcher(
-                    parser_data,
+                    parser,
                     map,
                     map_facultative,
                     map_of,
@@ -84,7 +83,7 @@ where
 
             if list.is_some() || list_facultative.is_some() || list_of.is_some() {
                 result = Some(apply_list_matcher(
-                    parser_data,
+                    parser,
                     list,
                     list_facultative,
                     list_of,

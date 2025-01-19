@@ -19,7 +19,7 @@ impl YamlFile {
         }
     }
 
-    pub fn unmarshal(&mut self) -> Result<(), AnyBoxedError> {
+    pub fn deserialize(&mut self) -> Result<(), AnyBoxedError> {
         let docs = YamlLoader::load_from_str(&self.file.content)
             .map_err(|e| SimpleError::from_str(&e.to_string()))?;
         if docs.is_empty() {

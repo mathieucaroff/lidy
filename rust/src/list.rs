@@ -2,11 +2,11 @@ use lidy__yaml::{Yaml, YamlData};
 
 use crate::error::{AnyBoxedError, JoinError, SimpleError};
 use crate::expression::apply_expression;
-use crate::lidy::{Builder, ParserData};
+use crate::lidy::{Builder, Parser};
 use crate::result::{Data, LidyResult, ListData};
 
-pub fn apply_list_matcher<TV, TB>(
-    parser_data: &mut ParserData<TV, TB>,
+pub fn apply_list_matcher<TV>(
+    parser: &mut Parser<TV>,
     list: Option<&Yaml>,
     list_facultative: Option<&Yaml>,
     list_of: Option<&Yaml>,
@@ -14,7 +14,6 @@ pub fn apply_list_matcher<TV, TB>(
 ) -> Result<LidyResult<TV>, AnyBoxedError>
 where
     TV: Clone,
-    TB: Builder<TV>,
 {
     if let YamlData::List(content_list) = &content.data {
         let mut data = ListData {
@@ -34,7 +33,7 @@ where
                         );
                         break;
                     }
-                    let outcome = apply_expression(parser_data, schema, &content_list[index]);
+                    let outcome = apply_expression(parser, schema, &content_list[index]);
                     match outcome {
                         Err(err) => join_error.add(err),
                         Ok(lidy_result) => data.list.push(lidy_result),
@@ -55,7 +54,7 @@ where
                     if index >= content_list.len() {
                         break;
                     }
-                    let outcome = apply_expression(parser_data, schema, &content_list[index]);
+                    let outcome = apply_expression(parser, schema, &content_list[index]);
                     match outcome {
                         Err(err) => join_error.add(err),
                         Ok(lidy_result) => data.list.push(lidy_result),
@@ -68,7 +67,7 @@ where
         // Process list_of items
         if let Some(list_of_yaml) = list_of {
             for k in offset..content_list.len() {
-                let outcome = apply_expression(parser_data, list_of_yaml, &content_list[k]);
+                let outcome = apply_expression(parser, list_of_yaml, &content_list[k]);
                 match outcome {
                     Err(err) => {
                         join_error.add(err);
@@ -82,11 +81,7 @@ where
 
         join_error.into_result()?;
 
-        Ok(LidyResult::create(
-            &parser_data,
-            &content,
-            Data::ListData(data),
-        ))
+        Ok(LidyResult::create(&parser, &content, Data::ListData(data)))
     } else {
         Err(SimpleError::from_check("_list*", "must be a sequence node".into(), content).into())
     }
