@@ -1,98 +1,102 @@
 use lidy__yaml::{LineCol, YamlData};
 
-use crate::{error::AnyBoxedError, lidy::Builder, Parser, Position, SimpleError};
+use crate::{
+    builder::BuilderTrait,
+    error::{AnyBoxedError, JoinError},
+    result::Data,
+    LidyResult, Parser, Position, SimpleError,
+};
 
-struct MapCheckerBuilder<TV>(Builder<TV>) where TV: Clone;
+#[derive(Clone)]
+struct MapCheckerBuilder;
 
-
-fn check_merged_node<TV>(
-    name: &str,
-    last_position: &Position,
-    origin_position: &Position,
-    subparser: &Parser<TV>,
-) -> Option<AnyBoxedError>
+impl<TV> BuilderTrait<MapCheckerBuilder> for Parser<TV>
 where
-    TV: Clone,
+    TV: Clone + 'static,
 {
-    let rule = subparser.rule_set.get(name);
-    if rule.is_none() {
-        return Some(Box::new(SimpleError::from_check_result(
-            "_merge",
-            &format!(
-                "unknown rule '{name}' encountered at {} following rules from a _merge keyword",
-                LineCol::from(last_position)
-            ),
-            (origin_position).clone().into(),
-        )));
-    }
-    // check_error, to be returned only if the node is not a map checker
-    let check_error = SimpleError::from_check(
-        "_merge",
-        "reference leads to a non-map-checker node",
-        &rule.as_ref()?.node,
-    );
-
-    let rule_node = &rule.unwrap().node;
-    let last_pos = Position::from_line_col_beginning_only(
-        origin_position.filename.clone(),
-        rule_node.line_col,
-    );
-
-    match &rule_node.data {
-        YamlData::String(name) => check_merged_node(name, &last_pos, origin_position, subparser),
-        YamlData::Mapping(map) => {
-            let is_map_checker = map.iter().any(|(key, _)| {
-                if let YamlData::String(key_str) = &key.data {
-                    matches!(
-                        key_str.as_str(),
-                        "_map" | "_mapFacultative" | "_mapOf" | "_merge"
-                    )
-                } else {
-                    false
+    fn build(
+        &mut self,
+        lidy_result: &LidyResult<MapCheckerBuilder>,
+    ) -> Result<Data<MapCheckerBuilder>, AnyBoxedError> {
+        if let Data::MapData(map_data) = &lidy_result.data {
+            if let Some(merge) = map_data.map.get("_merge") {
+                let mut join_error = JoinError::default();
+                if let Data::ListData(list_data) = &merge.data {
+                    for result in &list_data.list_of {
+                        match &result.data {
+                            Data::CustomData(_) => continue,
+                            Data::String(s) => {
+                                if let Some(err) =
+                                    self.check_merged_node(s, &result.position, &result.position)
+                                {
+                                    join_error.add(err);
+                                }
+                            }
+                            _ => continue,
+                        }
+                    }
                 }
-            });
-            if !is_map_checker {
-                Some(Box::new(check_error))
-            } else {
-                None
+                join_error.into_result()?;
             }
         }
-        _ => Some(Box::new(check_error)),
+        Ok(lidy_result.data.clone())
     }
 }
 
+impl<TV> Parser<TV>
+where
+    TV: Clone + 'static,
+{
+    fn check_merged_node(
+        &self,
+        name: &str,
+        last_position: &Position,
+        origin_position: &Position,
+    ) -> Option<AnyBoxedError> {
+        let rule = self.rule_set.get(name);
+        if rule.is_none() {
+            return Some(Box::new(SimpleError::from_check_result(
+                "_merge",
+                &format!(
+                    "unknown rule '{name}' encountered at {} following rules from a _merge keyword",
+                    LineCol::from(last_position)
+                ),
+                (origin_position).clone().into(),
+            )));
+        }
+        // check_error, to be returned only if the node is not a map checker
+        let check_error = SimpleError::from_check(
+            "_merge",
+            "reference leads to a non-map-checker node",
+            &rule.as_ref()?.node,
+        );
 
-pub fn map_checker_builder {
-    let builder_fn = Box::new(
-        |input: &LidyResult<TV>| -> Result<Data<TV>, AnyBoxedError> {
-            if let Data::MapData(map_data) = &input.data {
-                if let Some(merge) = map_data.map.get("_merge") {
-                    let mut join_error = JoinError::default();
-                    if let Data::ListData(list_data) = &merge.data {
-                        let subparser = subparser_ref.borrow();
-                        for result in &list_data.list_of {
-                            match &result.data {
-                                Data::CustomData(_) => continue,
-                                Data::String(s) => {
-                                    if let Some(err) = check_merged_node(
-                                        s,
-                                        &result.position,
-                                        &result.position,
-                                        &subparser,
-                                    ) {
-                                        join_error.add(err);
-                                    }
-                                }
-                                _ => continue,
-                            }
-                        }
+        let rule_node = &rule.unwrap().node;
+        let last_pos = Position::from_line_col_beginning_only(
+            origin_position.filename.clone(),
+            rule_node.line_col,
+        );
+
+        match &rule_node.data {
+            YamlData::String(name) => self.check_merged_node(name, &last_pos, origin_position),
+            YamlData::Mapping(map) => {
+                let is_map_checker = map.iter().any(|(key, _)| {
+                    if let YamlData::String(key_str) = &key.data {
+                        matches!(
+                            key_str.as_str(),
+                            "_map" | "_mapFacultative" | "_mapOf" | "_merge"
+                        )
+                    } else {
+                        false
                     }
-                    join_error.into_result()?;
+                });
+                if !is_map_checker {
+                    Some(Box::new(check_error))
+                } else {
+                    None
                 }
             }
-            Ok(input.data.clone())
-        },
-    )
-        as Box<dyn FnMut(&LidyResult<TV>) -> Result<Data<TV>, Box<(dyn std::error::Error)>>>;
-    Rc::new(RefCell::new(builder_fn))
-};
+            _ => Some(Box::new(check_error)),
+        }
+    }
+}

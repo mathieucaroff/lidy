@@ -1,7 +1,7 @@
 use crate::any::map_any_yaml_data_to_lidy_data;
 use crate::error::AnyBoxedError;
 use crate::expression::apply_expression;
-use crate::lidy::{Parser, RuleNodePair};
+use crate::parser::{Parser, RuleNodePair};
 use crate::result::{Data, LidyResult, Position};
 use lidy__yaml::{Yaml, YamlData};
 use regex::Regex;
@@ -33,7 +33,7 @@ where
 
     let rule_node_pair = RuleNodePair::new(rule_name.into(), content);
 
-    let result = match parser.parser.rule_set.get(rule_name) {
+    let result = match parser.rule_set.get(rule_name) {
         None => apply_predefined_rule(parser, rule_name, content, false),
         Some(rule) => {
             let rule = rule.clone();
@@ -77,7 +77,7 @@ pub fn apply_predefined_rule<TV>(
     only_check_if_rule_exists: bool,
 ) -> Result<LidyResult<TV>, AnyBoxedError>
 where
-    TV: Clone,
+    TV: Clone + 'static,
 {
     let predefined_rule: Option<PredefinedRuleFn<TV>> = match rule_name {
         "string" => Some(Box::new(|content: &Yaml| {

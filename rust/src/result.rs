@@ -2,7 +2,7 @@ use std::{collections::HashMap, rc::Rc};
 
 use lidy__yaml::{LineCol, Yaml};
 
-use crate::lidy::{Builder, Parser};
+use crate::parser::Parser;
 
 #[derive(Clone, Debug, Default)]
 pub struct Position {
@@ -42,7 +42,7 @@ impl From<&Position> for LineCol {
 
 impl<TV> From<&LidyResult<TV>> for LineCol
 where
-    TV: Clone,
+    TV: Clone + 'static,
 {
     fn from(result: &LidyResult<TV>) -> Self {
         LineCol {
@@ -58,7 +58,7 @@ where
 #[derive(Clone, Debug)]
 pub struct LidyResult<TV>
 where
-    TV: Clone,
+    TV: Clone + 'static,
 {
     pub position: Position,
     pub rule_name: Box<str>,
@@ -67,7 +67,7 @@ where
 
 impl<TV> LidyResult<TV>
 where
-    TV: Clone,
+    TV: Clone + 'static,
 {
     pub fn make(rule_name: &str, position: Position, data: Data<TV>) -> LidyResult<TV> {
         LidyResult::<TV> {
@@ -76,7 +76,7 @@ where
             data,
         }
     }
-    pub fn create<TB>(parser: &Parser<TV>, content: &Yaml, data: Data<TV>) -> LidyResult<TV>
+    pub fn create(parser: &Parser<TV>, content: &Yaml, data: Data<TV>) -> LidyResult<TV>
 where {
         LidyResult::<TV> {
             position: Position::from_line_col_beginning_only(
@@ -92,7 +92,7 @@ where {
 #[derive(Clone, Debug)]
 pub struct MapData<TV>
 where
-    TV: Clone,
+    TV: Clone + 'static,
 {
     pub map: HashMap<Box<str>, LidyResult<TV>>,
     pub map_of: Vec<KeyValueData<TV>>,
@@ -101,7 +101,7 @@ where
 #[derive(Clone, Debug)]
 pub struct KeyValueData<TV>
 where
-    TV: Clone,
+    TV: Clone + 'static,
 {
     pub key: LidyResult<TV>,
     pub value: LidyResult<TV>,
@@ -110,7 +110,7 @@ where
 #[derive(Clone, Debug)]
 pub struct ListData<TV>
 where
-    TV: Clone,
+    TV: Clone + 'static,
 {
     pub list: Vec<LidyResult<TV>>,
     pub list_of: Vec<LidyResult<TV>>,
@@ -119,7 +119,7 @@ where
 #[derive(Clone, Debug)]
 pub enum Data<TV>
 where
-    TV: Clone,
+    TV: Clone + 'static,
 {
     Float(f64),
     Integer(i64),

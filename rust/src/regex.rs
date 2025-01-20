@@ -1,9 +1,8 @@
 use lidy__yaml::{Yaml, YamlData};
 use regex::Regex;
 
-use crate::lidy::Builder;
 use crate::result::Data;
-use crate::{error::AnyBoxedError, lidy::Parser, LidyResult, SimpleError};
+use crate::{error::AnyBoxedError, parser::Parser, LidyResult, SimpleError};
 
 pub fn apply_regex_matcher<TV>(
     parser: &mut Parser<TV>,
@@ -11,7 +10,7 @@ pub fn apply_regex_matcher<TV>(
     content: &Yaml,
 ) -> Result<LidyResult<TV>, AnyBoxedError>
 where
-    TV: Clone,
+    TV: Clone + 'static,
 {
     // Obtain the regex pattern as string from the schema node
     let pattern = match &node.data {

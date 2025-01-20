@@ -1,23 +1,18 @@
+use lidy__yaml::{LineCol, Yaml, YamlData};
 use std::collections::HashMap;
 use std::rc::Rc;
 
-use lidy__yaml::{LineCol, Yaml, YamlData};
-
+use crate::builder::Builder;
 use crate::error::{AnyBoxedError, SimpleError};
 use crate::file::File;
 use crate::metaparser::{check_rule_set, make_meta_parser_for};
-use crate::result::{Data, LidyResult};
 use crate::rule::Rule;
 use crate::yamlfile::YamlFile;
 
-pub struct Builder<TV>(Box<dyn FnMut(&LidyResult<TV>) -> Result<Data<TV>, AnyBoxedError>>)
-where
-    TV: Clone;
-
-#[derive(Default)]
+#[derive(Clone, Default)]
 pub struct Parser<TV>
 where
-    TV: Clone,
+    TV: Clone + 'static,
 {
     pub content_file_name: Rc<str>,
     // The map of rule name to rule content
@@ -48,9 +43,12 @@ impl RuleNodePair {
 
 impl<TV> Parser<TV>
 where
-    TV: Clone,
+    TV: Clone + 'static,
 {
-    pub fn make(file: &Rc<File>, builder_map: HashMap<Box<str>>) -> Result<Self, AnyBoxedError> {
+    pub fn make(
+        file: &Rc<File>,
+        builder_map: HashMap<Box<str>, Builder<TV>>,
+    ) -> Result<Self, AnyBoxedError> {
         let mut schema_file = YamlFile::new(file.clone());
         schema_file.deserialize()?;
 
@@ -58,7 +56,7 @@ where
         let mut parser = Parser {
             content_file_name: file.name.into(),
             rule_set,
-            builder_map: builder_map,
+            builder_map,
             rule_trace: Vec::new(),
             rule_is_matching_node: HashMap::new(),
         };

@@ -1,13 +1,14 @@
 mod any;
+mod builder;
 mod error;
 mod expression;
 mod file;
 mod in_;
-mod lidy;
 mod list;
 mod map;
 mod metaparser;
 mod one_of;
+mod parser;
 mod range;
 mod regex;
 mod result;
@@ -18,7 +19,7 @@ mod yamlfile;
 
 pub use error::SimpleError;
 pub use file::File;
-pub use lidy::Parser;
+pub use parser::Parser;
 pub use result::{KeyValueData, LidyResult, ListData, MapData, Position};
 pub use rule::Rule;
 pub use yamlfile::YamlFile;

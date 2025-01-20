@@ -1,98 +1,38 @@
-use std::cell::RefCell;
 use std::collections::HashMap;
 use std::rc::Rc;
 
 use lidy__yaml::{LineCol, Yaml, YamlData};
 
+use crate::builder::{Builder, BuilderTrait};
 use crate::error::{AnyBoxedError, JoinError, SimpleError};
 use crate::file::File;
-use crate::lidy::{make_rule_set, Parser};
-use crate::result::{Data, LidyResult};
-use crate::rule::{apply_predefined_rule, Rule};
+use crate::parser::{make_rule_set, Parser};
+use crate::rule::Rule;
 use crate::yamlfile::YamlFile;
 
-struct RuleReferenceBuilder<'a, TV>
-where
-    TV: Clone,
-{
-    subparser: &'a mut Parser<TV>,
-}
+use super::size_checker_keyword_set::MapCheckerBuilder;
 
-pub fn make_meta_parser_for<TV>(subparser: &mut Parser<TV>) -> Result<Parser<()>, AnyBoxedError>
+pub fn make_meta_parser_for<TV>(parser: &mut Parser<TV>) -> Result<Parser<()>, AnyBoxedError>
 where
-    TV: Clone,
+    TV: Clone + 'static,
 {
     let meta_schema_file = File::read_local_file("../../lidy.schema.yaml")?;
     let mut meta_schema = YamlFile::new(Rc::new(meta_schema_file));
     meta_schema.deserialize()?;
 
-    let rule_reference_builder: Builder<()> = {
-        let builder_fn: Box<dyn FnMut(&LidyResult<TV>) -> Result<Data<TV>, Box<dyn Error>>> =
-            Box::new(
-                |input: &LidyResult<TV>| -> Result<Data<TV>, AnyBoxedError> {
-                    let identifier = match &input.data {
-                        Data::String(s) => s.to_string(),
-                        _ => return Ok(input.data.clone()),
-                    };
-
-                    if identifier == "expression" {
-                        println!(
-                            "identifier === 'expression', stack: {:?}",
-                            std::backtrace::Backtrace::capture()
-                        );
-                    }
-
-                    if let Some(rule) = subparser.rule_set.get_mut(&*identifier) {
-                        rule.is_used = true;
-                    } else {
-                        let rule_exists = match apply_predefined_rule(
-                        &Parser::<(), ()>::default(),
-                        &identifier,
-                        &Yaml::default(),
-                        true,
-                    )?.data {
-                        Data::Boolean(exists) => exists,
-                        _ => panic!("never, apply_predefined_rule must return a boolean when only_check_if_rule_exists is passed")
-                    };
-                        if !rule_exists {
-                            let rule_listing = subparser
-                                .rule_set
-                                .keys()
-                                .map(|k| k.to_string())
-                                .collect::<Vec<_>>()
-                                .join(", ");
-                            return Err(Box::new(SimpleError::from_check_result(
-                                &identifier,
-                                &format!(
-                                "encountered unknown rule identifier '{}'. Known rules are: [{}]",
-                                identifier, rule_listing
-                            ),
-                                LineCol {
-                                    line: input.position.line,
-                                    column: input.position.column,
-                                },
-                            )));
-                        }
-                    }
-                    Ok(input.data.clone())
-                },
-            )
-                as Box<
-                    dyn FnMut(&LidyResult<TV>) -> Result<Data<TV>, Box<(dyn std::error::Error)>>,
-                >;
-        Rc::new(RefCell::new(builder_fn))
-    };
-
     let meta_builder_map: HashMap<Box<str>, Builder<TV>> = HashMap::from([
-        (Box::from("ruleReference"), rule_reference_builder),
-        (Box::from("mapChecker"), map_checker_builder),
         (
-            Box::from("sizedCheckerKeywordSet"),
-            sized_checker_keyword_set_builder,
+            Box::from("mapChecker"),
+            Builder::<TV>(Box::new(parser.clone())),
         ),
+        // (Box::from("ruleReference"), rule_reference_builder),
+        // (
+        //     Box::from("sizedCheckerKeywordSet"),
+        //     sized_checker_keyword_set_builder,
+        // ),
     ]);
 
-    let rule_set = make_rule_set(&meta_schema, meta_builder_map)?;
+    let rule_set = make_rule_set(&meta_schema)?;
 
     let mut meta_parser = Parser {
         content_file_name: "lidy.schema.yaml".into(),

@@ -1,7 +1,7 @@
 use crate::{
     error::{AnyBoxedError, JoinError, SimpleError},
     expression::apply_expression,
-    lidy::{Builder, Parser},
+    parser::Parser,
     LidyResult,
 };
 use lidy__yaml::{Yaml, YamlData};
@@ -12,7 +12,7 @@ pub fn apply_one_of_matcher<TV>(
     content: &Yaml,
 ) -> Result<LidyResult<TV>, AnyBoxedError>
 where
-    TV: Clone,
+    TV: Clone + 'static,
 {
     let items = match &node.data {
         YamlData::List(list) => list,

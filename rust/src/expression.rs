@@ -2,10 +2,10 @@ use lidy__yaml::{Yaml, YamlData};
 
 use crate::error::{AnyBoxedError, JoinError, SimpleError};
 use crate::in_::apply_in_matcher;
-use crate::lidy::{Builder, Parser};
 use crate::list::apply_list_matcher;
 use crate::map::apply_map_matcher;
 use crate::one_of::apply_one_of_matcher;
+use crate::parser::Parser;
 use crate::range::apply_range_matcher;
 use crate::regex::apply_regex_matcher;
 use crate::result::LidyResult;
@@ -18,7 +18,7 @@ pub fn apply_expression<TV>(
     content: &Yaml,
 ) -> Result<LidyResult<TV>, AnyBoxedError>
 where
-    TV: Clone,
+    TV: Clone + 'static,
 {
     match &schema.data {
         YamlData::String(value) => apply_rule(parser, value, content),

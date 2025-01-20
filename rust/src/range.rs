@@ -3,11 +3,7 @@ use lidy__yaml::{Yaml, YamlData};
 use regex::Regex;
 
 use crate::result::Data;
-use crate::{
-    error::AnyBoxedError,
-    lidy::{Builder, Parser},
-    LidyResult, SimpleError,
-};
+use crate::{error::AnyBoxedError, parser::Parser, LidyResult, SimpleError};
 
 lazy_static! {
     static ref RANGE_REGEX: Regex =
@@ -21,7 +17,7 @@ pub fn apply_range_matcher<TV>(
     content: &Yaml,
 ) -> Result<LidyResult<TV>, AnyBoxedError>
 where
-    TV: Clone,
+    TV: Clone + 'static,
 {
     // Check that content is a number
     let value = match &content.data {

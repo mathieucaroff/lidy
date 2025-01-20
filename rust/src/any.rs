@@ -16,7 +16,7 @@ pub fn map_any_yaml_data_to_lidy_data<TV>(
     content: &Yaml,
 ) -> Data<TV>
 where
-    TV: Clone,
+    TV: Clone + 'static,
 {
     match &content.data {
         YamlData::String(value) => Data::String(value.clone().into()),

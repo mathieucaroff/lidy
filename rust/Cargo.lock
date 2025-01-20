@@ -226,8 +226,6 @@ checksum = "0fda2ff0d084019ba4d7c6f371c95d8fd75ce3524c3cb8fb653a3023f6323e64"
 [[package]]
 name = "specimen"
 version = "0.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c678192ca8e96c3bf8cb463862b462f5f0b41a0ea69ba9d1725318ed7b25e502"
 dependencies = [
  "specimen__focustree",
  "specimen__multistringmap",
@@ -238,8 +236,6 @@ dependencies = [
 [[package]]
 name = "specimen__focustree"
 version = "0.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "222965d5cf6b706cdb93a6393cd3ac8c71a832ea4e512a491f93adf6880d9883"
 dependencies = [
  "specimen__writable",
 ]
@@ -247,8 +243,6 @@ dependencies = [
 [[package]]
 name = "specimen__multistringmap"
 version = "0.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2865f7db4bec1b134eee7d9269c78e1991bd7852d29ff62fc90c4ab9b597b377"
 dependencies = [
  "linked-hash-map",
 ]
@@ -256,14 +250,10 @@ dependencies = [
 [[package]]
 name = "specimen__writable"
 version = "0.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3edf9792a04f26948c59df0b5753c0034c4bc4dcfb7d3cf412c63e741ba12018"
 
 [[package]]
 name = "specimen__yaml"
 version = "0.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "acafe695ffada7070016f888f10e661717b7ac33ef9c867646e739edbe5a056f"
 dependencies = [
  "yaml-rust",
 ]

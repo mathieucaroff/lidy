@@ -2,7 +2,7 @@ use lidy__yaml::{Yaml, YamlData};
 
 use crate::error::{AnyBoxedError, JoinError, SimpleError};
 use crate::expression::apply_expression;
-use crate::lidy::{Builder, Parser};
+use crate::parser::Parser;
 use crate::result::{Data, LidyResult, ListData};
 
 pub fn apply_list_matcher<TV>(
@@ -13,7 +13,7 @@ pub fn apply_list_matcher<TV>(
     content: &Yaml,
 ) -> Result<LidyResult<TV>, AnyBoxedError>
 where
-    TV: Clone,
+    TV: Clone + 'static,
 {
     if let YamlData::List(content_list) = &content.data {
         let mut data = ListData {

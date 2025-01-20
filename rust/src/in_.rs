@@ -1,8 +1,6 @@
 use crate::{
-    any::map_any_yaml_data_to_lidy_data,
-    error::AnyBoxedError,
-    lidy::{Builder, Parser},
-    syaml, LidyResult, SimpleError,
+    any::map_any_yaml_data_to_lidy_data, error::AnyBoxedError, parser::Parser, syaml, LidyResult,
+    SimpleError,
 };
 use lidy__yaml::{Yaml, YamlData};
 
@@ -12,7 +10,7 @@ pub fn apply_in_matcher<TV>(
     content: &Yaml,
 ) -> Result<LidyResult<TV>, AnyBoxedError>
 where
-    TV: Clone,
+    TV: Clone + 'static,
 {
     let valid_value_list = match &node.data {
         YamlData::List(list) => list,

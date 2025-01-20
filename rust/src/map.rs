@@ -3,7 +3,7 @@ use std::collections::HashMap;
 
 use crate::error::{AnyBoxedError, JoinError, SimpleError};
 use crate::expression::apply_expression;
-use crate::lidy::Parser;
+use crate::parser::Parser;
 use crate::result::{Data, LidyResult, MapData};
 use crate::syaml::extract_kv_entry;
 use crate::KeyValueData;
@@ -13,17 +13,17 @@ struct MapInfo {
     map: HashMap<Box<str>, Yaml>,
 }
 
-fn resolve_merge_reference<'a, T>(
+fn resolve_merge_reference<'a, TV>(
     parser: &'a Parser<TV>,
-    node: &Yaml,
+    node: &'a Yaml,
 ) -> Result<&'a Vec<(Yaml, Yaml)>, AnyBoxedError>
 where
-    TV: Clone,
+    TV: Clone + 'static,
 {
     match &node.data {
         YamlData::Mapping(yaml_mapping) => Ok(yaml_mapping),
         YamlData::String(ref rule_name) => {
-            let rule = parser.parser.rule_set.get(&**rule_name).ok_or_else(|| {
+            let rule = parser.rule_set.get(&**rule_name).ok_or_else(|| {
                 SimpleError::from_message(
                     "The merge value reference must exist in the schema".into(),
                 )
@@ -45,7 +45,7 @@ fn contribute_to_map_info<TV>(
     merge: Option<&Yaml>,
 ) -> Result<(), AnyBoxedError>
 where
-    TV: Clone,
+    TV: Clone + 'static,
 {
     // Extracting from _merge
     if let Some(merge_yaml) = merge {
@@ -108,7 +108,7 @@ pub fn apply_map_matcher<TV>(
     content: &Yaml,
 ) -> Result<LidyResult<TV>, AnyBoxedError>
 where
-    TV: Clone,
+    TV: Clone + 'static,
 {
     if let YamlData::Mapping(content_mapping) = &content.data {
         let mut map_info = MapInfo {
