@@ -6,7 +6,7 @@ import { Builder, makeParserFromRuleSet, makeRuleSet, Parser } from "./lidy"
 import { ListData, MapData, Position, Result } from "./result"
 import { applyPredefinedRule, Rule } from "./rule"
 import * as syaml from "./syaml"
-import { unmarshalYamlFile, YamlFile } from "./yamlfile"
+import { deserializedYamlFile, YamlFile } from "./yamlfile"
 
 export function makeMetaParserFor(subparser: Parser): Parser {
   const metaSchema: YamlFile = {
@@ -15,7 +15,7 @@ export function makeMetaParserFor(subparser: Parser): Parser {
     doneParsing: false,
     lineCounter: new yaml.LineCounter(),
   }
-  const error = unmarshalYamlFile(metaSchema)
+  const error = deserializedYamlFile(metaSchema)
   if (error) {
     throw error
   }

@@ -19,7 +19,7 @@ export function createYamlFile(file: File): YamlFile {
   }
 }
 
-export function unmarshalYamlFile(yamlFile: YamlFile): Error | undefined {
+export function deserializedYamlFile(yamlFile: YamlFile): Error | undefined {
   if (yamlFile.doneParsing) {
     return yamlFile.parsingError
   }

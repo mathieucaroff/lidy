@@ -5,7 +5,7 @@ import { checkRuleSet, makeMetaParserFor } from "./metaparser"
 import { Result } from "./result"
 import { applyRule, Rule } from "./rule"
 import { PairMap } from "./util/pairMap"
-import { createYamlFile, unmarshalYamlFile, YamlFile } from "./yamlfile"
+import { createYamlFile, deserializedYamlFile, YamlFile } from "./yamlfile"
 
 // Builder is a user-implemented input-validation and creation of user objects
 export type Builder = (input: Result<any>) => {
@@ -32,7 +32,7 @@ export function makeParser(
   builderMap: Record<string, Builder>,
 ): Parser {
   const schemaFile = createYamlFile(file)
-  const error = unmarshalYamlFile(schemaFile)
+  const error = deserializedYamlFile(schemaFile)
   if (error) {
     throw error
   }
@@ -78,7 +78,7 @@ export function makeParserFromRuleSet(ruleSet: Record<string, Rule>): Parser {
     ruleSet,
     parse: (contentFile: File) => {
       const yamlContentFile = createYamlFile(contentFile)
-      const error = unmarshalYamlFile(yamlContentFile)
+      const error = deserializedYamlFile(yamlContentFile)
       if (error) {
         throw error
       }
