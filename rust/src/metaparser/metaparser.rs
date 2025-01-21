@@ -11,7 +11,12 @@ use crate::rule::Rule;
 use crate::yamlfile::YamlFile;
 use crate::LidyResult;
 
-pub fn make_meta_parser_for<TV>(parser: &mut Parser<TV>) -> Result<Parser<()>, AnyBoxedError> {
+pub fn make_meta_parser_for<'a, 'b, TV>(
+    parser: &'b mut Parser<'a, TV>,
+) -> Result<Parser<'b, ()>, AnyBoxedError>
+where
+    'a: 'b,
+{
     let meta_schema_file = File::read_local_file("../../lidy.schema.yaml")?;
     let mut meta_schema = YamlFile::new(Rc::new(meta_schema_file));
     meta_schema.deserialize()?;

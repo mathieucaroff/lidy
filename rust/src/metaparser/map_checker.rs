@@ -6,7 +6,7 @@ use crate::{
     LidyResult, Parser, Position, SimpleError,
 };
 
-impl<TV> Parser<TV> {
+impl<'a, TV> Parser<'a, TV> {
     pub fn run_map_checker_builder(
         &mut self,
         lidy_result: &LidyResult<()>,

@@ -7,7 +7,7 @@ use crate::{
     SimpleError,
 };
 
-impl<TV> Parser<TV> {
+impl<'a, TV> Parser<'a, TV> {
     pub fn run_rule_reference_checker_builder(
         &mut self,
         lidy_result: &LidyResult<()>,

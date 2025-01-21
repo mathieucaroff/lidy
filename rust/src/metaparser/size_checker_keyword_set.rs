@@ -2,7 +2,7 @@ use lidy__yaml::LineCol;
 
 use crate::{error::AnyBoxedError, result::Data, LidyResult, Parser, SimpleError};
 
-impl<TV> Parser<TV> {
+impl<'a, TV> Parser<'a, TV> {
     pub fn run_size_checker_builder(
         &mut self,
         lidy_result: &LidyResult<()>,

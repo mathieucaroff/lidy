@@ -1,4 +1,4 @@
-use std::{collections::HashMap, rc::Rc};
+use std::rc::Rc;
 
 use regex::Regex;
 use specimen;
@@ -104,7 +104,7 @@ fn test_lidy() {
                         name: "<schema>.yaml".into(),
                         content: schema.unwrap(),
                     }),
-                    HashMap::new(),
+                    Box::new(|_, lidy_result| Ok(lidy_result.data.clone())),
                 );
                 if parser.is_err() {
                     return Err(Box::from(format!(
@@ -144,7 +144,7 @@ fn test_lidy() {
                         name: "<schema>.yaml".into(),
                         content: schema.unwrap().clone(),
                     }),
-                    HashMap::new(),
+                    Box::new(|_, lidy_result| Ok(lidy_result.data.clone())),
                 );
 
                 if let Err(err) = parser {
