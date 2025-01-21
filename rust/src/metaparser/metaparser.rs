@@ -3,48 +3,38 @@ use std::rc::Rc;
 
 use lidy__yaml::{Yaml, YamlData};
 
-use super::map_checker::MapCheckerBuilder;
-use super::rule_reference::RuleReferenceBuilder;
-use super::size_checker_keyword_set::SizeCheckerBuilder;
-use crate::builder::{BuilderMap, BuilderTrait};
 use crate::error::{AnyBoxedError, JoinError, SimpleError};
 use crate::file::File;
 use crate::parser::{make_rule_set, Parser};
+use crate::result::Data;
 use crate::rule::Rule;
 use crate::yamlfile::YamlFile;
+use crate::LidyResult;
 
-pub fn make_meta_parser_for<TV>(parser: &mut Parser<TV>) -> Result<Parser<()>, AnyBoxedError>
-where
-{
+pub fn make_meta_parser_for<TV>(parser: &mut Parser<TV>) -> Result<Parser<()>, AnyBoxedError> {
     let meta_schema_file = File::read_local_file("../../lidy.schema.yaml")?;
     let mut meta_schema = YamlFile::new(Rc::new(meta_schema_file));
     meta_schema.deserialize()?;
 
-    // HashMap<Box<str>, Box<dyn BuilderTrait<TV>>>
-
-    let meta_builder_map: BuilderMap<()> = HashMap::from([
-        (
-            Box::from("mapChecker"),
-            Box::from(BuilderTrait::<MapCheckerBuilder>(parser.clone())),
-        ),
-        (
-            Box::from("ruleReference"),
-            Box::from(BuilderTrait::<RuleReferenceBuilder>(parser.clone())),
-        ),
-        (
-            Box::from("sizedCheckerKeywordSet"),
-            Box::from(BuilderTrait::<SizeCheckerBuilder>(parser.clone())),
-        ),
-    ]);
-
     let rule_set = make_rule_set(&meta_schema)?;
 
-    let mut meta_parser = Parser {
+    let meta_parser = Parser {
         content_file_name: "lidy.schema.yaml".into(),
         rule_set,
-        builder_map: meta_builder_map,
         rule_trace: Vec::new(),
         rule_is_matching_node: HashMap::new(),
+        builder_callback: Box::new(
+            |rule_name,
+             lidy_result: &LidyResult<()>|
+             -> Result<Data<()>, Box<dyn std::error::Error>> {
+                match rule_name {
+                    "mapChecker" => parser.run_map_checker_builder(lidy_result),
+                    "ruleReference" => parser.run_rule_reference_checker_builder(lidy_result),
+                    "sizeCheckerKeywordSet" => parser.run_size_checker_builder(lidy_result),
+                    _ => Ok(lidy_result.data.clone()),
+                }
+            },
+        ),
     };
 
     Ok(meta_parser)

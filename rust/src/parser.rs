@@ -2,21 +2,20 @@ use lidy__yaml::{LineCol, Yaml, YamlData};
 use std::collections::HashMap;
 use std::rc::Rc;
 
-use crate::builder::BuilderMap;
 use crate::error::{AnyBoxedError, SimpleError};
 use crate::file::File;
 use crate::metaparser::{check_rule_set, make_meta_parser_for};
+use crate::result::Data;
 use crate::rule::{apply_rule, Rule};
 use crate::yamlfile::YamlFile;
 use crate::LidyResult;
 
-#[derive(Default)]
 pub struct Parser<TV> {
     pub content_file_name: Rc<str>,
     // The map of rule name to rule content
     pub rule_set: HashMap<Box<str>, Rule>,
     // The map of builder functions for each rule
-    pub builder_map: BuilderMap<TV>,
+    pub builder_callback: Box<dyn FnMut(&str, &LidyResult<TV>) -> Result<Data<TV>, AnyBoxedError>>,
     // The stack of the names of the rules
     pub rule_trace: Vec<Box<str>>,
     // Whether this rule is already being processed for a node. This is used
@@ -40,7 +39,10 @@ impl RuleNodePair {
 }
 
 impl<TV> Parser<TV> {
-    pub fn make(file: &Rc<File>, builder_map: BuilderMap<TV>) -> Result<Self, AnyBoxedError> {
+    pub fn make(
+        file: &Rc<File>,
+        builder_callback: Box<dyn FnMut(&str, &LidyResult<TV>) -> Result<Data<TV>, AnyBoxedError>>,
+    ) -> Result<Self, AnyBoxedError> {
         let mut schema_file = YamlFile::new(file.clone());
         schema_file.deserialize()?;
 
@@ -48,7 +50,7 @@ impl<TV> Parser<TV> {
         let mut parser = Parser {
             content_file_name: file.name.clone().into(),
             rule_set,
-            builder_map,
+            builder_callback,
             rule_trace: Vec::new(),
             rule_is_matching_node: HashMap::new(),
         };
@@ -56,7 +58,7 @@ impl<TV> Parser<TV> {
         // METAPARSING VALIDATION
         // Validate that the provided schema is valid according to the lidy metaschema
         let mut meta_parser = make_meta_parser_for::<TV>(&mut parser)?;
-        meta_parser.parse_yaml_file(&schema_file)?;
+        meta_parser.parse_content_yaml_file(&schema_file)?;
         check_rule_set(&mut parser.rule_set);
 
         Ok(parser)
@@ -65,10 +67,10 @@ impl<TV> Parser<TV> {
     pub fn parse(&mut self, file: &Rc<File>) -> Result<LidyResult<TV>, AnyBoxedError> {
         let mut yaml_file = YamlFile::new(file.clone());
         yaml_file.deserialize()?;
-        self.parse_yaml_file(&yaml_file)
+        self.parse_content_yaml_file(&yaml_file)
     }
 
-    pub fn parse_yaml_file(
+    pub fn parse_content_yaml_file(
         &mut self,
         yaml_file: &YamlFile,
     ) -> Result<LidyResult<TV>, AnyBoxedError> {

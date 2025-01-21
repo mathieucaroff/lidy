@@ -1,19 +1,12 @@
 use lidy__yaml::LineCol;
 
-use crate::{
-    builder::BuilderTrait, error::AnyBoxedError, result::Data, LidyResult, Parser, SimpleError,
-};
+use crate::{error::AnyBoxedError, result::Data, LidyResult, Parser, SimpleError};
 
-#[derive(Clone)]
-pub struct SizeCheckerBuilder;
-
-impl<TV> BuilderTrait<SizeCheckerBuilder> for Parser<TV>
-where
-{
-    fn build(
+impl<TV> Parser<TV> {
+    pub fn run_size_checker_builder(
         &mut self,
-        lidy_result: &LidyResult<SizeCheckerBuilder>,
-    ) -> Result<Data<SizeCheckerBuilder>, AnyBoxedError> {
+        lidy_result: &LidyResult<()>,
+    ) -> Result<Data<()>, AnyBoxedError> {
         if let Data::MapData(map_data) = &lidy_result.data {
             for keyword in &["_min", "_max", "_nb"] {
                 if let Some(value) = map_data.map.get(*keyword) {

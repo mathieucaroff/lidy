@@ -3,20 +3,15 @@ use std::collections::HashMap;
 use lidy__yaml::{LineCol, Yaml};
 
 use crate::{
-    builder::BuilderTrait, error::AnyBoxedError, result::Data, rule::apply_predefined_rule,
-    LidyResult, Parser, SimpleError,
+    error::AnyBoxedError, result::Data, rule::apply_predefined_rule, LidyResult, Parser,
+    SimpleError,
 };
 
-#[derive(Clone)]
-pub struct RuleReferenceBuilder;
-
-impl<TV> BuilderTrait<RuleReferenceBuilder> for Parser<TV>
-where
-{
-    fn build(
+impl<TV> Parser<TV> {
+    pub fn run_rule_reference_checker_builder(
         &mut self,
-        lidy_result: &LidyResult<RuleReferenceBuilder>,
-    ) -> Result<Data<RuleReferenceBuilder>, AnyBoxedError> {
+        lidy_result: &LidyResult<()>,
+    ) -> Result<Data<()>, AnyBoxedError> {
         let identifier = match &lidy_result.data {
             Data::String(s) => s.to_string(),
             _ => return Ok(lidy_result.data.clone()),
@@ -29,9 +24,15 @@ where
                 &mut Parser{
                     content_file_name: "ruleCheck".into(),
                     rule_set: HashMap::new(),
-                    builder_map: HashMap::<Box<str>, Box<dyn BuilderTrait<TV>>>::new(),
                     rule_trace: Vec::new(),
                     rule_is_matching_node: HashMap::new(),
+                    builder_callback: Box::new(
+                        |_: &str,
+                         _: &LidyResult<()>|
+                         -> Result<Data<()>, Box<dyn std::error::Error>> {
+                            panic!("never")
+                        },
+                    ),
                 },
                 &identifier,
                 &Yaml::default(),

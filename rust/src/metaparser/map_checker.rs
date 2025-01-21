@@ -1,22 +1,16 @@
 use lidy__yaml::{LineCol, YamlData};
 
 use crate::{
-    builder::BuilderTrait,
     error::{AnyBoxedError, JoinError},
     result::Data,
     LidyResult, Parser, Position, SimpleError,
 };
 
-#[derive(Clone)]
-pub struct MapCheckerBuilder;
-
-impl<TV> BuilderTrait<MapCheckerBuilder> for Parser<TV>
-where
-{
-    fn build(
+impl<TV> Parser<TV> {
+    pub fn run_map_checker_builder(
         &mut self,
-        lidy_result: &LidyResult<MapCheckerBuilder>,
-    ) -> Result<Data<MapCheckerBuilder>, AnyBoxedError> {
+        lidy_result: &LidyResult<()>,
+    ) -> Result<Data<()>, AnyBoxedError> {
         if let Data::MapData(map_data) = &lidy_result.data {
             if let Some(merge) = map_data.map.get("_merge") {
                 let mut join_error = JoinError::default();
@@ -40,11 +34,7 @@ where
         }
         Ok(lidy_result.data.clone())
     }
-}
 
-impl<TV> Parser<TV>
-where
-{
     fn check_merged_node(
         &self,
         name: &str,
