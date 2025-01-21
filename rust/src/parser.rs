@@ -6,8 +6,9 @@ use crate::builder::BuilderMap;
 use crate::error::{AnyBoxedError, SimpleError};
 use crate::file::File;
 use crate::metaparser::{check_rule_set, make_meta_parser_for};
-use crate::rule::Rule;
+use crate::rule::{apply_rule, Rule};
 use crate::yamlfile::YamlFile;
+use crate::LidyResult;
 
 #[derive(Clone, Default)]
 pub struct Parser<TV>
@@ -51,7 +52,7 @@ where
 
         let rule_set = make_rule_set(&schema_file)?;
         let mut parser = Parser {
-            content_file_name: file.name.into(),
+            content_file_name: file.name.clone().into(),
             rule_set,
             builder_map,
             rule_trace: Vec::new(),
@@ -60,11 +61,24 @@ where
 
         // METAPARSING VALIDATION
         // Validate that the provided schema is valid according to the lidy metaschema
-        let meta_parser = make_meta_parser_for::<TV>(&mut parser)?;
-        meta_parser._parse_data(&schema_file)?;
+        let mut meta_parser = make_meta_parser_for::<TV>(&mut parser)?;
+        meta_parser.parse_yaml_file(&schema_file)?;
         check_rule_set(&mut parser.rule_set);
 
         Ok(parser)
+    }
+
+    pub fn parse(&mut self, file: &Rc<File>) -> Result<LidyResult<TV>, AnyBoxedError> {
+        let mut yaml_file = YamlFile::new(file.clone());
+        yaml_file.deserialize()?;
+        self.parse_yaml_file(&yaml_file)
+    }
+
+    pub fn parse_yaml_file(
+        &mut self,
+        yaml_file: &YamlFile,
+    ) -> Result<LidyResult<TV>, AnyBoxedError> {
+        apply_rule(self, "main", &yaml_file.yaml)
     }
 }
 

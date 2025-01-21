@@ -23,7 +23,7 @@ where
 
     // HashMap<Box<str>, Box<dyn BuilderTrait<TV>>>
 
-    let meta_builder_map: BuilderMap<TV> = HashMap::from([
+    let meta_builder_map: BuilderMap<()> = HashMap::from([
         (
             Box::from("mapChecker"),
             Box::from(BuilderTrait::<MapCheckerBuilder>(parser.clone())),
