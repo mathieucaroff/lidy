@@ -4,10 +4,7 @@ use crate::{
 };
 use std::collections::HashMap;
 
-pub trait BuilderTrait<TV>: Clone
-where
-    TV: Clone + 'static,
-{
+pub trait BuilderTrait<TV> {
     fn build(&mut self, lidy_result: &LidyResult<TV>) -> Result<Data<TV>, AnyBoxedError>;
 }
 

@@ -10,11 +10,8 @@ use crate::rule::{apply_rule, Rule};
 use crate::yamlfile::YamlFile;
 use crate::LidyResult;
 
-#[derive(Clone, Default)]
-pub struct Parser<TV>
-where
-    TV: Clone + 'static,
-{
+#[derive(Default)]
+pub struct Parser<TV> {
     pub content_file_name: Rc<str>,
     // The map of rule name to rule content
     pub rule_set: HashMap<Box<str>, Rule>,
@@ -42,10 +39,7 @@ impl RuleNodePair {
     }
 }
 
-impl<TV> Parser<TV>
-where
-    TV: Clone + 'static,
-{
+impl<TV> Parser<TV> {
     pub fn make(file: &Rc<File>, builder_map: BuilderMap<TV>) -> Result<Self, AnyBoxedError> {
         let mut schema_file = YamlFile::new(file.clone());
         schema_file.deserialize()?;

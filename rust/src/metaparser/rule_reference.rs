@@ -12,7 +12,6 @@ pub struct RuleReferenceBuilder;
 
 impl<TV> BuilderTrait<RuleReferenceBuilder> for Parser<TV>
 where
-    TV: Clone + 'static,
 {
     fn build(
         &mut self,

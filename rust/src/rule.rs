@@ -27,7 +27,6 @@ pub fn apply_rule<TV>(
     content: &Yaml,
 ) -> Result<LidyResult<TV>, AnyBoxedError>
 where
-    TV: Clone + 'static,
 {
     parser.rule_trace.push(rule_name.into());
 
@@ -77,7 +76,6 @@ pub fn apply_predefined_rule<TV>(
     only_check_if_rule_exists: bool,
 ) -> Result<LidyResult<TV>, AnyBoxedError>
 where
-    TV: Clone + 'static,
 {
     let predefined_rule: Option<PredefinedRuleFn<TV>> = match rule_name {
         "string" => Some(Box::new(|content: &Yaml| {

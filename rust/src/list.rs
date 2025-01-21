@@ -13,7 +13,6 @@ pub fn apply_list_matcher<TV>(
     content: &Yaml,
 ) -> Result<LidyResult<TV>, AnyBoxedError>
 where
-    TV: Clone + 'static,
 {
     if let YamlData::List(content_list) = &content.data {
         let mut data = ListData {

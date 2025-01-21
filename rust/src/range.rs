@@ -17,7 +17,6 @@ pub fn apply_range_matcher<TV>(
     content: &Yaml,
 ) -> Result<LidyResult<TV>, AnyBoxedError>
 where
-    TV: Clone + 'static,
 {
     // Check that content is a number
     let value = match &content.data {

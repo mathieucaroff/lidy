@@ -18,7 +18,6 @@ fn resolve_merge_reference<'a, TV>(
     node: &'a Yaml,
 ) -> Result<&'a Vec<(Yaml, Yaml)>, AnyBoxedError>
 where
-    TV: Clone + 'static,
 {
     match &node.data {
         YamlData::Mapping(yaml_mapping) => Ok(yaml_mapping),
@@ -45,7 +44,6 @@ fn contribute_to_map_info<TV>(
     merge: Option<&Yaml>,
 ) -> Result<(), AnyBoxedError>
 where
-    TV: Clone + 'static,
 {
     // Extracting from _merge
     if let Some(merge_yaml) = merge {
@@ -108,7 +106,6 @@ pub fn apply_map_matcher<TV>(
     content: &Yaml,
 ) -> Result<LidyResult<TV>, AnyBoxedError>
 where
-    TV: Clone + 'static,
 {
     if let YamlData::Mapping(content_mapping) = &content.data {
         let mut map_info = MapInfo {

@@ -9,7 +9,6 @@ pub struct SizeCheckerBuilder;
 
 impl<TV> BuilderTrait<SizeCheckerBuilder> for Parser<TV>
 where
-    TV: Clone + 'static,
 {
     fn build(
         &mut self,

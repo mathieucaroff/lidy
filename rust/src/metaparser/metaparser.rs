@@ -15,7 +15,6 @@ use crate::yamlfile::YamlFile;
 
 pub fn make_meta_parser_for<TV>(parser: &mut Parser<TV>) -> Result<Parser<()>, AnyBoxedError>
 where
-    TV: Clone + 'static,
 {
     let meta_schema_file = File::read_local_file("../../lidy.schema.yaml")?;
     let mut meta_schema = YamlFile::new(Rc::new(meta_schema_file));

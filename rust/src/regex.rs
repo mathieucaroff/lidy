@@ -10,7 +10,6 @@ pub fn apply_regex_matcher<TV>(
     content: &Yaml,
 ) -> Result<LidyResult<TV>, AnyBoxedError>
 where
-    TV: Clone + 'static,
 {
     // Obtain the regex pattern as string from the schema node
     let pattern = match &node.data {

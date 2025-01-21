@@ -12,7 +12,6 @@ pub fn apply_one_of_matcher<TV>(
     content: &Yaml,
 ) -> Result<LidyResult<TV>, AnyBoxedError>
 where
-    TV: Clone + 'static,
 {
     let items = match &node.data {
         YamlData::List(list) => list,

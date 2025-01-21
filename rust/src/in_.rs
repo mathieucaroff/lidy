@@ -10,7 +10,6 @@ pub fn apply_in_matcher<TV>(
     content: &Yaml,
 ) -> Result<LidyResult<TV>, AnyBoxedError>
 where
-    TV: Clone + 'static,
 {
     let valid_value_list = match &node.data {
         YamlData::List(list) => list,

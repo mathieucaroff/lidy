@@ -40,10 +40,7 @@ impl From<&Position> for LineCol {
     }
 }
 
-impl<TV> From<&LidyResult<TV>> for LineCol
-where
-    TV: Clone + 'static,
-{
+impl<TV> From<&LidyResult<TV>> for LineCol {
     fn from(result: &LidyResult<TV>) -> Self {
         LineCol {
             line: result.position.line,
@@ -56,19 +53,13 @@ where
 /// the data can be a mapping type, which itself requiers a key type and a
 /// value type.
 #[derive(Clone, Debug)]
-pub struct LidyResult<TV>
-where
-    TV: Clone + 'static,
-{
+pub struct LidyResult<TV> {
     pub position: Position,
     pub rule_name: Box<str>,
     pub data: Data<TV>,
 }
 
-impl<TV> LidyResult<TV>
-where
-    TV: Clone + 'static,
-{
+impl<TV> LidyResult<TV> {
     pub fn make(rule_name: &str, position: Position, data: Data<TV>) -> LidyResult<TV> {
         LidyResult::<TV> {
             position,
@@ -90,37 +81,25 @@ where {
 }
 
 #[derive(Clone, Debug)]
-pub struct MapData<TV>
-where
-    TV: Clone + 'static,
-{
+pub struct MapData<TV> {
     pub map: HashMap<Box<str>, LidyResult<TV>>,
     pub map_of: Vec<KeyValueData<TV>>,
 }
 
 #[derive(Clone, Debug)]
-pub struct KeyValueData<TV>
-where
-    TV: Clone + 'static,
-{
+pub struct KeyValueData<TV> {
     pub key: LidyResult<TV>,
     pub value: LidyResult<TV>,
 }
 
 #[derive(Clone, Debug)]
-pub struct ListData<TV>
-where
-    TV: Clone + 'static,
-{
+pub struct ListData<TV> {
     pub list: Vec<LidyResult<TV>>,
     pub list_of: Vec<LidyResult<TV>>,
 }
 
 #[derive(Clone, Debug)]
-pub enum Data<TV>
-where
-    TV: Clone + 'static,
-{
+pub enum Data<TV> {
     Float(f64),
     Integer(i64),
     String(Box<str>),

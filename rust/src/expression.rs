@@ -18,7 +18,6 @@ pub fn apply_expression<TV>(
     content: &Yaml,
 ) -> Result<LidyResult<TV>, AnyBoxedError>
 where
-    TV: Clone + 'static,
 {
     match &schema.data {
         YamlData::String(value) => apply_rule(parser, value, content),

@@ -12,7 +12,6 @@ pub struct MapCheckerBuilder;
 
 impl<TV> BuilderTrait<MapCheckerBuilder> for Parser<TV>
 where
-    TV: Clone + 'static,
 {
     fn build(
         &mut self,
@@ -45,7 +44,6 @@ where
 
 impl<TV> Parser<TV>
 where
-    TV: Clone + 'static,
 {
     fn check_merged_node(
         &self,
