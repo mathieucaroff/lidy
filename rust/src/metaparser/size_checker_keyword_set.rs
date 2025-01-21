@@ -5,16 +5,16 @@ use crate::{
 };
 
 #[derive(Clone)]
-pub struct MapCheckerBuilder;
+pub struct SizeCheckerBuilder;
 
-impl<TV> BuilderTrait<MapCheckerBuilder> for Parser<TV>
+impl<TV> BuilderTrait<SizeCheckerBuilder> for Parser<TV>
 where
     TV: Clone + 'static,
 {
     fn build(
         &mut self,
-        lidy_result: &LidyResult<MapCheckerBuilder>,
-    ) -> Result<Data<MapCheckerBuilder>, AnyBoxedError> {
+        lidy_result: &LidyResult<SizeCheckerBuilder>,
+    ) -> Result<Data<SizeCheckerBuilder>, AnyBoxedError> {
         if let Data::MapData(map_data) = &lidy_result.data {
             for keyword in &["_min", "_max", "_nb"] {
                 if let Some(value) = map_data.map.get(*keyword) {

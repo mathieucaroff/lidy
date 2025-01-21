@@ -2,6 +2,7 @@ use crate::{
     error::AnyBoxedError,
     result::{Data, LidyResult},
 };
+use std::collections::HashMap;
 
 pub trait BuilderTrait<TV>: Clone
 where
@@ -10,6 +11,4 @@ where
     fn build(&mut self, lidy_result: &LidyResult<TV>) -> Result<Data<TV>, AnyBoxedError>;
 }
 
-pub struct Builder<TV>(pub Box<dyn BuilderTrait<TV>>)
-where
-    TV: Clone;
+pub type BuilderMap<TV> = HashMap<Box<str>, Box<dyn BuilderTrait<TV>>>;

@@ -2,7 +2,7 @@ use lidy__yaml::{LineCol, Yaml, YamlData};
 use std::collections::HashMap;
 use std::rc::Rc;
 
-use crate::builder::Builder;
+use crate::builder::BuilderMap;
 use crate::error::{AnyBoxedError, SimpleError};
 use crate::file::File;
 use crate::metaparser::{check_rule_set, make_meta_parser_for};
@@ -18,7 +18,7 @@ where
     // The map of rule name to rule content
     pub rule_set: HashMap<Box<str>, Rule>,
     // The map of builder functions for each rule
-    pub builder_map: HashMap<Box<str>, Builder<TV>>,
+    pub builder_map: BuilderMap<TV>,
     // The stack of the names of the rules
     pub rule_trace: Vec<Box<str>>,
     // Whether this rule is already being processed for a node. This is used
@@ -45,10 +45,7 @@ impl<TV> Parser<TV>
 where
     TV: Clone + 'static,
 {
-    pub fn make(
-        file: &Rc<File>,
-        builder_map: HashMap<Box<str>, Builder<TV>>,
-    ) -> Result<Self, AnyBoxedError> {
+    pub fn make(file: &Rc<File>, builder_map: BuilderMap<TV>) -> Result<Self, AnyBoxedError> {
         let mut schema_file = YamlFile::new(file.clone());
         schema_file.deserialize()?;
 

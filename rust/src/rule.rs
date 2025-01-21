@@ -56,8 +56,8 @@ where
 
             parser.rule_is_matching_node.remove(&rule_node_pair);
 
-            if let Some(builder) = rule.builder {
-                lidy_result.data = builder.borrow_mut()(&lidy_result)?;
+            if let Some(builder) = parser.builder_map.get(rule_name) {
+                lidy_result.data = (&builder).build(&lidy_result)?;
             }
 
             Ok(lidy_result)

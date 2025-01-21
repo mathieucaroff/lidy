@@ -3,15 +3,12 @@ use std::collections::HashMap;
 use lidy__yaml::{LineCol, Yaml};
 
 use crate::{
-    builder::{Builder, BuilderTrait},
-    error::AnyBoxedError,
-    result::Data,
-    rule::apply_predefined_rule,
+    builder::BuilderTrait, error::AnyBoxedError, result::Data, rule::apply_predefined_rule,
     LidyResult, Parser, SimpleError,
 };
 
 #[derive(Clone)]
-struct RuleReferenceBuilder;
+pub struct RuleReferenceBuilder;
 
 impl<TV> BuilderTrait<RuleReferenceBuilder> for Parser<TV>
 where
@@ -33,7 +30,7 @@ where
                 &mut Parser{
                     content_file_name: "ruleCheck".into(),
                     rule_set: HashMap::new(),
-                    builder_map: HashMap::<Box<str>, Builder<()>>::new(),
+                    builder_map: HashMap::<Box<str>, Box<dyn BuilderTrait<TV>>>::new(),
                     rule_trace: Vec::new(),
                     rule_is_matching_node: HashMap::new(),
                 },

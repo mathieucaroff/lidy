@@ -1,16 +1,17 @@
 use std::collections::HashMap;
 use std::rc::Rc;
 
-use lidy__yaml::{LineCol, Yaml, YamlData};
+use lidy__yaml::{Yaml, YamlData};
 
-use crate::builder::{Builder, BuilderTrait};
+use super::map_checker::MapCheckerBuilder;
+use super::rule_reference::RuleReferenceBuilder;
+use super::size_checker_keyword_set::SizeCheckerBuilder;
+use crate::builder::{BuilderMap, BuilderTrait};
 use crate::error::{AnyBoxedError, JoinError, SimpleError};
 use crate::file::File;
 use crate::parser::{make_rule_set, Parser};
 use crate::rule::Rule;
 use crate::yamlfile::YamlFile;
-
-use super::size_checker_keyword_set::MapCheckerBuilder;
 
 pub fn make_meta_parser_for<TV>(parser: &mut Parser<TV>) -> Result<Parser<()>, AnyBoxedError>
 where
@@ -20,16 +21,21 @@ where
     let mut meta_schema = YamlFile::new(Rc::new(meta_schema_file));
     meta_schema.deserialize()?;
 
-    let meta_builder_map: HashMap<Box<str>, Builder<TV>> = HashMap::from([
+    // HashMap<Box<str>, Box<dyn BuilderTrait<TV>>>
+
+    let meta_builder_map: BuilderMap<TV> = HashMap::from([
         (
             Box::from("mapChecker"),
-            Builder::<TV>(Box::new(parser.clone())),
+            Box::from(BuilderTrait::<MapCheckerBuilder>(parser.clone())),
         ),
-        // (Box::from("ruleReference"), rule_reference_builder),
-        // (
-        //     Box::from("sizedCheckerKeywordSet"),
-        //     sized_checker_keyword_set_builder,
-        // ),
+        (
+            Box::from("ruleReference"),
+            Box::from(BuilderTrait::<RuleReferenceBuilder>(parser.clone())),
+        ),
+        (
+            Box::from("sizedCheckerKeywordSet"),
+            Box::from(BuilderTrait::<SizeCheckerBuilder>(parser.clone())),
+        ),
     ]);
 
     let rule_set = make_rule_set(&meta_schema)?;
@@ -37,7 +43,7 @@ where
     let mut meta_parser = Parser {
         content_file_name: "lidy.schema.yaml".into(),
         rule_set,
-        builder_map: HashMap::new(),
+        builder_map: meta_builder_map,
         rule_trace: Vec::new(),
         rule_is_matching_node: HashMap::new(),
     };

@@ -8,7 +8,7 @@ use crate::{
 };
 
 #[derive(Clone)]
-struct MapCheckerBuilder;
+pub struct MapCheckerBuilder;
 
 impl<TV> BuilderTrait<MapCheckerBuilder> for Parser<TV>
 where
