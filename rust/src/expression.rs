@@ -61,12 +61,6 @@ where
             }
 
             let mut join_error = JoinError::default();
-            if min.is_some() || max.is_some() || nb.is_some() {
-                if let Some(error) = apply_size_check(content, min, max, nb) {
-                    join_error.add(error);
-                }
-            }
-
             let mut result = None;
 
             if map.is_some() || map_facultative.is_some() || map_of.is_some() || merge.is_some() {
@@ -88,6 +82,20 @@ where
                     list_of,
                     content,
                 )?);
+            }
+
+            if min.is_some() || max.is_some() || nb.is_some() {
+                if result.is_some() {
+                    if let Some(error) = apply_size_check(content, min, max, nb) {
+                        join_error.add(error);
+                    }
+                } else {
+                    join_error.add(SimpleError::from_check(
+                        "_size",
+                        "Size constraints (_min, _max, _nb) can only be applied to containers (maps or sequences)",
+                        content,
+                    ).into());
+                }
             }
 
             result.ok_or_else(|| {
