@@ -3,6 +3,7 @@ use lidy__yaml::{Yaml, YamlData};
 use regex::Regex;
 
 use crate::result::Data;
+use crate::syaml::must_parse_float;
 use crate::{error::AnyBoxedError, parser::Parser, LidyResult, SimpleError};
 
 lazy_static! {
@@ -21,7 +22,7 @@ where
     // Check that content is a number
     let value = match &content.data {
         YamlData::Integer(i) => *i as f64,
-        YamlData::Real(r) => r.parse::<f64>().unwrap(),
+        YamlData::Real(r) => must_parse_float(r),
         _ => {
             return Err(SimpleError::from_check("_range", "must be a number", content).into());
         }

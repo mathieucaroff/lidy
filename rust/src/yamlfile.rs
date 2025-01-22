@@ -25,6 +25,7 @@ impl YamlFile {
         if docs.is_empty() {
             return Err("No YAML document found".into());
         }
+        self.yaml = docs[0].clone();
         Ok(())
     }
 }

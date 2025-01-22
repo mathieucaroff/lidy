@@ -3,6 +3,7 @@ use crate::error::AnyBoxedError;
 use crate::expression::apply_expression;
 use crate::parser::{Parser, RuleNodePair};
 use crate::result::{Data, LidyResult, Position};
+use crate::syaml::must_parse_float;
 use lidy__yaml::{Yaml, YamlData};
 use regex::Regex;
 
@@ -92,12 +93,7 @@ where
         })),
         "float" => Some(Box::new(|content: &Yaml| {
             if let YamlData::Real(value) = &content.data {
-                match value.parse() {
-                    Ok(value) => Ok(Data::Float(value)),
-                    Err(e) => {
-                        panic!("failed to parse Yaml Real into Rust f64 float: {e}")
-                    }
-                }
+                Ok(Data::Float(must_parse_float(value)))
             } else {
                 Err("expected a float".into())
             }

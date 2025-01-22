@@ -5,7 +5,9 @@ use std::{collections::HashMap, rc::Rc};
 
 use lidy__yaml::{Yaml, YamlData};
 
-use crate::{result::Data, KeyValueData, LidyResult, ListData, MapData, Position};
+use crate::{
+    result::Data, syaml::must_parse_float, KeyValueData, LidyResult, ListData, MapData, Position,
+};
 
 // Info:
 //
@@ -20,7 +22,7 @@ where
     match &content.data {
         YamlData::String(value) => Data::String(value.clone().into()),
         YamlData::Integer(value) => Data::Integer(*value),
-        YamlData::Real(value) => Data::Float(value.parse().ok().unwrap()),
+        YamlData::Real(value) => Data::Float(must_parse_float(value)),
         YamlData::Boolean(value) => Data::Boolean(*value),
         YamlData::Null => Data::Null,
         YamlData::Mapping(value_mapping) => {

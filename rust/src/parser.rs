@@ -99,6 +99,13 @@ pub fn make_rule_set(yaml_file: &YamlFile) -> Result<HashMap<Box<str>, Rule>, An
             }
             Ok(rule_set)
         }
-        _ => Err(SimpleError::from_message("The document should be a YAML map.".into()).into()),
+        _ => Err(SimpleError::from_message(
+            format!(
+                "The document should be a YAML map, not {:?}",
+                yaml_file.yaml.data
+            )
+            .into(),
+        )
+        .into()),
     }
 }

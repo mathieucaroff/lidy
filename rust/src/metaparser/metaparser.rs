@@ -17,7 +17,7 @@ pub fn make_meta_parser_for<'a, 'b, TV>(
 where
     'a: 'b,
 {
-    let meta_schema_file = File::read_local_file("../../lidy.schema.yaml")?;
+    let meta_schema_file = File::read_local_file("../lidy.schema.yaml")?;
     let mut meta_schema = YamlFile::new(Rc::new(meta_schema_file));
     meta_schema.deserialize()?;
 
