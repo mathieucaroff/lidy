@@ -139,7 +139,7 @@ fn test_lidy() {
                     }
                 }
                 // TODO check this call once make_parser is implemented
-                let parser = lidy::Parser::<()>::make(
+                let parser_result = lidy::Parser::<()>::make(
                     &Rc::from(lidy::File {
                         name: "<schema>.yaml".into(),
                         content: schema.unwrap().clone(),
@@ -147,7 +147,7 @@ fn test_lidy() {
                     Box::new(|_, lidy_result| Ok(lidy_result.data.clone())),
                 );
 
-                if let Err(err) = parser {
+                if let Err(err) = parser_result {
                     error = Some(format!("error in schema: {}", err).into());
                 }
             }
@@ -168,7 +168,7 @@ fn test_lidy() {
                 }
             } else {
                 if error.is_none() {
-                    return Err("no error was found".into());
+                    return Err(format!("no error was found ({name})").into());
                 }
                 if let Some(wanted) = error_contains {
                     let message = error.unwrap();

@@ -25,15 +25,15 @@ impl<'a, TV> Parser<'a, TV> {
                 }
             }
             let min = map_data.map.get("_min").and_then(|v| match v.data {
-                Data::Float(n) => Some(n),
+                Data::Integer(n) => Some(n),
                 _ => None,
             });
             let max = map_data.map.get("_max").and_then(|v| match v.data {
-                Data::Float(n) => Some(n),
+                Data::Integer(n) => Some(n),
                 _ => None,
             });
             let nb = map_data.map.get("_nb").and_then(|v| match v.data {
-                Data::Float(n) => Some(n),
+                Data::Integer(n) => Some(n),
                 _ => None,
             });
 

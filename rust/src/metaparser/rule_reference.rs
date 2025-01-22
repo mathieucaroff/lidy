@@ -14,7 +14,10 @@ impl<'a, TV> Parser<'a, TV> {
     ) -> Result<Data<()>, AnyBoxedError> {
         let identifier = match &lidy_result.data {
             Data::String(s) => s.to_string(),
-            _ => return Ok(lidy_result.data.clone()),
+            _ => {
+                panic!("never non-string identifier for rule reference");
+                // return Ok(lidy_result.data.clone())
+            }
         };
 
         if let Some(rule) = self.rule_set.get_mut(&*identifier) {

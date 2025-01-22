@@ -21,11 +21,11 @@ where
     let mut meta_schema = YamlFile::new(Rc::new(meta_schema_file));
     meta_schema.deserialize()?;
 
-    let rule_set = make_rule_set(&meta_schema)?;
+    let meta_rule_set = make_rule_set(&meta_schema)?;
 
     let meta_parser = Parser {
         content_file_name: "lidy.schema.yaml".into(),
-        rule_set,
+        rule_set: meta_rule_set,
         rule_trace: Vec::new(),
         rule_is_matching_node: HashMap::new(),
         builder_callback: Box::new(

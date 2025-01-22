@@ -1,5 +1,6 @@
 use lidy__yaml::{LineCol, Yaml, YamlData};
 use std::collections::HashMap;
+use std::fmt::{self, Debug};
 use std::rc::Rc;
 
 use crate::error::{AnyBoxedError, SimpleError};
@@ -24,7 +25,20 @@ pub struct Parser<'a, TV> {
     pub rule_is_matching_node: HashMap<RuleNodePair, ()>,
 }
 
-#[derive(Clone, Eq, PartialEq, Hash)]
+impl<'a, TV> Debug for Parser<'a, TV> {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(
+            f,
+            "Parser{{content_file_name: {:?}}}{{rule_set: {:?}}}{{builder_callback: (closure)}}{{rule_trace: {:?}}}{{rule_is_matching_node: {:?}}}",
+            self.content_file_name,
+            self.rule_set,
+            self.rule_trace,
+            self.rule_is_matching_node,
+        )
+    }
+}
+
+#[derive(Clone, Debug, Eq, PartialEq, Hash)]
 pub struct RuleNodePair {
     pub rule: Box<str>,
     pub node_line_col: LineCol,

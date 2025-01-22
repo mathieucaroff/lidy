@@ -11,7 +11,7 @@ lazy_static::lazy_static! {
     static ref REGEX_BASE64: Regex = Regex::new(r"^[a-zA-Z0-9_\- \n]*[= \n]*$").unwrap();
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Rule {
     // Name of the rule in the schema
     pub name: Box<str>,
@@ -31,9 +31,18 @@ where
 {
     parser.rule_trace.push(rule_name.into());
 
-    let rule_node_pair = RuleNodePair::new(rule_name.into(), content);
+    let result = try_apply_rule(parser, rule_name, content);
+    parser.rule_trace.pop();
+    result
+}
 
-    let result = match parser.rule_set.get(rule_name) {
+fn try_apply_rule<TV>(
+    parser: &mut Parser<'_, TV>,
+    rule_name: &str,
+    content: &Yaml,
+) -> Result<LidyResult<TV>, AnyBoxedError> {
+    let rule_node_pair = RuleNodePair::new(rule_name.into(), content);
+    match parser.rule_set.get(rule_name) {
         None => apply_predefined_rule(parser, rule_name, content, false),
         Some(rule) => {
             let rule = rule.clone();
@@ -60,9 +69,7 @@ where
 
             Ok(lidy_result)
         }
-    };
-    parser.rule_trace.pop();
-    result
+    }
 }
 
 type RuleResult<TV> = Result<Data<TV>, AnyBoxedError>;
@@ -94,6 +101,8 @@ where
         "float" => Some(Box::new(|content: &Yaml| {
             if let YamlData::Real(value) = &content.data {
                 Ok(Data::Float(must_parse_float(value)))
+            } else if let YamlData::Integer(value) = &content.data {
+                Ok(Data::Float(*value as f64))
             } else {
                 Err("expected a float".into())
             }
