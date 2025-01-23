@@ -7,6 +7,8 @@ use crate::{
 };
 
 impl<'a, TV> Parser<'a, TV> {
+    // Check the given mapping produced by the current parser to make sure that
+    // all _merge references of the schema are valid
     pub fn run_map_checker_builder(
         &mut self,
         lidy_result: &LidyResult<()>,
@@ -43,8 +45,9 @@ impl<'a, TV> Parser<'a, TV> {
     ) -> Option<AnyBoxedError> {
         let rule = self.rule_set.get(name);
         if rule.is_none() {
+            let rule_name = self.rule_trace.last();
             return Some(Box::new(SimpleError::from_check_result(
-                "_merge",
+                rule_name.unwrap_or(&"_merge".into()),
                 &format!(
                     "unknown rule '{name}' encountered at {} following rules from a _merge keyword",
                     LineCol::from(last_position)

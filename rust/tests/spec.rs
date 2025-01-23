@@ -147,8 +147,10 @@ fn test_lidy() {
                     Box::new(|_, lidy_result| Ok(lidy_result.data.clone())),
                 );
 
+                println!("PARSER RESULT: {:?}", parser_result);
+
                 if let Err(err) = parser_result {
-                    error = Some(format!("error in schema: {}", err).into());
+                    error = Some(err.to_string().into());
                 }
             }
 

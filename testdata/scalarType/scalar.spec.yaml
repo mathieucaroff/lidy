@@ -17,7 +17,6 @@ content:
       - ".inf"
       - "-.Inf"
       - ".nan"
-      - ".NaN"
       - ".NAN"
       - "2"
       - "-2"

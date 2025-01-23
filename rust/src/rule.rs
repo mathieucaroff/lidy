@@ -4,6 +4,7 @@ use crate::expression::apply_expression;
 use crate::parser::{Parser, RuleNodePair};
 use crate::result::{Data, LidyResult, Position};
 use crate::syaml::must_parse_float;
+use crate::SimpleError;
 use lidy__yaml::{Yaml, YamlData};
 use regex::Regex;
 
@@ -61,7 +62,9 @@ fn try_apply_rule<TV>(
             parser
                 .rule_is_matching_node
                 .insert(rule_node_pair.clone(), ());
-            let mut lidy_result = apply_expression(parser, &rule.node, content)?;
+            let mut lidy_result = apply_expression(parser, &rule.node, content).map_err(|err| {
+                SimpleError::from_check_result(rule_name, &err.to_string(), content.line_col)
+            })?;
 
             parser.rule_is_matching_node.remove(&rule_node_pair);
 

@@ -61,46 +61,55 @@ where
             }
 
             let mut join_error = JoinError::default();
-            let mut result = None;
 
-            if map.is_some() || map_facultative.is_some() || map_of.is_some() || merge.is_some() {
-                result = Some(apply_map_matcher(
+            let is_mapping =
+                map.is_some() || map_facultative.is_some() || map_of.is_some() || merge.is_some();
+            let is_list = list.is_some() || list_facultative.is_some() || list_of.is_some();
+
+            if is_mapping && is_list {
+                return Err(SimpleError::from_check(
+                    "_(map*|list*)",
+                    "Cannot apply _map and _list at the same time",
+                    schema,
+                )
+                .into());
+            }
+
+            let result = if is_mapping {
+                Some(apply_map_matcher(
                     parser,
                     map,
                     map_facultative,
                     map_of,
                     merge,
                     content,
-                )?);
-            }
-
-            if list.is_some() || list_facultative.is_some() || list_of.is_some() {
-                result = Some(apply_list_matcher(
+                )?)
+            } else if is_list {
+                Some(apply_list_matcher(
                     parser,
                     list,
                     list_facultative,
                     list_of,
                     content,
-                )?);
-            }
+                )?)
+            } else {
+                return Err(SimpleError::from_check(
+                    "_(map*|list*)",
+                    "no keyword found in matcher",
+                    schema,
+                )
+                .into());
+            };
 
             if min.is_some() || max.is_some() || nb.is_some() {
-                if result.is_some() {
-                    if let Some(error) = apply_size_check(content, min, max, nb) {
-                        join_error.add(error);
-                    }
-                } else {
-                    join_error.add(SimpleError::from_check(
-                        "_size",
-                        "Size constraints (_min, _max, _nb) can only be applied to containers (maps or sequences)",
-                        content,
-                    ).into());
+                if let Some(error) = apply_size_check(content, min, max, nb) {
+                    join_error.add(error);
                 }
             }
 
-            result.ok_or_else(|| {
-                SimpleError::from_message("No keyword found in matcher".into()).into()
-            })
+            join_error.into_result()?;
+
+            Ok(result.unwrap())
         }
         _ => panic!("Lidy expressions must be strings (rule names) or mappings (checkers)"),
     }
