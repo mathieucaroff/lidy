@@ -13,6 +13,7 @@
 !/js/
 !/python/
 !/rust/
+!/schema/
 !/testdata/
 
 !/.gitignore

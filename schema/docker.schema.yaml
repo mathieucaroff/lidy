@@ -1,0 +1,571 @@
+main: compose
+
+compose:
+  _mapFacultative:
+    name: string
+    version: string
+    include: includeList
+    services: services
+    networks: networks
+    volumes: volumes
+    configs: configs
+    secrets: secrets
+  _mapOf: { string: value }
+
+services:
+  _mapOf: { string: service }
+
+service:
+  _mapFacultative:
+    image: string
+    build: build
+    pull_policy: string
+    platform: string
+    command: stringOrStringList
+    entrypoint: stringOrStringList
+    container_name: string
+    hostname: string
+    domainname: string
+    user: string
+    working_dir: string
+    profiles: stringList
+    depends_on: dependsOn
+    environment: environment
+    env_file: envFile
+    labels: labels
+    ports: ports
+    expose: stringOrIntList
+    volumes: serviceVolumes
+    tmpfs: stringOrStringList
+    configs: serviceConfigs
+    secrets: serviceSecrets
+    networks: serviceNetworks
+    restart: string
+    init: boolean
+    stdin_open: boolean
+    tty: boolean
+    privileged: boolean
+    read_only: boolean
+    shm_size: stringOrInt
+    stop_grace_period: string
+    stop_signal: string
+    healthcheck: healthcheck
+    deploy: deploy
+    develop: develop
+    logging: logging
+    extra_hosts: extraHosts
+    dns: stringOrStringList
+    dns_search: stringOrStringList
+    cap_add: stringList
+    cap_drop: stringList
+    devices: stringList
+    sysctls: stringMap
+    ulimits: ulimits
+    extends: extends
+  _mapOf: { string: value }
+
+build:
+  _oneOf:
+    - string
+    - buildMap
+
+buildMap:
+  _mapFacultative:
+    context: string
+    dockerfile: string
+    dockerfile_inline: string
+    target: string
+    network: string
+    shm_size: stringOrInt
+    privileged: boolean
+    pull: boolean
+    no_cache: boolean
+    isolation: string
+    entitlements: stringList
+    extra_hosts: stringList
+    cache_from: stringOrBuildCacheList
+    cache_to: stringOrBuildCacheList
+    additional_contexts: stringMap
+    args: environment
+    labels: labels
+    platforms: stringList
+    secrets: stringList
+    ssh: stringOrStringList
+    tags: stringList
+    ulimits: ulimits
+  _mapOf: { string: value }
+
+dependsOn:
+  _oneOf:
+    - stringList
+    - dependsOnMap
+
+dependsOnMap:
+  _mapOf: { string: dependsOnCondition }
+
+dependsOnCondition:
+  _oneOf:
+    - string
+    - dependsOnConditionMap
+
+dependsOnConditionMap:
+  _mapFacultative:
+    condition: string
+    restart: boolean
+    required: boolean
+  _mapOf: { string: value }
+
+environment:
+  _oneOf:
+    - stringList
+    - stringMap
+
+envFile:
+  _oneOf:
+    - string
+    - stringList
+    - envFileEntries
+
+envFileEntries:
+  _listOf: envFileEntry
+  _min: 1
+
+envFileEntry:
+  _oneOf:
+    - string
+    - envFileMap
+
+envFileMap:
+  _map:
+    path: string
+  _mapFacultative:
+    required: boolean
+    format: string
+  _mapOf: { string: value }
+
+labels:
+  _oneOf:
+    - stringList
+    - stringMap
+
+ports:
+  _listOf: port
+  _min: 1
+
+port:
+  _oneOf:
+    - string
+    - int
+    - portMap
+
+portMap:
+  _mapFacultative:
+    name: string
+    target: int
+    published: stringOrInt
+    host_ip: string
+    protocol: string
+    app_protocol: string
+    mode: string
+  _mapOf: { string: value }
+
+serviceVolumes:
+  _listOf: serviceVolume
+  _min: 1
+
+serviceVolume:
+  _oneOf:
+    - string
+    - serviceVolumeMap
+
+serviceVolumeMap:
+  _mapFacultative:
+    type: string
+    source: string
+    target: string
+    read_only: boolean
+    consistency: string
+    bind: valueMap
+    volume: valueMap
+    tmpfs: valueMap
+  _mapOf: { string: value }
+
+serviceConfigs:
+  _listOf: serviceConfig
+  _min: 1
+
+serviceConfig:
+  _oneOf:
+    - string
+    - serviceConfigMap
+
+serviceConfigMap:
+  _map:
+    source: string
+  _mapFacultative:
+    target: string
+    uid: string
+    gid: string
+    mode: int
+  _mapOf: { string: value }
+
+serviceSecrets:
+  _listOf: serviceSecret
+  _min: 1
+
+serviceSecret:
+  _oneOf:
+    - string
+    - serviceSecretMap
+
+serviceSecretMap:
+  _map:
+    source: string
+  _mapFacultative:
+    target: string
+    uid: string
+    gid: string
+    mode: int
+  _mapOf: { string: value }
+
+serviceNetworks:
+  _oneOf:
+    - stringList
+    - serviceNetworksMap
+
+serviceNetworksMap:
+  _mapOf: { string: serviceNetwork }
+
+serviceNetwork:
+  _oneOf:
+    - nullType
+    - serviceNetworkMap
+
+serviceNetworkMap:
+  _mapFacultative:
+    aliases: stringList
+    ipv4_address: string
+    ipv6_address: string
+    link_local_ips: stringList
+    priority: int
+    gw_priority: int
+    mac_address: string
+    driver_opts: stringMap
+  _mapOf: { string: value }
+
+healthcheck:
+  _mapFacultative:
+    test: healthcheckTest
+    interval: string
+    timeout: string
+    retries: int
+    start_period: string
+    start_interval: string
+    disable: boolean
+  _mapOf: { string: value }
+
+healthcheckTest:
+  _oneOf:
+    - string
+    - stringList
+
+deploy:
+  _mapFacultative:
+    mode: string
+    endpoint_mode: string
+    replicas: int
+    labels: labels
+    rollback_config: updateConfig
+    update_config: updateConfig
+    restart_policy: restartPolicy
+    resources: resources
+    placement: placement
+  _mapOf: { string: value }
+
+updateConfig:
+  _mapFacultative:
+    parallelism: int
+    delay: string
+    failure_action: string
+    monitor: string
+    max_failure_ratio: float
+    order: string
+  _mapOf: { string: value }
+
+restartPolicy:
+  _mapFacultative:
+    condition: string
+    delay: string
+    max_attempts: int
+    window: string
+  _mapOf: { string: value }
+
+resources:
+  _mapFacultative:
+    limits: resourceValues
+    reservations: resourceValues
+  _mapOf: { string: value }
+
+resourceValues:
+  _mapFacultative:
+    cpus: string
+    memory: string
+    pids: int
+    devices: resourceDevices
+  _mapOf: { string: value }
+
+resourceDevices:
+  _listOf: resourceDevice
+  _min: 1
+
+resourceDevice:
+  _mapFacultative:
+    capabilities: stringList
+    driver: string
+    count: stringOrInt
+    device_ids: stringList
+    options: stringMap
+  _mapOf: { string: value }
+
+placement:
+  _mapFacultative:
+    constraints: stringList
+    preferences: placementPreferences
+    max_replicas_per_node: int
+  _mapOf: { string: value }
+
+placementPreferences:
+  _listOf: placementPreference
+  _min: 1
+
+placementPreference:
+  _mapFacultative:
+    spread: string
+  _mapOf: { string: value }
+
+develop:
+  _mapFacultative:
+    watch: watchRules
+  _mapOf: { string: value }
+
+watchRules:
+  _listOf: watchRule
+  _min: 1
+
+watchRule:
+  _map:
+    action: string
+    path: string
+  _mapFacultative:
+    target: string
+    ignore: stringList
+  _mapOf: { string: value }
+
+logging:
+  _mapFacultative:
+    driver: string
+    options: stringMap
+  _mapOf: { string: value }
+
+extraHosts:
+  _oneOf:
+    - stringList
+    - stringMap
+
+ulimits:
+  _oneOf:
+    - int
+    - ulimitsMap
+
+ulimitsMap:
+  _mapOf: { string: ulimitValue }
+
+ulimitValue:
+  _oneOf:
+    - int
+    - softHardLimit
+
+softHardLimit:
+  _mapFacultative:
+    soft: int
+    hard: int
+  _mapOf: { string: value }
+
+extends:
+  _oneOf:
+    - string
+    - extendsMap
+
+extendsMap:
+  _mapFacultative:
+    file: string
+    service: string
+  _mapOf: { string: value }
+
+networks:
+  _mapOf: { string: network }
+
+network:
+  _oneOf:
+    - nullType
+    - networkMap
+
+networkMap:
+  _mapFacultative:
+    name: string
+    driver: string
+    driver_opts: stringMap
+    attachable: boolean
+    enable_ipv4: boolean
+    enable_ipv6: boolean
+    external: booleanOrExternalMap
+    internal: boolean
+    labels: labels
+    ipam: ipam
+  _mapOf: { string: value }
+
+ipam:
+  _mapFacultative:
+    driver: string
+    options: stringMap
+    config: ipamConfigs
+  _mapOf: { string: value }
+
+ipamConfigs:
+  _listOf: ipamConfig
+  _min: 1
+
+ipamConfig:
+  _mapFacultative:
+    subnet: string
+    ip_range: string
+    gateway: string
+    aux_addresses: stringMap
+  _mapOf: { string: value }
+
+volumes:
+  _mapOf: { string: volume }
+
+volume:
+  _oneOf:
+    - nullType
+    - volumeMap
+
+volumeMap:
+  _mapFacultative:
+    name: string
+    driver: string
+    driver_opts: stringMap
+    external: booleanOrExternalMap
+    labels: labels
+  _mapOf: { string: value }
+
+configs:
+  _mapOf: { string: config }
+
+config:
+  _oneOf:
+    - nullType
+    - configMap
+
+configMap:
+  _mapFacultative:
+    name: string
+    file: string
+    environment: string
+    content: string
+    external: booleanOrExternalMap
+    labels: labels
+    template_driver: string
+  _mapOf: { string: value }
+
+secrets:
+  _mapOf: { string: secret }
+
+secret:
+  _oneOf:
+    - nullType
+    - secretMap
+
+secretMap:
+  _mapFacultative:
+    name: string
+    file: string
+    environment: string
+    external: booleanOrExternalMap
+    labels: labels
+  _mapOf: { string: value }
+
+includeList:
+  _oneOf:
+    - string
+    - includeEntries
+
+includeEntries:
+  _listOf: includeEntry
+  _min: 1
+
+includeEntry:
+  _oneOf:
+    - string
+    - includeMap
+
+includeMap:
+  _mapFacultative:
+    path: stringOrStringList
+    project_directory: string
+    env_file: envFile
+  _mapOf: { string: value }
+
+booleanOrExternalMap:
+  _oneOf:
+    - boolean
+    - externalMap
+
+externalMap:
+  _mapFacultative:
+    name: string
+  _mapOf: { string: value }
+
+stringOrStringList:
+  _oneOf:
+    - string
+    - stringList
+
+stringOrInt:
+  _oneOf:
+    - string
+    - int
+
+stringOrIntList:
+  _listOf: stringOrInt
+  _min: 1
+
+stringOrBuildCacheList:
+  _oneOf:
+    - string
+    - buildCacheList
+
+buildCacheList:
+  _listOf: string
+  _min: 1
+
+stringList:
+  _listOf: string
+  _min: 1
+
+stringMap:
+  _mapOf: { string: string }
+
+valueMap:
+  _mapOf: { string: value }
+
+value:
+  _oneOf:
+    - string
+    - int
+    - float
+    - boolean
+    - nullType
+    - { _listOf: anyData }
+    - { _mapOf: { string: anyData } }

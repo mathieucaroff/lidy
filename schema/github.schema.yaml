@@ -1,0 +1,239 @@
+main: workflow
+
+workflow:
+  _map:
+    on: trigger
+    jobs: jobs
+  _mapFacultative:
+    name: string
+    run-name: string
+    env: env
+    defaults: defaults
+    permissions: permissions
+    concurrency: concurrency
+  _mapOf: { string: value }
+
+trigger:
+  _oneOf:
+    - string
+    - stringList
+    - triggerMap
+
+triggerMap:
+  _mapOf: { string: eventConfig }
+
+eventConfig:
+  _oneOf:
+    - nullType
+    - eventFilters
+
+eventFilters:
+  _mapOf: { string: value }
+
+jobs:
+  _mapOf: { string: job }
+
+job:
+  _oneOf:
+    - runJob
+    - reusableJob
+
+runJob:
+  _map:
+    runs-on: runsOn
+    steps: steps
+  _mapFacultative:
+    name: string
+    needs: stringOrStringList
+    if: string
+    permissions: permissions
+    env: env
+    defaults: defaults
+    concurrency: concurrency
+    strategy: strategy
+    timeout-minutes: int
+    continue-on-error: boolean
+    container: container
+    services: services
+    outputs: stringMap
+  _mapOf: { string: value }
+
+reusableJob:
+  _map:
+    uses: string
+  _mapFacultative:
+    name: string
+    needs: stringOrStringList
+    if: string
+    permissions: permissions
+    env: env
+    concurrency: concurrency
+    strategy: strategy
+    with: valueMap
+    secrets: secrets
+  _mapOf: { string: value }
+
+steps:
+  _listOf: step
+  _min: 1
+
+step:
+  _oneOf:
+    - runStep
+    - usesStep
+
+runStep:
+  _map:
+    run: string
+  _mapFacultative:
+    name: string
+    id: string
+    if: string
+    shell: string
+    env: env
+    working-directory: string
+    timeout-minutes: int
+    continue-on-error: boolean
+  _mapOf: { string: value }
+
+usesStep:
+  _map:
+    uses: string
+  _mapFacultative:
+    name: string
+    id: string
+    if: string
+    with: valueMap
+    env: env
+    timeout-minutes: int
+    continue-on-error: boolean
+  _mapOf: { string: value }
+
+runsOn:
+  _oneOf:
+    - string
+    - stringList
+    - runsOnMap
+
+runsOnMap:
+  _mapFacultative:
+    group: string
+    labels: stringOrStringList
+  _mapOf: { string: value }
+
+defaults:
+  _mapFacultative:
+    run: defaultsRun
+  _mapOf: { string: value }
+
+defaultsRun:
+  _mapFacultative:
+    shell: string
+    working-directory: string
+  _mapOf: { string: value }
+
+permissions:
+  _oneOf:
+    - string
+    - permissionsMap
+
+permissionsMap:
+  _mapOf: { string: permission }
+
+permission:
+  _in: [read, write, none]
+
+concurrency:
+  _oneOf:
+    - string
+    - concurrencyMap
+
+concurrencyMap:
+  _map:
+    group: string
+  _mapFacultative:
+    cancel-in-progress: boolean
+  _mapOf: { string: value }
+
+strategy:
+  _mapFacultative:
+    fail-fast: boolean
+    max-parallel: int
+    matrix: valueMap
+  _mapOf: { string: value }
+
+container:
+  _oneOf:
+    - string
+    - containerMap
+
+containerMap:
+  _map:
+    image: string
+  _mapFacultative:
+    env: env
+    ports: stringList
+    volumes: stringList
+    credentials: valueMap
+    options: string
+  _mapOf: { string: value }
+
+services:
+  _mapOf: { string: service }
+
+service:
+  _oneOf:
+    - string
+    - serviceMap
+
+serviceMap:
+  _map:
+    image: string
+  _mapFacultative:
+    env: env
+    ports: stringList
+    volumes: stringList
+    credentials: valueMap
+    options: string
+  _mapOf: { string: value }
+
+secrets:
+  _oneOf:
+    - string
+    - stringMap
+
+env:
+  _mapOf: { string: value }
+
+stringMap:
+  _mapOf: { string: string }
+
+valueMap:
+  _mapOf: { string: value }
+
+stringOrStringList:
+  _oneOf:
+    - string
+    - stringList
+
+stringList:
+  _listOf: string
+  _min: 1
+
+valueList:
+  _listOf: value
+  _min: 1
+
+scalar:
+  _oneOf:
+    - string
+    - boolean
+    - int
+    - float
+    - nullType
+
+value:
+  _oneOf:
+    - scalar
+    - valueList
+    - valueMap

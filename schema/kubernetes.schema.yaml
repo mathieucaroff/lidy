@@ -1,0 +1,571 @@
+main: document
+
+document:
+  _oneOf:
+    - list
+    - namespace
+    - configMap
+    - secret
+    - serviceAccount
+    - service
+    - deployment
+    - statefulSet
+    - daemonSet
+    - job
+    - cronJob
+    - ingress
+    - persistentVolumeClaim
+    - pod
+
+apiVersion.core:
+  _in: [v1]
+
+apiVersion.apps:
+  _in: [apps/v1]
+
+apiVersion.batch:
+  _in: [batch/v1]
+
+apiVersion.networking:
+  _in: [networking.k8s.io/v1]
+
+stringMap:
+  _mapOf: { string: string }
+
+stringOrInt:
+  _oneOf:
+    - string
+    - int
+
+intOrPercent:
+  _oneOf:
+    - int
+    - string
+
+objectMeta:
+  _mapFacultative:
+    name: string
+    generateName: string
+    namespace: string
+    labels: stringMap
+    annotations: stringMap
+    finalizers: { _listOf: string }
+    ownerReferences: { _listOf: ownerReference }
+  _mapOf: { string: anyData }
+
+ownerReference:
+  _map:
+    apiVersion: string
+    kind: string
+    name: string
+    uid: string
+  _mapFacultative:
+    controller: boolean
+    blockOwnerDeletion: boolean
+  _mapOf: { string: anyData }
+
+labelSelector:
+  _mapFacultative:
+    matchLabels: stringMap
+    matchExpressions: { _listOf: labelSelectorRequirement }
+  _mapOf: { string: anyData }
+
+labelSelectorRequirement:
+  _map:
+    key: string
+    operator:
+      _in: [In, NotIn, Exists, DoesNotExist]
+  _mapFacultative:
+    values: { _listOf: string }
+  _mapOf: { string: anyData }
+
+localObjectReference:
+  _map:
+    name: string
+  _mapOf: { string: anyData }
+
+secretKeySelector:
+  _map:
+    name: string
+    key: string
+  _mapFacultative:
+    optional: boolean
+  _mapOf: { string: anyData }
+
+configMapKeySelector:
+  _map:
+    name: string
+    key: string
+  _mapFacultative:
+    optional: boolean
+  _mapOf: { string: anyData }
+
+fieldRef:
+  _map:
+    fieldPath: string
+  _mapFacultative:
+    apiVersion: string
+  _mapOf: { string: anyData }
+
+resourceFieldRef:
+  _map:
+    resource: string
+  _mapFacultative:
+    containerName: string
+    divisor: string
+  _mapOf: { string: anyData }
+
+envVarSource:
+  _mapFacultative:
+    secretKeyRef: secretKeySelector
+    configMapKeyRef: configMapKeySelector
+    fieldRef: fieldRef
+    resourceFieldRef: resourceFieldRef
+  _mapOf: { string: anyData }
+
+envVar:
+  _map:
+    name: string
+  _mapFacultative:
+    value: string
+    valueFrom: envVarSource
+  _mapOf: { string: anyData }
+
+resourceRequirements:
+  _mapFacultative:
+    limits: { _mapOf: { string: string } }
+    requests: { _mapOf: { string: string } }
+  _mapOf: { string: anyData }
+
+containerPort:
+  _map:
+    containerPort: int
+  _mapFacultative:
+    name: string
+    protocol: { _in: [TCP, UDP, SCTP] }
+    hostPort: int
+  _mapOf: { string: anyData }
+
+httpHeader:
+  _map:
+    name: string
+    value: string
+  _mapOf: { string: anyData }
+
+httpGetAction:
+  _map:
+    path: string
+    port: stringOrInt
+  _mapFacultative:
+    host: string
+    scheme: { _in: [HTTP, HTTPS] }
+    httpHeaders: { _listOf: httpHeader }
+  _mapOf: { string: anyData }
+
+execAction:
+  _map:
+    command: { _listOf: string }
+  _mapOf: { string: anyData }
+
+tcpSocketAction:
+  _map:
+    port: stringOrInt
+  _mapFacultative:
+    host: string
+  _mapOf: { string: anyData }
+
+probe:
+  _mapFacultative:
+    httpGet: httpGetAction
+    exec: execAction
+    tcpSocket: tcpSocketAction
+    initialDelaySeconds: int
+    periodSeconds: int
+    timeoutSeconds: int
+    successThreshold: int
+    failureThreshold: int
+  _mapOf: { string: anyData }
+
+volumeMount:
+  _map:
+    name: string
+    mountPath: string
+  _mapFacultative:
+    readOnly: boolean
+    subPath: string
+    subPathExpr: string
+  _mapOf: { string: anyData }
+
+secretVolumeSource:
+  _map:
+    secretName: string
+  _mapFacultative:
+    optional: boolean
+  _mapOf: { string: anyData }
+
+configMapVolumeSource:
+  _map:
+    name: string
+  _mapFacultative:
+    optional: boolean
+  _mapOf: { string: anyData }
+
+persistentVolumeClaimVolumeSource:
+  _map:
+    claimName: string
+  _mapFacultative:
+    readOnly: boolean
+  _mapOf: { string: anyData }
+
+volume:
+  _map:
+    name: string
+  _mapFacultative:
+    emptyDir: { _mapOf: { string: anyData } }
+    configMap: configMapVolumeSource
+    secret: secretVolumeSource
+    persistentVolumeClaim: persistentVolumeClaimVolumeSource
+  _mapOf: { string: anyData }
+
+container:
+  _map:
+    name: string
+    image: string
+  _mapFacultative:
+    imagePullPolicy: { _in: [Always, IfNotPresent, Never] }
+    command: { _listOf: string }
+    args: { _listOf: string }
+    workingDir: string
+    env: { _listOf: envVar }
+    ports: { _listOf: containerPort }
+    resources: resourceRequirements
+    volumeMounts: { _listOf: volumeMount }
+    readinessProbe: probe
+    livenessProbe: probe
+    startupProbe: probe
+  _mapOf: { string: anyData }
+
+podSpec:
+  _map:
+    containers: { _listOf: container, _min: 1 }
+  _mapFacultative:
+    initContainers: { _listOf: container }
+    serviceAccountName: string
+    restartPolicy: { _in: [Always, OnFailure, Never] }
+    nodeSelector: stringMap
+    volumes: { _listOf: volume }
+    imagePullSecrets: { _listOf: localObjectReference }
+  _mapOf: { string: anyData }
+
+podTemplateSpec:
+  _map:
+    spec: podSpec
+  _mapFacultative:
+    metadata: objectMeta
+  _mapOf: { string: anyData }
+
+servicePort:
+  _map:
+    port: int
+  _mapFacultative:
+    name: string
+    protocol: { _in: [TCP, UDP, SCTP] }
+    targetPort: stringOrInt
+    nodePort: int
+  _mapOf: { string: anyData }
+
+serviceSpec:
+  _map:
+    ports: { _listOf: servicePort, _min: 1 }
+  _mapFacultative:
+    type: { _in: [ClusterIP, NodePort, LoadBalancer, ExternalName] }
+    selector: stringMap
+    clusterIP: string
+    externalName: string
+    sessionAffinity: { _in: [None, ClientIP] }
+  _mapOf: { string: anyData }
+
+deploymentStrategy:
+  _mapFacultative:
+    type: { _in: [Recreate, RollingUpdate] }
+    rollingUpdate:
+      _mapFacultative:
+        maxUnavailable: intOrPercent
+        maxSurge: intOrPercent
+      _mapOf: { string: anyData }
+  _mapOf: { string: anyData }
+
+deploymentSpec:
+  _map:
+    selector: labelSelector
+    template: podTemplateSpec
+  _mapFacultative:
+    replicas: int
+    strategy: deploymentStrategy
+    minReadySeconds: int
+    revisionHistoryLimit: int
+    paused: boolean
+    progressDeadlineSeconds: int
+  _mapOf: { string: anyData }
+
+statefulSetSpec:
+  _map:
+    serviceName: string
+    selector: labelSelector
+    template: podTemplateSpec
+  _mapFacultative:
+    replicas: int
+    podManagementPolicy: { _in: [OrderedReady, Parallel] }
+    updateStrategy: { _mapOf: { string: anyData } }
+    volumeClaimTemplates: { _listOf: persistentVolumeClaimSpecWrapper }
+  _mapOf: { string: anyData }
+
+daemonSetSpec:
+  _map:
+    selector: labelSelector
+    template: podTemplateSpec
+  _mapFacultative:
+    minReadySeconds: int
+    revisionHistoryLimit: int
+    updateStrategy: { _mapOf: { string: anyData } }
+  _mapOf: { string: anyData }
+
+jobSpec:
+  _map:
+    template: podTemplateSpec
+  _mapFacultative:
+    parallelism: int
+    completions: int
+    backoffLimit: int
+    activeDeadlineSeconds: int
+    ttlSecondsAfterFinished: int
+    completionMode: { _in: [NonIndexed, Indexed] }
+  _mapOf: { string: anyData }
+
+cronJobSpec:
+  _map:
+    schedule: string
+    jobTemplate: jobTemplateSpec
+  _mapFacultative:
+    timeZone: string
+    suspend: boolean
+    startingDeadlineSeconds: int
+    successfulJobsHistoryLimit: int
+    failedJobsHistoryLimit: int
+    concurrencyPolicy: { _in: [Allow, Forbid, Replace] }
+  _mapOf: { string: anyData }
+
+jobTemplateSpec:
+  _map:
+    spec: jobSpec
+  _mapFacultative:
+    metadata: objectMeta
+  _mapOf: { string: anyData }
+
+serviceBackendPort:
+  _mapFacultative:
+    number: int
+    name: string
+  _mapOf: { string: anyData }
+
+ingressServiceBackend:
+  _map:
+    name: string
+    port: serviceBackendPort
+  _mapOf: { string: anyData }
+
+ingressBackend:
+  _mapFacultative:
+    service: ingressServiceBackend
+    resource: { _mapOf: { string: anyData } }
+  _mapOf: { string: anyData }
+
+ingressPath:
+  _map:
+    path: string
+    pathType: { _in: [Exact, Prefix, ImplementationSpecific] }
+    backend: ingressBackend
+  _mapOf: { string: anyData }
+
+httpIngressRuleValue:
+  _map:
+    paths: { _listOf: ingressPath, _min: 1 }
+  _mapOf: { string: anyData }
+
+ingressRule:
+  _map:
+    http: httpIngressRuleValue
+  _mapFacultative:
+    host: string
+  _mapOf: { string: anyData }
+
+ingressTLS:
+  _mapFacultative:
+    hosts: { _listOf: string }
+    secretName: string
+  _mapOf: { string: anyData }
+
+ingressSpec:
+  _mapFacultative:
+    ingressClassName: string
+    defaultBackend: ingressBackend
+    tls: { _listOf: ingressTLS }
+    rules: { _listOf: ingressRule }
+  _mapOf: { string: anyData }
+
+persistentVolumeClaimResourceRequirements:
+  _mapFacultative:
+    requests: { _mapOf: { string: string } }
+    limits: { _mapOf: { string: string } }
+  _mapOf: { string: anyData }
+
+persistentVolumeClaimSpec:
+  _map:
+    accessModes: { _listOf: string, _min: 1 }
+    resources: persistentVolumeClaimResourceRequirements
+  _mapFacultative:
+    storageClassName: string
+    volumeMode: { _in: [Filesystem, Block] }
+    volumeName: string
+    selector: labelSelector
+  _mapOf: { string: anyData }
+
+persistentVolumeClaimSpecWrapper:
+  _map:
+    spec: persistentVolumeClaimSpec
+  _mapFacultative:
+    metadata: objectMeta
+  _mapOf: { string: anyData }
+
+list:
+  _map:
+    apiVersion: string
+    kind: { _in: [List] }
+    items: { _listOf: document }
+  _mapFacultative:
+    metadata: objectMeta
+  _mapOf: { string: anyData }
+
+namespace:
+  _map:
+    apiVersion: apiVersion.core
+    kind: { _in: [Namespace] }
+  _mapFacultative:
+    metadata: objectMeta
+    spec: { _mapOf: { string: anyData } }
+  _mapOf: { string: anyData }
+
+configMap:
+  _map:
+    apiVersion: apiVersion.core
+    kind: { _in: [ConfigMap] }
+  _mapFacultative:
+    metadata: objectMeta
+    data: { _mapOf: { string: string } }
+    binaryData: { _mapOf: { string: string } }
+    immutable: boolean
+  _mapOf: { string: anyData }
+
+secret:
+  _map:
+    apiVersion: apiVersion.core
+    kind: { _in: [Secret] }
+  _mapFacultative:
+    metadata: objectMeta
+    type: string
+    data: { _mapOf: { string: string } }
+    stringData: { _mapOf: { string: string } }
+    immutable: boolean
+  _mapOf: { string: anyData }
+
+serviceAccount:
+  _map:
+    apiVersion: apiVersion.core
+    kind: { _in: [ServiceAccount] }
+  _mapFacultative:
+    metadata: objectMeta
+    automountServiceAccountToken: boolean
+    imagePullSecrets: { _listOf: localObjectReference }
+    secrets: { _listOf: localObjectReference }
+  _mapOf: { string: anyData }
+
+service:
+  _map:
+    apiVersion: apiVersion.core
+    kind: { _in: [Service] }
+    spec: serviceSpec
+  _mapFacultative:
+    metadata: objectMeta
+  _mapOf: { string: anyData }
+
+deployment:
+  _map:
+    apiVersion: apiVersion.apps
+    kind: { _in: [Deployment] }
+    spec: deploymentSpec
+  _mapFacultative:
+    metadata: objectMeta
+  _mapOf: { string: anyData }
+
+statefulSet:
+  _map:
+    apiVersion: apiVersion.apps
+    kind: { _in: [StatefulSet] }
+    spec: statefulSetSpec
+  _mapFacultative:
+    metadata: objectMeta
+  _mapOf: { string: anyData }
+
+daemonSet:
+  _map:
+    apiVersion: apiVersion.apps
+    kind: { _in: [DaemonSet] }
+    spec: daemonSetSpec
+  _mapFacultative:
+    metadata: objectMeta
+  _mapOf: { string: anyData }
+
+job:
+  _map:
+    apiVersion: apiVersion.batch
+    kind: { _in: [Job] }
+    spec: jobSpec
+  _mapFacultative:
+    metadata: objectMeta
+  _mapOf: { string: anyData }
+
+cronJob:
+  _map:
+    apiVersion: apiVersion.batch
+    kind: { _in: [CronJob] }
+    spec: cronJobSpec
+  _mapFacultative:
+    metadata: objectMeta
+  _mapOf: { string: anyData }
+
+ingress:
+  _map:
+    apiVersion: apiVersion.networking
+    kind: { _in: [Ingress] }
+    spec: ingressSpec
+  _mapFacultative:
+    metadata: objectMeta
+  _mapOf: { string: anyData }
+
+persistentVolumeClaim:
+  _map:
+    apiVersion: apiVersion.core
+    kind: { _in: [PersistentVolumeClaim] }
+    spec: persistentVolumeClaimSpec
+  _mapFacultative:
+    metadata: objectMeta
+  _mapOf: { string: anyData }
+
+pod:
+  _map:
+    apiVersion: apiVersion.core
+    kind: { _in: [Pod] }
+    spec: podSpec
+  _mapFacultative:
+    metadata: objectMeta
+  _mapOf: { string: anyData }

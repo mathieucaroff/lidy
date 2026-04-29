@@ -1,3 +1,4 @@
+main: service_template
 
 unbounded:
   _in: ["unbounded"]
@@ -38,7 +39,7 @@ bitrate: scalar_unit.bitrate
 scalar_unit.bitrate:
   _regex: '((?<sign>[+-]) *)?(?<value>[0-9]+(\.[0-9]+)?) *(?<unit>bps|Kbps|Kibps|Mbps|Mibps|Gbps|Gibps|Tbps|Tibps|Bps|KBps|KiBps|MBps|MiBps|GBps|GiBps|TBps|TiBps)$'
 
-string_value_expresion:
+string_value_expression:
   _oneOf:
     - string
     - value_expression
@@ -78,15 +79,15 @@ value:
 value_expression:
   _max: 1
   _mapFacultative:
-    concat:               value_expression.concat
-    get_input:            value_expression.get_input
-    get_nodes_of_type:    value_expression.get_nodes_of_type
-    token:                value_expression.token
-    join:                 value_expression.join
-    get_property:         value_expression.get_property
-    get_attribute:        value_expression.get_attribute
+    concat: value_expression.concat
+    get_input: value_expression.get_input
+    get_nodes_of_type: value_expression.get_nodes_of_type
+    token: value_expression.token
+    join: value_expression.join
+    get_property: value_expression.get_property
+    get_attribute: value_expression.get_attribute
     get_operation_output: value_expression.get_operation_output
-    get_artifact:         value_expression.get_artifact
+    get_artifact: value_expression.get_artifact
 
 value_expression.concat:
   _list: [string_value_expression]
@@ -123,13 +124,13 @@ value_expression.get_artifact:
     - _list: [string, string, string, boolean]
 
 import:
-    _oneOf:
-      - string
-      - _nb: 1
-        _mapOf: { string: string }
-      - _nb: 1
-        _mapOf: { string: import.target }
- 
+  _oneOf:
+    - string
+    - _nb: 1
+      _mapOf: { string: string }
+    - _nb: 1
+      _mapOf: { string: import.target }
+
 import.target:
   _map:
     file: string
@@ -188,7 +189,8 @@ property:
     constraints: constraints
     required: boolean
     default: value
-    status: { _in: [supported, unsupported, experimental, deprecated, optional] }
+    status:
+      { _in: [supported, unsupported, experimental, deprecated, optional] }
     metadata: metadata
     entry_schema: entry_schema
 
@@ -204,7 +206,8 @@ attribute:
   _mapFacultative:
     description: description
     default: value
-    status: { _in: [supported, unsupported, experimental, deprecated, optional] }
+    status:
+      { _in: [supported, unsupported, experimental, deprecated, optional] }
     entry_schema: entry_schema
 
 attributes:
@@ -221,7 +224,8 @@ input_parameter:
     constraints: constraints
     required: boolean
     default: value
-    status: { _in: [supported, unsupported, experimental, deprecated, optional] }
+    status:
+      { _in: [supported, unsupported, experimental, deprecated, optional] }
     entry_schema: entry_schema
     value: { _oneOf: [value, value_expression] }
 
@@ -238,7 +242,8 @@ output_parameter:
     constraints: constraints
     required: boolean
     default: value
-    status: { _in: [supported, unsupported, experimental, deprecated, optional] }
+    status:
+      { _in: [supported, unsupported, experimental, deprecated, optional] }
     entry_schema: entry_schema
     value: { _oneOf: [value, value_expression] }
 
@@ -293,7 +298,7 @@ artifact_type:
     file_ext: { _listOf: string, _min: 1 }
     mime_type: string
     properties: properties
-  _merge: type_common_keys
+  _merge: [type_common_keys]
 
 artifact_types:
   _mapOf: { string: artifact_type }
@@ -304,7 +309,7 @@ data_type:
     constraints: constraints
     key_schema: entry_schema
     entry_schema: entry_schema
-  _merge: type_common_keys
+  _merge: [type_common_keys]
 
 data_types:
   _mapOf: { string: data_type }
@@ -340,7 +345,7 @@ interface_type:
     inputs: properties
   _mapOf:
     string: operation_def
-  _merge: type_common_keys
+  _merge: [type_common_keys]
 
 interface_types:
   _mapOf: { string: interface_type }
@@ -371,7 +376,7 @@ capability_type:
     properties: properties
     attributes: attributes
     valid_source_types: { _listOf: string, _min: 1 }
-  _merge: type_common_keys
+  _merge: [type_common_keys]
 
 capability_types:
   _mapOf: { string: capability_type }
@@ -412,8 +417,7 @@ property_filter:
           _min: 1
 
 properties_filter:
-  _listOf:
-    property_filter
+  _listOf: property_filter
 
 capability_filter:
   _nb: 1
@@ -421,8 +425,7 @@ capability_filter:
     string: { _mapFacultative: { properties: properties_filter } }
 
 capabilities_filter:
-  _listOf:
-    capability_filter
+  _listOf: capability_filter
 
 node_filter:
   _mapFacultative:
@@ -451,8 +454,7 @@ requirement_def:
             relationship: relationship_def
 
 requirement_defs:
-  _listOf:
-    requirement_def
+  _listOf: requirement_def
 
 relationship_assignment:
   _oneOf:
@@ -476,8 +478,7 @@ requirement_assignment:
             node_filter: node_filter
 
 requirement_assignments:
-  _listOf:
-    requirement_assignment
+  _listOf: requirement_assignment
 
 workflow_condition_operator:
   _nb: 1
@@ -532,7 +533,21 @@ workflow_activity.call_operation:
         inputs: input_assignments
 
 workflow_activity.state:
-  _in: [initial, creating, created, configuring, configured, starting, started, stopping, stopped, deleting, deleted, error]
+  _in:
+    [
+      initial,
+      creating,
+      created,
+      configuring,
+      configured,
+      starting,
+      started,
+      stopping,
+      stopped,
+      deleting,
+      deleted,
+      error,
+    ]
 
 declarative_workflow_steps:
   _mapOf:
@@ -620,12 +635,12 @@ imperative_workflow_defs:
     string: imperative_workflow_def
 
 imperative_workflow_def:
-      _mapFacultative:
-        description: description
-        metadata: metadata
-        inputs: properties
-        preconditions: workflow_preconditions
-        steps: imperative_workflow_steps
+  _mapFacultative:
+    description: description
+    metadata: metadata
+    inputs: properties
+    preconditions: workflow_preconditions
+    steps: imperative_workflow_steps
 
 node_type:
   _mapFacultative:
@@ -636,22 +651,21 @@ node_type:
     interfaces: interface_defs
     workflows: declarative_workflow_node_defs
     artifacts: artifact_defs
-  _merge: type_common_keys
+  _merge: [type_common_keys]
 
 node_types:
   _mapOf: { string: node_type }
 
 node_template:
   _merge:
-    _oneOf:
-      - _map:
-          type: string
-      - _map:
-          copy: string
+    - _mapFacultative:
+        type: string
+        copy: string
+      _min: 1
   _mapFacultative:
     metadata: metadata
     description: description
-    directives: { _list: string }
+    directives: { _listOf: string }
     properties: property_assignments
     attributes: attribute_assignments
     capabilities: capability_assignments
@@ -670,18 +684,17 @@ relationship_type:
     interfaces: interface_defs
     valid_target_types: { _listOf: string, _min: 1 }
     workflows: declarative_workflow_rel_defs
-  _merge: type_common_keys
+  _merge: [type_common_keys]
 
 relationship_types:
   _mapOf: { string: relationship_type }
 
 relationship_template:
   _merge:
-    _oneOf:
-      - _map:
-          type: string
-      - _map:
-          copy: string
+    - _mapFacultative:
+        type: string
+        copy: string
+      _min: 1
   _mapFacultative:
     description: description
     metadata: metadata
@@ -692,6 +705,9 @@ relationship_template:
 relationship_templates:
   _mapOf: { string: relationship_template }
 
+interface_defs_template:
+  _mapOf: { string: operation_def_template }
+
 group_type:
   _mapFacultative:
     properties: properties
@@ -699,7 +715,7 @@ group_type:
     requirements: requirement_defs
     interfaces: interface_defs
     members: { _listOf: string, _min: 1 }
-  _merge: type_common_keys
+  _merge: [type_common_keys]
 
 group_types:
   _mapOf: { string: group_type }
@@ -743,27 +759,23 @@ trigger_def.value:
     schedule: value
     target_filter: target_filter
     condition:
-        _oneOf:
-          - constraint
-          - _mapFacultative: { constraint: constraint }
+      _oneOf:
+        - constraint
+        - _mapFacultative: { constraint: constraint }
     period: string
     evaluations: int
     method: string
     action: { _oneOf: [string, operation_def] }
-
-trigger_defs:
-  _listOf: trigger_def
-  _min: 1
 
 policy_type:
   _mapFacultative:
     properties: properties
     targets: { _listOf: string, _min: 1 }
     triggers: trigger_defs
-  _merge: type_common_keys
+  _merge: [type_common_keys]
 
 policy_types:
-  _mapOf: { string:  policy_type }
+  _mapOf: { string: policy_type }
 
 policy_defs:
   _listOf: policy_def
@@ -794,7 +806,7 @@ property_mapping:
     - _nb: 1
       _mapFacultative:
         mapping:
-          _oneOf: [string, { max: 3, _listOf: string }]
+          _oneOf: [string, { _max: 3, _listOf: string }]
         value:
           _oneOf: [value, value_expression]
 
@@ -812,7 +824,7 @@ attribute_mapping:
     - _nb: 1
       _mapFacultative:
         mapping:
-          _oneOf: [string, { max: 3, _listOf: string }]
+          _oneOf: [string, { _max: 3, _listOf: string }]
         value:
           _oneOf: [value, value_expression]
 
@@ -822,9 +834,9 @@ capabilities_mapping:
 
 capability_mapping:
   _oneOf:
-    - { _listOf: string, _min: 1, max: 2 }
+    - { _listOf: string, _min: 1, _max: 2 }
     - _mapFacultative:
-        mapping: { _oneOf: [string, { _listOf: string, nb: 2 }] }
+        mapping: { _oneOf: [string, { _listOf: string, _nb: 2 }] }
         properties: property_assignments
         attributes: attribute_assignments
 
@@ -834,9 +846,9 @@ requirements_mapping:
 
 requirement_mapping:
   _oneOf:
-    - { _listOf: string, _min: 1, max: 2 }
+    - { _listOf: string, _min: 1, _max: 2 }
     - _mapFacultative:
-        mapping: { _oneOf: [string, { _listOf: string, _min: 1, max: 3 }] }
+        mapping: { _oneOf: [string, { _listOf: string, _min: 1, _max: 3 }] }
         properties: property_assignments
         attributes: attribute_assignments
 

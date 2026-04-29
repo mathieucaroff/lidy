@@ -1,0 +1,345 @@
+main: pipeline
+
+pipeline:
+  _mapFacultative:
+    stages: stringList
+    variables: variables
+    default: default
+    workflow: workflow
+    include: include
+    image: image
+    services: services
+    before_script: stringOrStringList
+    after_script: stringOrStringList
+    cache: cache
+    pages: job
+  _mapOf: { string: topLevelEntry }
+  _min: 1
+
+topLevelEntry:
+  _oneOf:
+    - job
+    - value
+
+job:
+  _mapFacultative:
+    stage: string
+    script: stringOrStringList
+    rules: rules
+    needs: needs
+    dependencies: stringList
+    extends: stringOrStringList
+    variables: variables
+    image: image
+    services: services
+    before_script: stringOrStringList
+    after_script: stringOrStringList
+    cache: cache
+    artifacts: artifacts
+    environment: environment
+    when: string
+    allow_failure: boolean
+    interruptible: boolean
+    parallel: parallel
+    only: refsCondition
+    except: refsCondition
+    tags: stringList
+    retry: retry
+    timeout: string
+    trigger: trigger
+    inherit: inherit
+    resource_group: string
+    coverage: string
+    release: release
+    id_tokens: valueMap
+    secrets: valueMap
+    hooks: valueMap
+    identity: string
+    pages: value
+  _mapOf: { string: value }
+  _min: 1
+
+default:
+  _mapFacultative:
+    image: image
+    services: services
+    before_script: stringOrStringList
+    after_script: stringOrStringList
+    cache: cache
+    retry: retry
+    tags: stringList
+    interruptible: boolean
+    timeout: string
+    artifacts: artifacts
+  _mapOf: { string: value }
+
+workflow:
+  _mapFacultative:
+    rules: rules
+    name: string
+    auto_cancel: valueMap
+  _mapOf: { string: value }
+
+include:
+  _oneOf:
+    - string
+    - includeEntry
+    - includeList
+
+includeList:
+  _listOf:
+    _oneOf:
+      - string
+      - includeEntry
+  _min: 1
+
+includeEntry:
+  _mapFacultative:
+    local: string
+    project: string
+    file: stringOrStringList
+    ref: string
+    remote: string
+    template: string
+    component: string
+    inputs: variables
+    rules: rules
+  _mapOf: { string: value }
+  _min: 1
+
+image:
+  _oneOf:
+    - string
+    - imageMap
+
+imageMap:
+  _map:
+    name: string
+  _mapFacultative:
+    entrypoint: stringOrStringList
+    docker: valueMap
+    kubernetes: valueMap
+    pull_policy: stringOrStringList
+  _mapOf: { string: value }
+
+services:
+  _oneOf:
+    - stringList
+    - serviceList
+
+serviceList:
+  _listOf: service
+  _min: 1
+
+service:
+  _oneOf:
+    - string
+    - serviceMap
+
+serviceMap:
+  _mapFacultative:
+    name: string
+    alias: string
+    entrypoint: stringOrStringList
+    command: stringOrStringList
+    pull_policy: stringOrStringList
+    variables: variables
+  _mapOf: { string: value }
+  _min: 1
+
+rules:
+  _listOf: rule
+  _min: 1
+
+rule:
+  _mapFacultative:
+    if: string
+    changes: stringOrStringList
+    exists: stringOrStringList
+    when: string
+    allow_failure: boolean
+    variables: variables
+    needs: needs
+  _mapOf: { string: value }
+  _min: 1
+
+needs:
+  _oneOf:
+    - stringList
+    - needList
+
+needList:
+  _listOf: need
+  _min: 1
+
+need:
+  _oneOf:
+    - string
+    - needMap
+
+needMap:
+  _mapFacultative:
+    job: string
+    project: string
+    pipeline: string
+    ref: string
+    artifacts: boolean
+    optional: boolean
+  _mapOf: { string: value }
+  _min: 1
+
+cache:
+  _oneOf:
+    - string
+    - cacheMap
+    - cacheList
+
+cacheList:
+  _listOf: cacheMap
+  _min: 1
+
+cacheMap:
+  _mapFacultative:
+    key: value
+    paths: stringList
+    policy: string
+    untracked: boolean
+    when: string
+    fallback_keys: stringList
+  _mapOf: { string: value }
+  _min: 1
+
+artifacts:
+  _mapFacultative:
+    paths: stringList
+    exclude: stringList
+    expose_as: string
+    expire_in: string
+    name: string
+    public: boolean
+    untracked: boolean
+    when: string
+    reports: valueMap
+  _mapOf: { string: value }
+  _min: 1
+
+environment:
+  _oneOf:
+    - string
+    - environmentMap
+
+environmentMap:
+  _mapFacultative:
+    name: string
+    url: string
+    on_stop: string
+    action: string
+    deployment_tier: string
+    auto_stop_in: string
+    kubernetes: valueMap
+  _mapOf: { string: value }
+  _min: 1
+
+parallel:
+  _oneOf:
+    - int
+    - parallelMatrix
+
+parallelMatrix:
+  _map:
+    matrix: valueList
+  _mapOf: { string: value }
+
+retry:
+  _oneOf:
+    - int
+    - retryMap
+
+retryMap:
+  _mapFacultative:
+    max: int
+    when: stringOrStringList
+    exit_codes: intList
+  _mapOf: { string: value }
+  _min: 1
+
+trigger:
+  _oneOf:
+    - string
+    - triggerMap
+
+triggerMap:
+  _mapFacultative:
+    include: include
+    project: string
+    branch: string
+    strategy: string
+    forward: valueMap
+  _mapOf: { string: value }
+  _min: 1
+
+inherit:
+  _oneOf:
+    - boolean
+    - stringList
+    - inheritMap
+
+inheritMap:
+  _mapFacultative:
+    variables: boolean
+    default: boolean
+  _mapOf: { string: value }
+  _min: 1
+
+refsCondition:
+  _oneOf:
+    - string
+    - stringList
+    - valueMap
+
+release:
+  _mapFacultative:
+    tag_name: string
+    name: string
+    description: string
+    ref: string
+    milestones: stringList
+  _mapOf: { string: value }
+  _min: 1
+
+variables:
+  _mapOf: { string: value }
+
+stringOrStringList:
+  _oneOf:
+    - string
+    - stringList
+
+stringList:
+  _listOf: string
+  _min: 1
+
+intList:
+  _listOf: int
+  _min: 1
+
+valueMap:
+  _mapOf: { string: value }
+
+valueList:
+  _listOf: value
+  _min: 1
+
+scalar:
+  _oneOf:
+    - string
+    - boolean
+    - int
+    - float
+    - nullType
+
+value:
+  _oneOf:
+    - scalar
+    - valueList
+    - valueMap

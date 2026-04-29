@@ -1,0 +1,189 @@
+main:
+  _listOf: playbookEntry
+  _min: 1
+
+playbookEntry:
+  _oneOf:
+    - play
+    - importPlaybook
+
+importPlaybook:
+  _map:
+    import_playbook: string
+  _mapFacultative:
+    vars: vars
+    tags: stringOrStringList
+    when: condition
+  _mapOf: { string: value }
+
+play:
+  _map:
+    hosts: stringOrStringList
+  _mapFacultative:
+    name: string
+    gather_facts: boolean
+    gather_subset: stringOrStringList
+    become: boolean
+    become_user: string
+    become_method: string
+    remote_user: string
+    port: int
+    connection: string
+    strategy: string
+    serial: intOrIntListOrPercentList
+    order: string
+    any_errors_fatal: boolean
+    ignore_errors: boolean
+    max_fail_percentage: int
+    environment: vars
+    vars: vars
+    vars_files: varsFiles
+    vars_prompt: varsPromptList
+    roles: roles
+    pre_tasks: tasks
+    tasks: tasks
+    post_tasks: tasks
+    handlers: tasks
+    tags: stringOrStringList
+  _mapOf: { string: value }
+
+tasks:
+  _listOf: task
+  _min: 1
+
+task:
+  _mapFacultative:
+    name: string
+    action: value
+    args: vars
+    when: condition
+    changed_when: condition
+    failed_when: condition
+    check_mode: boolean
+    diff: boolean
+    run_once: boolean
+    delegate_to: string
+    delegate_facts: boolean
+    throttle: int
+    timeout: int
+    poll: int
+    async: int
+    retries: int
+    delay: int
+    until: condition
+    loop: valueList
+    with_items: valueList
+    with_dict: value
+    with_fileglob: stringOrStringList
+    with_sequence: value
+    with_together: valueList
+    with_nested: valueList
+    with_subelements: valueList
+    register: string
+    notify: stringOrStringList
+    tags: stringOrStringList
+    vars: vars
+    environment: vars
+    become: boolean
+    become_user: string
+    become_method: string
+    remote_user: string
+    ignore_errors: boolean
+    ignore_unreachable: boolean
+    no_log: boolean
+    any_errors_fatal: boolean
+    loop_control: loopControl
+  _mapOf: { string: value }
+  _min: 1
+
+loopControl:
+  _mapFacultative:
+    label: string
+    pause: int
+    index_var: string
+    loop_var: string
+    extended: boolean
+  _mapOf: { string: value }
+
+roles:
+  _listOf: role
+  _min: 1
+
+role:
+  _oneOf:
+    - string
+    - roleMap
+
+roleMap:
+  _mapFacultative:
+    role: string
+    name: string
+    vars: vars
+    when: condition
+    tags: stringOrStringList
+    become: boolean
+  _mapOf: { string: value }
+  _min: 1
+
+varsFiles:
+  _listOf:
+    _oneOf:
+      - string
+      - { _listOf: string, _min: 1 }
+  _min: 1
+
+varsPromptList:
+  _listOf: varsPrompt
+  _min: 1
+
+varsPrompt:
+  _map:
+    name: string
+  _mapFacultative:
+    prompt: string
+    private: boolean
+    default: value
+    encrypt: string
+    confirm: boolean
+    salt: string
+    salt_size: int
+    unsafe: boolean
+  _mapOf: { string: value }
+
+vars:
+  _mapOf: { string: value }
+
+condition:
+  _oneOf:
+    - string
+    - { _listOf: string, _min: 1 }
+
+stringOrStringList:
+  _oneOf:
+    - string
+    - { _listOf: string, _min: 1 }
+
+intOrIntListOrPercentList:
+  _oneOf:
+    - int
+    - string
+    - { _listOf: int, _min: 1 }
+    - { _listOf: string, _min: 1 }
+
+valueList:
+  _listOf: value
+  _min: 1
+
+scalar:
+  _oneOf:
+    - string
+    - boolean
+    - int
+    - float
+    - nullType
+
+value:
+  _oneOf:
+    - scalar
+    - valueList
+    - { _mapOf: { string: value } }

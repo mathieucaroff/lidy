@@ -1,0 +1,277 @@
+main: document
+
+document:
+  _oneOf:
+    - documentWithPaths
+    - documentWithWebhooks
+    - documentWithComponents
+
+documentBase:
+  _map:
+    openapi: openapiVersion
+    info: info
+  _mapFacultative:
+    jsonSchemaDialect: string
+    servers: servers
+    security: securityRequirements
+    tags: tags
+    externalDocs: externalDocs
+  _mapOf: { string: anyData }
+
+documentWithPaths:
+  _merge:
+    - documentBase
+    - _map:
+        paths: paths
+      _mapFacultative:
+        webhooks: paths
+        components: components
+
+documentWithWebhooks:
+  _merge:
+    - documentBase
+    - _map:
+        webhooks: paths
+      _mapFacultative:
+        paths: paths
+        components: components
+
+documentWithComponents:
+  _merge:
+    - documentBase
+    - _map:
+        components: components
+      _mapFacultative:
+        paths: paths
+        webhooks: paths
+
+openapiVersion:
+  _regex: '^3\.(0|1)\.[0-9]+$'
+
+info:
+  _map:
+    title: string
+    version: string
+  _mapFacultative:
+    summary: string
+    description: string
+    termsOfService: string
+    contact: contact
+    license: license
+  _mapOf: { string: anyData }
+
+contact:
+  _mapFacultative:
+    name: string
+    url: string
+    email: string
+  _mapOf: { string: anyData }
+  _min: 1
+
+license:
+  _map:
+    name: string
+  _mapFacultative:
+    identifier: string
+    url: string
+  _mapOf: { string: anyData }
+
+paths:
+  _mapOf: { string: pathItem }
+
+pathItem:
+  _mapFacultative:
+    "$ref": string
+    summary: string
+    description: string
+    get: operation
+    put: operation
+    post: operation
+    delete: operation
+    options: operation
+    head: operation
+    patch: operation
+    trace: operation
+    servers: servers
+    parameters: parameterOrReferenceList
+  _mapOf: { string: anyData }
+
+operation:
+  _mapFacultative:
+    tags: stringList
+    summary: string
+    description: string
+    operationId: string
+    parameters: parameterOrReferenceList
+    requestBody: requestBodyOrReference
+    responses: responses
+    deprecated: boolean
+    security: securityRequirements
+    servers: servers
+  _mapOf: { string: anyData }
+  _min: 1
+
+parameterOrReferenceList:
+  _listOf: parameterOrReference
+  _min: 1
+
+parameterOrReference:
+  _oneOf:
+    - reference
+    - parameter
+
+reference:
+  _map:
+    "$ref": string
+  _mapOf: { string: anyData }
+
+parameter:
+  _map:
+    name: string
+    in: parameterLocation
+  _mapFacultative:
+    description: string
+    required: boolean
+    deprecated: boolean
+    allowEmptyValue: boolean
+    style: string
+    explode: boolean
+    allowReserved: boolean
+    schema: anyData
+    example: anyData
+    examples: valueMap
+    content: mediaTypes
+  _mapOf: { string: anyData }
+
+parameterLocation:
+  _in: [query, header, path, cookie]
+
+requestBodyOrReference:
+  _oneOf:
+    - reference
+    - requestBody
+
+requestBody:
+  _map:
+    content: mediaTypes
+  _mapFacultative:
+    description: string
+    required: boolean
+  _mapOf: { string: anyData }
+
+responses:
+  _mapOf: { string: responseOrReference }
+
+responseOrReference:
+  _oneOf:
+    - reference
+    - response
+
+response:
+  _map:
+    description: string
+  _mapFacultative:
+    headers: valueMap
+    content: mediaTypes
+    links: valueMap
+  _mapOf: { string: anyData }
+
+mediaTypes:
+  _mapOf: { string: mediaType }
+
+mediaType:
+  _mapFacultative:
+    schema: anyData
+    example: anyData
+    examples: valueMap
+    encoding: valueMap
+  _mapOf: { string: anyData }
+
+components:
+  _mapFacultative:
+    schemas: valueMap
+    responses: valueMap
+    parameters: valueMap
+    examples: valueMap
+    requestBodies: valueMap
+    headers: valueMap
+    securitySchemes: valueMap
+    links: valueMap
+    callbacks: valueMap
+    pathItems: valueMap
+  _mapOf: { string: anyData }
+  _min: 1
+
+servers:
+  _listOf: server
+  _min: 1
+
+server:
+  _map:
+    url: string
+  _mapFacultative:
+    description: string
+    variables: serverVariables
+  _mapOf: { string: anyData }
+
+serverVariables:
+  _mapOf: { string: serverVariable }
+
+serverVariable:
+  _map:
+    default: string
+  _mapFacultative:
+    enum: stringList
+    description: string
+  _mapOf: { string: anyData }
+
+tags:
+  _listOf: tag
+  _min: 1
+
+tag:
+  _map:
+    name: string
+  _mapFacultative:
+    description: string
+    externalDocs: externalDocs
+  _mapOf: { string: anyData }
+
+externalDocs:
+  _map:
+    url: string
+  _mapFacultative:
+    description: string
+  _mapOf: { string: anyData }
+
+securityRequirements:
+  _listOf: securityRequirement
+  _min: 1
+
+securityRequirement:
+  _mapOf: { string: stringList }
+
+valueMap:
+  _mapOf: { string: value }
+
+stringList:
+  _listOf: string
+  _min: 1
+
+valueList:
+  _listOf: value
+  _min: 1
+
+scalar:
+  _oneOf:
+    - string
+    - boolean
+    - int
+    - float
+    - nullType
+
+value:
+  _oneOf:
+    - scalar
+    - valueList
+    - valueMap
