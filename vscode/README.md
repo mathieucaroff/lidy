@@ -1,0 +1,1 @@
+# Lidy YAML Schema

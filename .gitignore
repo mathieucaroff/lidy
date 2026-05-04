@@ -15,5 +15,6 @@
 !/rust/
 !/schema/
 !/testdata/
+!/vscode/
 
 !/.gitignore

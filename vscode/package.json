@@ -1,0 +1,65 @@
+{
+  "name": "lidy-vscode",
+  "displayName": "Lidy YAML Schema",
+  "description": "Lidy schema resolution and YAML linting for VS Code",
+  "version": "0.1.0",
+  "license": "MPL-2.0",
+  "private": true,
+  "engines": {
+    "vscode": "^1.100.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Linters",
+    "Other"
+  ],
+  "activationEvents": [
+    "onLanguage:yaml"
+  ],
+  "main": "./out/client/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "lidy.refreshRemoteSchemas",
+        "title": "Refresh Remote Schemas",
+        "category": "Lidy"
+      },
+      {
+        "command": "lidy.insertSchemaDirective",
+        "title": "Insert Schema Directive",
+        "category": "Lidy"
+      },
+      {
+        "command": "lidy.addAssociationToConfig",
+        "title": "Add Association To lidy.config.yaml",
+        "category": "Lidy"
+      },
+      {
+        "command": "lidy.addAssociationToOverride",
+        "title": "Add Association To Override File",
+        "category": "Lidy"
+      }
+    ]
+  },
+  "scripts": {
+    "check": "tsc --noEmit -p ./",
+    "compile": "npm run check && vite build",
+    "watch": "vite build --watch",
+    "vscode:prepublish": "npm run compile"
+  },
+  "dependencies": {
+    "lidy": "^0.2.0",
+    "minimatch": "^10.0.1",
+    "vscode-languageclient": "^9.0.1",
+    "vscode-languageserver": "^9.0.1",
+    "vscode-languageserver-textdocument": "^1.0.11",
+    "yaml": "^2.8.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.21",
+    "@types/vscode": "^1.100.0",
+    "typescript": "^5.8.3",
+    "vite": "^6.3.5",
+    "vite-plugin-static-copy": "^2.3.1"
+  }
+}
