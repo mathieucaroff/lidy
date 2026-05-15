@@ -8,6 +8,12 @@ Think JSON Schema but for YAML. Please have a look at the [main README file](htt
 
 ```bash
 cd js
-yarn # install
-yarn test
+bun install
+bun test
+```
+
+Build the npm package with:
+
+```bash
+bun run build
 ```

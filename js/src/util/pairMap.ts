@@ -14,7 +14,7 @@ export class PairMap<TKA, TKB, TV> {
     return this.root.get(keyA)?.has(keyB) ?? false
   }
   get(keyA: TKA, keyB: TKB): TV {
-    return this.root.get(keyA)?.get(keyB)
+    return this.root.get(keyA)?.get(keyB)!
   }
   set(keyA: TKA, keyB: TKB, value: TV) {
     const map = this.root.get(keyA) ?? new Map()

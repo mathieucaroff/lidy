@@ -1,4 +1,5 @@
 import * as yaml from "yaml"
+import { resolve } from "path"
 
 import { CheckError, CheckResultError, JoinError } from "./error"
 import { readLocalFile } from "./file"
@@ -8,9 +9,17 @@ import { applyPredefinedRule, Rule } from "./rule"
 import * as syaml from "./syaml"
 import { deserializedYamlFile, YamlFile } from "./yamlfile"
 
+function readMetaSchemaFile() {
+  return readLocalFile("lidy.schema.yaml", [
+    __dirname,
+    resolve(__dirname, "../../"),
+    process.cwd(),
+  ])
+}
+
 export function makeMetaParserFor(subparser: Parser): Parser {
   const metaSchema: YamlFile = {
-    file: readLocalFile("../../lidy.schema.yaml"),
+    file: readMetaSchemaFile(),
     yaml: new yaml.YAMLMap(),
     doneParsing: false,
     lineCounter: new yaml.LineCounter(),

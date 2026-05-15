@@ -64,7 +64,7 @@ function check(
   }
 }
 
-function deepEqual(a: any, b: any) {
+function deepEqual(a: any, b: any): boolean {
   if (a === b) return true
   if (typeof a !== typeof b) return false
   if (typeof a === "object") {

@@ -106,27 +106,27 @@ function specimenHandler(
     try {
       parser = lidy.makeParser({ name: "<schema>.yaml", content: schema }, {})
     } catch (e) {
-      let message = `error in schema: ${e.message}`
+      let message = `error in schema: ${(e as Error)?.message}`
       s.abort(message)
     }
     try {
       parser.parse({ name: "<content>.yaml", content: text })
     } catch (e) {
-      error = e
+      error = e as Error
     }
   } else {
     schema = {
       lidySchemaExpression: () => `main:\n  ${text.replace(/\n/g, "\n  ")}`,
       lidySchemaDocument: () => text,
       lidySchemaRegexChecker: () => `main:\n  _regex: '${text}'`,
-    }[box]?.()
+    }[box]!?.()
     if (schema === undefined) {
       s.fail(`unknown test box: ${box}`)
     }
     try {
       lidy.makeParser({ name: "<schema>.yaml", content: schema }, {})
     } catch (e) {
-      error = e
+      error = e as Error
     }
   }
 
