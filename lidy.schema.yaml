@@ -39,6 +39,7 @@ checkerForm:
     - mapChecker
     - listChecker
     - oneOfChecker
+    - ifThenChecker
 
 regexChecker:
   _map:
@@ -108,3 +109,16 @@ oneOfChecker:
   _map:
     "_oneOf":
       _listOf: expression
+
+# In an if-then checker, each entry of the list is a pair of:
+# - a test expression (the "if" part)
+# - a expression to be used if the test matches (the "then" part)
+# If the test expression does not match, the next entry of the list is tried.
+# If no test expression matches, the whole if-then checker fails.
+# Note you can use `any` as a joker test expression which always matches as the
+# last entry of the list, to provide a default case.
+ifThenChecker:
+  _map:
+    "_ifThen":
+      _listOf:
+        _list: [expression, expression]

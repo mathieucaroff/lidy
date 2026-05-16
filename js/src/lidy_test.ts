@@ -171,6 +171,7 @@ specimen.run(specimenHandler, [
   readLocalFile("../../testdata/collection/merge.spec.yaml"),
   readLocalFile("../../testdata/collection/min_max_nb.spec.yaml"),
   readLocalFile("../../testdata/collection/tuple.spec.yaml"),
+  readLocalFile("../../testdata/combinator/ifThen.spec.yaml"),
   readLocalFile("../../testdata/combinator/oneOf.spec.yaml"),
   readLocalFile("../../testdata/scalar/in.spec.yaml"),
   readLocalFile("../../testdata/scalar/range.spec.yaml"),

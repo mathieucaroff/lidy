@@ -1,5 +1,6 @@
 import * as yaml from "yaml"
 import { JoinError } from "./error"
+import { applyIfThenMatcher } from "./ifThen"
 import { applyInMatcher } from "./in"
 import { ParserData } from "./lidy"
 import { applyListMatcher } from "./list"
@@ -54,6 +55,8 @@ export function applyExpression(
         return applyRangeMatcher(parserData, value, content)
       case "_oneOf":
         return applyOneOfMatcher(parserData, value, content)
+      case "_ifThen":
+        return applyIfThenMatcher(parserData, value, content)
       case "_map":
         _map = value
         break
@@ -105,7 +108,7 @@ export function applyExpression(
         content,
       )
     } catch (e) {
-      joinError.add(e)
+      joinError.add(e as Error)
     }
   }
   if (_list || _listFacultative || _listOf) {
@@ -118,7 +121,7 @@ export function applyExpression(
         content,
       )
     } catch (e) {
-      joinError.add(e)
+      joinError.add(e as Error)
     }
   }
   joinError.throw()

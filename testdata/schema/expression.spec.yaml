@@ -161,6 +161,25 @@ content:
           - "_oneOf: null"
           - "_oneOf: true"
           - "_oneOf"
+  - name: check for ifThen.checker
+    content:
+      - name: accept valid forms
+        text:
+          - "_ifThen: []"
+          - "_ifThen: [[string, string]]"
+          - "_ifThen: [[{ _in: [yes] }, string], [any, int]]"
+      - name: reject invalid forms
+        errorContains: "_ifThen"
+        text:
+          - "_ifThen: .2"
+          - "_ifThen: 22"
+          - "_ifThen: aa"
+          - "_ifThen: null"
+          - "_ifThen: true"
+          - "_ifThen: [string]"
+          - "_ifThen: [[string]]"
+          - "_ifThen: [[string, int, boolean]]"
+          - "_ifThen"
   - name: check that checkers are used with the right signature
     content:
       - name: reject
