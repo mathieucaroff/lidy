@@ -26,34 +26,57 @@ predefinedRule:
     - "never"
 
 expression:
-  _oneOf:
-    - predefinedRule
-    - ruleReference
-    - checkerForm
+  _ifThen:
+    - [predefinedRule, predefinedRule]
+    - [string, ruleReference]
+    - [any, checkerForm]
 
 checkerForm:
-  _oneOf:
-    - regexChecker
-    - inChecker
-    - rangeChecker
-    - mapChecker
-    - listChecker
-    - oneOfChecker
-    - ifThenChecker
+  _ifThen:
+    - [regexShape, regexChecker]
+    - [inShape, inChecker]
+    - [rangeShape, rangeChecker]
+    - [mapShape, mapChecker]
+    - [listShape, listChecker]
+    - [oneOfShape, oneOfChecker]
+    - [ifThenShape, ifThenChecker]
+
+###
+
+regexShape:
+  _map:
+    "_regex": any
+  _mapOf: { any: any }
 
 regexChecker:
   _map:
     "_regex": string
+
+###
+
+inShape:
+  _map:
+    "_in": any
+  _mapOf: { any: any }
 
 inChecker:
   _map:
     "_in":
       _listOf: scalar
 
+###
+
+rangeShape:
+  _map:
+    "_range": any
+  _mapOf: { any: any }
+
 rangeChecker:
   _map:
     "_range":
       _regex: "([0-9]+([.][0-9]+)? *<=? *)?(int|float)( *<=? *[0-9]+([.][0-9]+)?)?"
+
+###
 
 scalar:
   _oneOf:
@@ -61,6 +84,16 @@ scalar:
     - float
     - boolean
     - nullType
+
+###
+
+mapShape:
+  _mapFacultative:
+    "_map": any
+    "_mapFacultative": any
+    "_mapOf": any
+    "_merge": any
+  _min: 1
 
 # mapChecker has extra builder checks which ensure that _merge, if present,
 # refers to existing mapChecker rules
@@ -86,6 +119,15 @@ mergeable:
     - ruleReference
     - mapChecker
 
+###
+
+listShape:
+  _mapFacultative:
+    "_list": any
+    "_listFacultative": any
+    "_listOf": any
+  _min: 1
+
 listChecker:
   _mapFacultative:
     "_list":
@@ -107,10 +149,24 @@ sizedCheckerKeywordSet:
     "_max": int
     "_nb": int
 
+###
+
+oneOfShape:
+  _map:
+    "_oneOf": any
+  _mapOf: { any: any }
+
 oneOfChecker:
   _map:
     "_oneOf":
       _listOf: expression
+
+###
+
+ifThenShape:
+  _map:
+    "_ifThen": any
+  _mapOf: { any: any }
 
 # In an if-then checker, each entry of the list is a pair of:
 # - a test expression (the "if" part)
@@ -121,6 +177,10 @@ oneOfChecker:
 # last entry of the list, to provide a default case.
 ifThenChecker:
   _map:
-    "_ifThen":
-      _listOf:
-        _list: [expression, expression]
+    "_ifThen": testResultPairList
+
+testResultPairList:
+  _listOf: testResultPair
+
+testResultPair:
+  _list: [expression, expression]
