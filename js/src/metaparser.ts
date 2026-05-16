@@ -35,6 +35,15 @@ export function makeMetaParserFor(subparser: Parser): Parser {
     originPosition: Position,
   ): Error | undefined => {
     const rule = subparser.ruleSet[name]
+
+    if (!rule) {
+      return new CheckResultError(
+        "_merge",
+        `unknown rule '${name}' at ${namePosition} encountered followings rules from a _merge keyword`,
+        originPosition,
+      )
+    }
+
     // checkError, to be returned only if the node is not a map checker
     const checkError = new CheckError(
       "_merge",
@@ -43,13 +52,7 @@ export function makeMetaParserFor(subparser: Parser): Parser {
       rule.node,
     )
 
-    if (!rule) {
-      return new CheckResultError(
-        "_merge",
-        `unknown rule '${name}' at ${namePosition} encountered followings rules from a _merge keyword`,
-        originPosition,
-      )
-    } else if (yaml.isScalar(rule.node)) {
+    if (yaml.isScalar(rule.node)) {
       if (!syaml.isString(rule.node)) {
         return checkError
       }
@@ -117,25 +120,17 @@ export function makeMetaParserFor(subparser: Parser): Parser {
         isLidyData: true,
       }
     },
-    mapChecker: (input: Result<any>) => {
-      const mapData = input.data as MapData<any, string | ListData<any>>
-      const _merge = mapData.map["_merge"]
-      const joinError = new JoinError()
-      if (_merge) {
-        const mergedNodeSlice = (_merge.data as ListData<any>).listOf
-        mergedNodeSlice.forEach((result) => {
-          if (result.data.isLidyData && result.data._map) {
-            // the merged node is a _map* checker, it's okay
-            return // continue
-          } else if (typeof result.data === "string") {
-            // the merged node is an identifier, the rule it refers to.
-            joinError.add(
-              checkMergedNode(result.data, result.position, result.position),
-            )
-          }
-        })
+    mergeable: (input: Result<any>) => {
+      if (typeof input.data === "string") {
+        const error = checkMergedNode(
+          input.data,
+          input.position,
+          input.position,
+        )
+        if (error) {
+          throw error
+        }
       }
-      joinError.throw()
       return {
         data: input.data,
         isLidyData: true,

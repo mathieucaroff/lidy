@@ -77,12 +77,14 @@ mapChecker:
         expression: expression
       _min: 1 # mapOf must have at least one expression-to-expression entry
     "_merge":
-      _listOf:
-        _oneOf:
-          - ruleReference
-          - mapChecker
+      _listOf: mergeable
   _merge: [sizedCheckerKeywordSet]
   _min: 1 # mapChecker must have at least one of its four keywords present
+
+mergeable:
+  _oneOf:
+    - ruleReference
+    - mapChecker
 
 listChecker:
   _mapFacultative:
