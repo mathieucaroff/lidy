@@ -40,12 +40,16 @@ export default defineConfig({
     viteStaticCopy({
       targets: [
         {
+          src: path.posix.join("..", "lidy.schema.yaml"),
+          dest: ".",
+        },
+        {
           src: path.posix.join("..", "schema", "*.schema.yaml"),
           dest: "schema",
         },
         {
-          src: path.posix.join("..", "schema", "metadata.json"),
-          dest: "schema",
+          src: path.posix.join("..", "schema-autodetection.json"),
+          dest: ".",
         },
       ],
     }),

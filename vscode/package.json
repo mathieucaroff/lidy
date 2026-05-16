@@ -48,7 +48,7 @@
     "vscode:prepublish": "npm run compile"
   },
   "dependencies": {
-    "lidy": "^0.2.0",
+    "lidy": "^0.3.0",
     "minimatch": "^10.0.1",
     "vscode-languageclient": "^9.0.1",
     "vscode-languageserver": "^9.0.1",

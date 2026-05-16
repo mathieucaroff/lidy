@@ -1,17 +1,20 @@
 import * as path from "path"
+import { Console } from "node:console"
 import { makeParser } from "lidy"
 import {
   createConnection,
   Diagnostic,
+  DiagnosticSeverity,
   ExecuteCommandParams,
   InitializeParams,
   InitializeResult,
   ProposedFeatures,
+  Range,
   TextDocumentSyncKind,
 } from "vscode-languageserver/node"
 import { TextDocument } from "vscode-languageserver-textdocument"
 import { TextDocuments } from "vscode-languageserver/node"
-import { errorToDiagnostics } from "./diagnostics"
+import { errorToDiagnostics, makeDiagnostic } from "./diagnostics"
 import {
   isRepositoryConfigFile,
   looksLikeInvalidRepositoryConfigFile,
@@ -30,9 +33,20 @@ import { loadSchemaMetadata, SchemaMetadata } from "../shared/schemaMetadata"
 type InitializationOptions = {
   extensionRootPath?: string
   packagedSchemaRootPath?: string
+  packagedSchemaAutodetectionPath?: string
   globalStoragePath?: string
   isTrusted?: boolean
 }
+
+const stderrConsole = new Console({
+  stdout: process.stderr,
+  stderr: process.stderr,
+})
+
+// The LSP protocol owns stdout. Redirect incidental library logging away from it.
+console.log = stderrConsole.log.bind(stderrConsole)
+console.info = stderrConsole.info.bind(stderrConsole)
+console.debug = stderrConsole.debug.bind(stderrConsole)
 
 const connection = createConnection(
   ProposedFeatures.all,
@@ -43,6 +57,7 @@ const documents = new TextDocuments(TextDocument)
 
 let extensionRootPath = ""
 let packagedSchemaRootPath = ""
+let packagedSchemaAutodetectionPath = ""
 let globalStoragePath = ""
 let workspaceTrusted = false
 let workspaceFolders: string[] = []
@@ -53,13 +68,16 @@ connection.onInitialize((params: InitializeParams): InitializeResult => {
   extensionRootPath = init.extensionRootPath ?? ""
   packagedSchemaRootPath =
     init.packagedSchemaRootPath ?? path.join(extensionRootPath, "out", "schema")
+  packagedSchemaAutodetectionPath =
+    init.packagedSchemaAutodetectionPath ??
+    path.join(extensionRootPath, "out", "schema-autodetection.json")
   globalStoragePath =
     init.globalStoragePath ?? path.join(extensionRootPath, ".cache")
   workspaceTrusted = init.isTrusted === true
   workspaceFolders = (params.workspaceFolders ?? [])
     .map((folder) => uriToFsPath(folder.uri))
     .filter((folderPath): folderPath is string => folderPath !== undefined)
-  schemaMetadata = loadSchemaMetadata(packagedSchemaRootPath)
+  schemaMetadata = loadSchemaMetadata(packagedSchemaAutodetectionPath)
 
   return {
     capabilities: {
@@ -130,6 +148,7 @@ async function validateDocument(document: TextDocument): Promise<void> {
       extensionRootPath,
       globalStoragePath,
       packagedSchemaRootPath,
+      packagedSchemaAutodetectionPath,
       readRepositoryConfigFiles: (workspaceFolder, targetFilePath) =>
         readRepositoryConfigFiles(
           workspaceFolder,
@@ -176,11 +195,31 @@ async function lintYamlDocument(
   document: TextDocument,
   schemaFile: FileRef,
 ): Promise<Diagnostic[]> {
+  let parser: ReturnType<typeof makeParser>
   try {
-    const parser = makeParser(schemaFile, {})
+    parser = makeParser(schemaFile, {})
+  } catch (error) {
+    return schemaConstructionDiagnostics(schemaFile, error)
+  }
+
+  try {
     parser.parse({ name: document.uri, content: document.getText() })
     return []
   } catch (error) {
     return errorToDiagnostics(document, error)
   }
+}
+
+function schemaConstructionDiagnostics(
+  schemaFile: FileRef,
+  error: unknown,
+): Diagnostic[] {
+  const details = error instanceof Error ? error.message : String(error)
+  return [
+    makeDiagnostic(
+      `Failed to construct parser from schema '${schemaFile.name}': ${details}`,
+      DiagnosticSeverity.Error,
+      Range.create(0, 0, 0, 1),
+    ),
+  ]
 }

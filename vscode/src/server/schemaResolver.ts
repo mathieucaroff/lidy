@@ -10,7 +10,7 @@ import {
 import { makeDiagnostic } from "./diagnostics"
 import { ParsedConfigFile } from "./configFiles"
 import { findWorkspaceFolder, toPosix } from "./paths"
-import { packagedSchemaPath, SchemaMetadata } from "../shared/schemaMetadata"
+import { SchemaMetadata } from "../shared/schemaMetadata"
 
 export type FileRef = { name: string; content: string }
 
@@ -18,6 +18,7 @@ type ResolveSchemaContext = {
   extensionRootPath: string
   globalStoragePath: string
   packagedSchemaRootPath: string
+  packagedSchemaAutodetectionPath: string
   readRepositoryConfigFiles: (
     workspaceFolder: string,
     targetFilePath: string,
@@ -80,8 +81,8 @@ export async function resolveSchemaForDocument(
     return { diagnostics: [] }
   }
   return resolveSchemaReference(
-    `schema/${autodetected}`,
-    path.join(context.packagedSchemaRootPath, "metadata.json"),
+    autodetected,
+    context.packagedSchemaAutodetectionPath,
     context,
   )
 }
@@ -160,14 +161,23 @@ async function resolveSchemaReference(
       }
     }
 
+    if (isPackagedSchemaReference(schemaReference, context.schemaMetadata)) {
+      const resolvedPath = path.join(
+        path.dirname(context.packagedSchemaAutodetectionPath),
+        schemaReference,
+      )
+      return {
+        schemaFile: {
+          name: resolvedPath,
+          content: fs.readFileSync(resolvedPath, "utf8"),
+        },
+        diagnostics: [],
+      }
+    }
+
     const resolvedPath = path.isAbsolute(schemaReference)
       ? schemaReference
-      : schemaReference.startsWith("schema/")
-        ? packagedSchemaPath(
-            context.packagedSchemaRootPath,
-            path.basename(schemaReference),
-          )
-        : path.resolve(path.dirname(originFilePath), schemaReference)
+      : path.resolve(path.dirname(originFilePath), schemaReference)
     return {
       schemaFile: {
         name: resolvedPath,
@@ -199,18 +209,27 @@ function loadKnownOfficialSchema(
   )
   for (const schema of new Set(packagedFiles)) {
     const candidateUrls = [
-      `https://raw.githubusercontent.com/mathieucaroff/lidy/refs/tags/v${version}/schema/${schema}`,
-      `https://raw.githubusercontent.com/mathieucaroff/lidy/v${version}/schema/${schema}`,
+      `https://raw.githubusercontent.com/mathieucaroff/lidy/refs/tags/v${version}/${schema}`,
+      `https://raw.githubusercontent.com/mathieucaroff/lidy/v${version}/${schema}`,
     ]
     if (candidateUrls.includes(url)) {
-      const schemaPath = packagedSchemaPath(
-        context.packagedSchemaRootPath,
+      const schemaPath = path.join(
+        path.dirname(context.packagedSchemaAutodetectionPath),
         schema,
       )
       return { name: schemaPath, content: fs.readFileSync(schemaPath, "utf8") }
     }
   }
   return undefined
+}
+
+function isPackagedSchemaReference(
+  schemaReference: string,
+  schemaMetadata: SchemaMetadata,
+): boolean {
+  return schemaMetadata.autodetectionByPath.some(
+    (entry) => entry.schema === schemaReference,
+  )
 }
 
 async function loadRemoteSchema(

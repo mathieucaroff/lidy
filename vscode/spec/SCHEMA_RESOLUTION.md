@@ -245,7 +245,7 @@ For a given YAML file, the extension resolves the schema as follows:
 - if the referenced schema cannot be loaded, fetched, or parsed as a Lidy schema, report a diagnostic and stop with no selected schema
 - otherwise use that schema and stop
 
-8. If no schema has been selected yet, apply autodetection based on the rules defined in `schema/metadata.json`, using only the file name and the name of the containing directory.
+8. If no schema has been selected yet, apply autodetection based on the rules defined in `schema-autodetection.json`, using only the file name and the name of the containing directory.
 9. If autodetection yields a schema reference, resolve it.
 
 - if resolution succeeds, use that schema and stop
@@ -257,10 +257,10 @@ For a given YAML file, the extension resolves the schema as follows:
 
 Autodetection is intentionally limited in scope.
 
-The autodetection rules are defined by the content of `schema/metadata.json` packaged with the extension.
+The autodetection rules are defined by the content of `schema-autodetection.json` packaged with the extension.
 In particular, autodetection by path must be driven by that file's `autodetectionByPath` entries.
 
-The current shape of `schema/metadata.json` is:
+The current shape of `schema-autodetection.json` is:
 
 ```json
 {

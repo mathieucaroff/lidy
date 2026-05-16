@@ -1,5 +1,4 @@
 import * as fs from "fs"
-import * as path from "path"
 
 export interface AutodetectionByPathEntry {
   schema: string
@@ -10,24 +9,18 @@ export interface SchemaMetadata {
   autodetectionByPath: AutodetectionByPathEntry[]
 }
 
-export function loadSchemaMetadata(schemaRootPath: string): SchemaMetadata {
-  const filePath = path.join(schemaRootPath, "metadata.json")
-  const content = fs.readFileSync(filePath, "utf8")
+export function loadSchemaMetadata(
+  schemaMetadataFilePath: string,
+): SchemaMetadata {
+  const content = fs.readFileSync(schemaMetadataFilePath, "utf8")
   return JSON.parse(content) as SchemaMetadata
 }
 
-export function listPackagedSchemaFiles(schemaRootPath: string): string[] {
-  const schemaDir = schemaRootPath
-  return fs
-    .readdirSync(schemaDir, { withFileTypes: true })
-    .filter((entry) => entry.isFile() && entry.name.endsWith(".schema.yaml"))
-    .map((entry) => entry.name)
-    .sort()
-}
-
-export function packagedSchemaPath(
-  schemaRootPath: string,
-  schemaFileName: string,
-): string {
-  return path.join(schemaRootPath, schemaFileName)
+export function listPackagedSchemaReferences(
+  schemaMetadataFilePath: string,
+): string[] {
+  const schemaMetadata = loadSchemaMetadata(schemaMetadataFilePath)
+  return [
+    ...new Set(schemaMetadata.autodetectionByPath.map((entry) => entry.schema)),
+  ].sort()
 }

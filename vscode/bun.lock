@@ -4,7 +4,7 @@
     "": {
       "name": "lidy-vscode",
       "dependencies": {
-        "lidy": "^0.2.0",
+        "lidy": "^0.3.0",
         "minimatch": "^10.0.1",
         "vscode-languageclient": "^9.0.1",
         "vscode-languageserver": "^9.0.1",
@@ -175,7 +175,7 @@
 
     "jsonfile": ["jsonfile@6.2.1", "", { "dependencies": { "universalify": "^2.0.0" }, "optionalDependencies": { "graceful-fs": "^4.1.6" } }, "sha512-zwOTdL3rFQ/lRdBnntKVOX6k5cKJwEc1HdilT71BWEu7J41gXIB2MRp+vxduPSwZJPWBxEzv4yH1wYLJGUHX4Q=="],
 
-    "lidy": ["lidy@0.2.0", "", { "dependencies": { "yaml": "^2.6.1" } }, "sha512-4Jd0oi9k9mpQlOkLlcy13Tib8nw61A/GkJYoh0TWwVhUDicE/I41zcAuQwnqAq78QdKAkN/wUG027twlE5kPTQ=="],
+    "lidy": ["lidy@0.3.0", "", { "dependencies": { "yaml": "^2.6.1" } }, "sha512-mG2fZoLExSs94e0ggarE7guTdvvY7t2c611X6hmPQBtQ2nqv0XTRrGyWRniPXr0awNKIiFONnrNdo/xlX0PWww=="],
 
     "merge2": ["merge2@1.4.1", "", {}, "sha512-8q7VEgMJW4J8tcfVPy8g09NcQwZdbwFEqhe/WZkoIzjn/3TGDwtOCYtXGxA3O8tPzpczCCDgv+P2P5y00ZJOOg=="],
 

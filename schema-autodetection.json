@@ -1,0 +1,51 @@
+{
+  "autodetectionByPath": [
+    {
+      "schema": "lidy.schema.yaml",
+      "pathList": ["**/*.schema.y{a,}ml"]
+    },
+    {
+      "schema": "schema/ansible.schema.yaml",
+      "pathList": [
+        "**/{playbooks,ansible}/**/*.y{a,}ml",
+        "**/roles/*/{tasks,handlers,defaults,vars}/*.y{a,}ml"
+      ]
+    },
+    {
+      "schema": "schema/docker.schema.yaml",
+      "pathList": ["**/{docker-,}compose.y{a,}ml"]
+    },
+    {
+      "schema": "schema/github.schema.yaml",
+      "pathList": [
+        ".github/workflows/*.y{a,}ml",
+        "**/.github/workflows/*.y{a,}ml"
+      ]
+    },
+    {
+      "schema": "schema/gitlab.schema.yaml",
+      "pathList": [
+        ".gitlab-ci.y{a,}ml",
+        "**/.gitlab-ci.y{a,}ml",
+        ".gitlab/**/*.y{a,}ml",
+        "**/.gitlab/**/*.y{a,}ml"
+      ]
+    },
+    {
+      "schema": "schema/kubernetes.schema.yaml",
+      "pathList": ["**/{k8s,kubernetes,manifests}/**/*.y{a,}ml"]
+    },
+    {
+      "schema": "schema/openapi.schema.yaml",
+      "pathList": ["**/{openapi,swagger}.y{a,}ml", "**/openapi/**/*.y{a,}ml"]
+    },
+    {
+      "schema": "schema/tosca.schema.yaml",
+      "pathList": [
+        "**/tosca/**/*.y{a,}ml",
+        "**/tosca*.y{a,}ml",
+        "**/*service-template*.y{a,}ml"
+      ]
+    }
+  ]
+}

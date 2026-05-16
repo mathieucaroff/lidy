@@ -35,6 +35,9 @@ export async function activate(
   const packagedSchemaRootPath = context.asAbsolutePath(
     path.join("out", "schema"),
   )
+  const packagedSchemaAutodetectionPath = context.asAbsolutePath(
+    path.join("out", "schema-autodetection.json"),
+  )
 
   const serverOptions: ServerOptions = {
     run: { module: serverModule, transport: TransportKind.stdio },
@@ -72,6 +75,7 @@ export async function activate(
     initializationOptions: {
       extensionRootPath: context.extensionPath,
       packagedSchemaRootPath,
+      packagedSchemaAutodetectionPath,
       globalStoragePath: context.globalStorageUri.fsPath,
       isTrusted: vscode.workspace.isTrusted,
     },
@@ -121,7 +125,7 @@ export async function activate(
     traceOutputChannel,
   )
   context.subscriptions.push(
-    ...registerCommands(context, packagedSchemaRootPath, async () => {
+    ...registerCommands(context, packagedSchemaAutodetectionPath, async () => {
       await clientStart
       if (!client) {
         throw new Error("Lidy language client is not available")

@@ -1,7 +1,7 @@
 import * as fs from "fs"
 import * as path from "path"
 import * as vscode from "vscode"
-import { listPackagedSchemaFiles } from "../shared/schemaMetadata"
+import { listPackagedSchemaReferences } from "../shared/schemaMetadata"
 
 type CommandHandler = () => Promise<void>
 
@@ -10,15 +10,15 @@ type ContributedCommand = {
 }
 
 async function promptSchemaReference(
-  packagedSchemaRootPath: string,
+  packagedSchemaAutodetectionPath: string,
 ): Promise<string | undefined> {
-  const packaged = listPackagedSchemaFiles(packagedSchemaRootPath).map(
-    (schema) => ({
-      label: schema,
-      description: "Packaged official schema",
-      value: `schema/${schema}`,
-    }),
-  )
+  const packaged = listPackagedSchemaReferences(
+    packagedSchemaAutodetectionPath,
+  ).map((schemaReference) => ({
+    label: path.basename(schemaReference),
+    description: `Packaged official schema (${schemaReference})`,
+    value: schemaReference,
+  }))
 
   const entered = await vscode.window.showQuickPick(
     [
@@ -122,7 +122,7 @@ function ensureAllDeclaredCommandsRegistered(
 
 export function registerCommands(
   context: vscode.ExtensionContext,
-  packagedSchemaRootPath: string,
+  packagedSchemaAutodetectionPath: string,
   refreshRemoteSchemas: () => Thenable<void>,
 ): vscode.Disposable[] {
   const handlers = new Map<string, CommandHandler>([
@@ -130,7 +130,9 @@ export function registerCommands(
       "lidy.insertSchemaDirective",
       runCommand(async () => {
         const editor = activeEditorOrThrow()
-        const schema = await promptSchemaReference(packagedSchemaRootPath)
+        const schema = await promptSchemaReference(
+          packagedSchemaAutodetectionPath,
+        )
         if (!schema) {
           return
         }
@@ -154,7 +156,9 @@ export function registerCommands(
         if (!pattern) {
           return
         }
-        const schema = await promptSchemaReference(packagedSchemaRootPath)
+        const schema = await promptSchemaReference(
+          packagedSchemaAutodetectionPath,
+        )
         if (!schema) {
           return
         }
@@ -192,7 +196,9 @@ export function registerCommands(
         if (!pattern) {
           return
         }
-        const schema = await promptSchemaReference(packagedSchemaRootPath)
+        const schema = await promptSchemaReference(
+          packagedSchemaAutodetectionPath,
+        )
         if (!schema) {
           return
         }
