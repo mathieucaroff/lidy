@@ -254,7 +254,7 @@ repository:
   _oneOf:
     - string
     - _map:
-        url: string
+        url: url
       _mapFacultative:
         description: description
         credential:
@@ -266,7 +266,7 @@ repository:
             user: string
 
 repositories:
-  _mapOf: { string: output_parameter }
+  _mapOf: { string: repository }
 
 artifact_def:
   _oneOf:

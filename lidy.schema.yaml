@@ -93,6 +93,7 @@ mapShape:
     "_mapFacultative": any
     "_mapOf": any
     "_merge": any
+  _merge: [sizedCheckerKeywordSet]
   _min: 1
 
 # mapChecker has extra builder checks which ensure that _merge, if present,
@@ -126,6 +127,7 @@ listShape:
     "_list": any
     "_listFacultative": any
     "_listOf": any
+  _merge: [sizedCheckerKeywordSet]
   _min: 1
 
 listChecker:

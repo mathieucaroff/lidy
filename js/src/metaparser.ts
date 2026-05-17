@@ -89,9 +89,6 @@ export function makeMetaParserFor(subparser: Parser): Parser {
   const metaBuilderMap: Record<string, Builder> = {
     ruleReference: (input: Result<any>) => {
       const identifier = input.data
-      if (identifier === "expression") {
-        console.log("identifier === 'expression', stack:", new Error().stack)
-      }
       const rule = subparser.ruleSet[identifier]
       if (!rule) {
         const $$onlyCheckIfRuleExistsRef = { value: false }
